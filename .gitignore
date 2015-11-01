@@ -26,3 +26,13 @@
 *.exe
 *.out
 *.app
+
+#build directory
+GLImac-Template-Projet-Linux-Windows-build/*
+
+#glimac and imaincraft stuff
+GLImac-Template-Projet-Linux-Windows/assets/*
+GLImac-Template-Projet-Linux-Windows/glimac/*
+
+
+
