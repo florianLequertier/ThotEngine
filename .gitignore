@@ -34,5 +34,5 @@ GLImac-Template-Projet-Linux-Windows-build/*
 GLImac-Template-Projet-Linux-Windows/assets/*
 GLImac-Template-Projet-Linux-Windows/glimac/*
 
-
-
+#third party
+GLImac-Template-Projet-Linux-Windows/third-party/*
