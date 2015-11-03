@@ -25,8 +25,14 @@ class BaseCArray{
 //template<typename T>
 typedef std::map<std::type_index, std::shared_ptr<BaseCArray> > CMap;
 
+class IHandler
+{
+public:
+    virtual bool istypeof(const std::type_index& type) = 0;
+};
+
 template<typename T>
-class Handler
+class Handler : public IHandler
 {
 public :
     Handler(CMap* user, int index);
@@ -37,9 +43,16 @@ public :
         return m_index;
     }
 
+    inline virtual bool istypeof(const std::type_index& type) override
+    {
+        return (type == m_type);
+    }
+
 private :
     int m_index;
     CMap* m_user;
+    std::type_index m_type;
+
 };
 
 

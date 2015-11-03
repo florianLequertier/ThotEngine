@@ -2,6 +2,7 @@
 #define TRANSFORM_H
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "thotEngine/Component.hpp"
 
@@ -9,6 +10,7 @@ namespace te{
 
 class Transform : public Component
 {
+
 private :
     glm::quat m_rotation;
     glm::vec3 m_scale;

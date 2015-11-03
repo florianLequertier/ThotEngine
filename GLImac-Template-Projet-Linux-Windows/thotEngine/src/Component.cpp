@@ -1,4 +1,7 @@
+
 #include "thotEngine/Component.hpp"
+#include "thotEngine/Entity.hpp"
+#include "thotEngine/Transform.hpp"
 
 namespace te{
 

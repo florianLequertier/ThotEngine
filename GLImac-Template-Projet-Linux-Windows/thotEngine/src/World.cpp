@@ -5,14 +5,19 @@ namespace te{
 
 World::World()
 {
-    m_content[typeid(Component)] = std::make_shared< CArray<Component> >();
 
-    m_ptrToComponents = std::static_pointer_cast<CArray<Component>>(m_content[typeid(Component)]);
 }
 
 World::~World()
 {
 
+}
+
+void World::init()
+{
+    m_content[typeid(Entity)] = std::make_shared< CArray<Entity> >();
+
+    m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
 }
 
 void World::update()

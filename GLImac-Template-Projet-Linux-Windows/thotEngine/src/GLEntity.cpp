@@ -11,6 +11,7 @@
 #include <glm\ext.hpp>
 
 #include "thotEngine/GLEntity.hpp"
+#include "thotEngine/GLConfig.hpp"
 
 
 namespace te{
@@ -82,15 +83,15 @@ void GLEntity::pushToGPU()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
-    glEnableVertexAttribArray(gl::GLINDEX_POSITION);
-    glEnableVertexAttribArray(gl::GLINDEX_NORMAL);
-    glEnableVertexAttribArray(gl::GLINDEX_TEXCOORDS);
-    glEnableVertexAttribArray(gl::GLINDEX_COLOR);
+    glEnableVertexAttribArray(te::gl::GLINDEX_POSITION);
+    glEnableVertexAttribArray(te::gl::GLINDEX_NORMAL);
+    glEnableVertexAttribArray(te::gl::GLINDEX_TEXCOORDS);
+    glEnableVertexAttribArray(te::gl::GLINDEX_COLOR);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glVertexAttribPointer(gl::GLINDEX_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(gl::Vertex), (const GLvoid*)offsetof(gl::Vertex, position));
-    glVertexAttribPointer(gl::GLINDEX_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(gl::Vertex), (const GLvoid*)offsetof(gl::Vertex, normal));
-    glVertexAttribPointer(gl::GLINDEX_TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(gl::Vertex), (const GLvoid*)offsetof(gl::Vertex, texCoords));
-    glVertexAttribPointer(gl::GLINDEX_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof(gl::Vertex), (const GLvoid*)offsetof(gl::Vertex, color));
+    glVertexAttribPointer(te::gl::GLINDEX_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(te::Vertex), (const GLvoid*)offsetof(te::Vertex, position));
+    glVertexAttribPointer(te::gl::GLINDEX_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(te::Vertex), (const GLvoid*)offsetof(te::Vertex, normal));
+    glVertexAttribPointer(te::gl::GLINDEX_TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(te::Vertex), (const GLvoid*)offsetof(te::Vertex, texCoords));
+    glVertexAttribPointer(te::gl::GLINDEX_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof(te::Vertex), (const GLvoid*)offsetof(te::Vertex, color));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);

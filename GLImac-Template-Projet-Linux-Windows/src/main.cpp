@@ -3,18 +3,21 @@
 
 #include "thotEngine/World.hpp"
 #include "thotEngine/Component.hpp"
+#include "thotEngine/Entity.hpp"
 
 int main(int argc, char** argv)
 {
     te::World world;
+    world.init();
 
-    auto component = world.InstantiateNew<te::Component>();
-    component->setName("toto");
+    auto entity01 = world.InstantiateNew<te::Entity>();
+    entity01->setName("toto");
 
-    component = world.InstantiateNew<te::Component>();
-    component->setName("tutu");
+    entity01 = world.InstantiateNew<te::Entity>();
+    entity01->setName("tutu");
+    world.attachTo<te::Component>(entity01);
 
-    world.destroy(component);
+    world.destroy(entity01);
 
     for(int i = 0; i < 10; ++i)
     {

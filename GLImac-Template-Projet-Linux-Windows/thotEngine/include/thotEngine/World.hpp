@@ -15,9 +15,19 @@ namespace te{
 
 class World
 {
+private:
+    CMap m_content;
+
+    TestSystem m_testSystem;
+
+    //shortcup to CArrays in the CMap, to improve performance
+    std::shared_ptr<CArray<Component>> m_ptrToEntities;
+
 public :
     World();
     ~World();
+    void init();
+
     template<typename T>
     Handler<T> InstantiateNew();
     template<typename T>
@@ -25,14 +35,10 @@ public :
     template<typename T>
     void destroy(Handler<T> target);
 
+    template<typename T>
+    Handler<T> attachTo(Handler<Entity> entity);
+
     void update();
-
-private:
-    CMap m_content;
-
-    TestSystem m_testSystem;
-
-    std::shared_ptr<CArray<Component>> m_ptrToComponents;
 
 };
 
@@ -54,6 +60,14 @@ template<typename T>
 void World::destroy(Handler<T> target)
 {
     std::static_pointer_cast<CArray<T>>(m_content[typeid(T)])->remove(target);
+}
+
+template<typename T>
+Handler<T> World::attachTo(Handler<Entity> entity)
+{
+    auto newComponent = InstantiateNew<T>();
+    entity->addComponent<T>(newComponent);
+    return newComponent;
 }
 
 }
