@@ -15,6 +15,8 @@
 #include <assimp\postprocess.h>
 #include <assimp\scene.h>
 
+#include "GLEntity.hpp"
+
 #define INVALID_MATERIAL 0xFFFFFFFF
 
 namespace te
@@ -38,15 +40,19 @@ public:
     Mesh(std::string name);
     ~Mesh();
 
-    void init(const std::vector<gl::Vertex>& vertices, const std::vector<uint32_t>& indices/*, std::shared_ptr<Material> material*/);
+    void init(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices/*, std::shared_ptr<Material> material*/);
     bool load(const std::string& path); // version without engine check
 
     void pushToGPU(); // envoie les donn�es stock�es dans la m�moire de l'ordinateur � la m�moire de la CG
+    void popFromGPU();
+
     //std::shared_ptr<Material> getMaterial() const;
     //void setMaterial(std::shared_ptr<Material> material);
 
     void draw();
-}
+};
+
+
 }
 
 #endif // MESH_HPP

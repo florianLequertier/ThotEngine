@@ -20,6 +20,13 @@
 #include "stb_image.h"
 #include <iostream>
 
+namespace te{
+
+ResourceManager::ResourceManager()
+{
+
+}
+
 ResourceManager::ResourceManager(std::string applicationPath) : m_applicationPath(applicationPath)
 {
 
@@ -28,57 +35,151 @@ ResourceManager::ResourceManager(std::string applicationPath) : m_applicationPat
 ResourceManager::~ResourceManager()
 {
     m_meshes.clear();
-    //m_meshesMapping.clear();
-
     m_images.clear();
-    //m_textureMapping.clear();
+    m_materials.clear();
+    m_programs.clear();
+    //...
 }
 
-std::shared_ptr<Mesh> ResourceManager::loadMesh(std::string name, std::string path)
+ResourceManager::init(std::string applicationPath)
 {
+    m_applicationPath = applicationPath;
+}
+
+void ResourceManager::pushMeshToGPU(std::string name)
+{
+    //try to found mesh name among meshes which have already been loaded
+    assert( std::find(m_meshKeys.begin(), m_meshKeys.end(), name) != m_meshKeys.end() );
+
+    //if mesh isn't present in scene (hasn't already be pushed to gpu)
+    if(m_meshCount[name] == 0)
+    {
+        //push the mesh to the gpu
+       m_meshes[name]->pushToGPU();
+    }
+    //update mesh use counter
+    m_meshCount[name]++;
+}
+
+void ResourceManager::popMeshFromGPU(std::string name)
+{
+    //try to found mesh name among meshes which have already been loaded
+    assert( std::find(m_meshKeys.begin(), m_meshKeys.end(), name) != m_meshKeys.end() );
+
+    //update mesh use counter
+    m_meshCount[name]--;
+    //if mesh has totaly disappeared from the sceen
+    if(m_meshCount[name] == 0)
+    {
+       //pop the mesh to the gpu
+       m_meshes[name]->popFromGPU();
+    }
+}
+
+void ResourceManager::pushImageToGPU(std::string name)
+{
+    //try to found image name among meshes which have already been loaded
+    assert( std::find(m_imageKeys.begin(), m_imageKeys.end(), name) != m_imageKeys.end() );
+
+    //if image isn't present in scene (hasn't already be pushed to gpu)
+    if(m_imageCount[name] == 0)
+    {
+        //push the image to the gpu
+       m_images[name]->pushToGPU();
+    }
+    //update image use counter
+    m_imageCount[name]++;
+}
+
+void ResourceManager::popImageFromGPU(std::string name)
+{
+    //try to found image name among meshes which have already been loaded
+    assert( std::find(m_imageKeys.begin(), m_imageKeys.end(), name) != m_imageKeys.end() );
+
+    //update image use counter
+    m_imageCount[name]--;
+    //if image has totaly disappeared from the sceen
+    if(m_imageCount[name] == 0)
+    {
+       //pop the image to the gpu
+       m_images[name]->popFromGPU();
+    }
+}
+
+std::shared_ptr<Mesh> ResourceManager::loadMesh(std::string name, std::string path, bool relative)
+{
+    //complete path if the given path is relative
+    if(relative)
+    {
+        path.insert(0, m_applicationPath);
+    }
+
     if (m_meshes.find(name) != m_meshes.end())
     {
+        //if a mesh with same name has already been created, return it
         return m_meshes[name];
     }
     else
     {
+        //create a new mesh
         auto newMesh = std::shared_ptr<Mesh>(new Mesh(name));
-
         newMesh->load(*this, path);
+
+        //store it in the manager
         m_meshes[name] = newMesh;
-        //m_meshesMapping[name] = m_meshes.size() - 1;
+        m_meshKeys[name] = path;
+        m_meshCount[name] = 0;
 
         return newMesh;
     }
 }
 
-std::shared_ptr<Mesh> ResourceManager::loadMesh(std::string name, const std::vector<gl::Vertex>& vertices, const std::vector<uint32_t>& indices)
+std::shared_ptr<Mesh> ResourceManager::loadMesh(std::string name, const std::vector<gl::Vertex>& vertices, const std::vector<uint32_t>& indices, bool relative)
 {
+    //complete path if the given path is relative
+    if(relative)
+    {
+        path.insert(0, m_applicationPath);
+    }
+
     if (m_meshes.find(name) != m_meshes.end())
     {
+        //if a mesh with same name has already been created, return it
         return m_meshes[name];
     }
     else
     {
+        //create a new mesh
         auto newMesh = std::shared_ptr<Mesh>(new Mesh(name));
         newMesh->init(vertices, indices);
+
+        //store it in the manager
         m_meshes[name] = newMesh;
-        //m_meshesMapping[name] = m_meshes.size() - 1;
+        m_meshKeys[name] = ""; //no path, because it has been directly generated, not loaded from a file.
+        m_meshCount[name] = 0;
 
         return newMesh;
     }
 }
 
-std::shared_ptr<Image> ResourceManager::loadImage(std::string name, std::string path)
+std::shared_ptr<Image> ResourceManager::loadImage(std::string name, std::string path, bool relative)
 {
-    if (m_textures.find(name) != m_images.end())
+    //complete path if the given path is relative
+    if(relative)
     {
+        path.insert(0, m_applicationPath);
+    }
+
+    if (m_images.find(name) != m_images.end())
+    {
+        //if an image with same name has already been created, return it
         return m_images[name];
     }
     else
     {
+        //create the new image
         int x, y, n;
-        unsigned char *data = stbi_load(filepath.c_str(), &x, &y, &n, 4);
+        unsigned char *data = stbi_load(path.c_str(), &x, &y, &n, 4);
         if(!data) {
             std::cerr << "loading image " << filepath << " error: " << stbi_failure_reason() << std::endl;
             return std::unique_ptr<Image>();
@@ -97,23 +198,38 @@ std::shared_ptr<Image> ResourceManager::loadImage(std::string name, std::string 
         }
         stbi_image_free(data);
 
+        //store the new image in the manager
         m_images[name] = pImage;
+        m_imageKeys[name] = path;
+        m_imageCount[name] = 0;
 
         return pImage;
     }
 }
 
-std::shared_ptr<GLProgram> ResourceManager::loadProgram(std::string name, std::string vsRelativePath, std::string fsRelativePath)
+std::shared_ptr<GLProgram> ResourceManager::loadProgram(std::string name, std::string vsPath, std::string fsPath, bool relative)
 {
+    //complete path if the given path is relative
+    if(relative)
+    {
+        vsPath.insert(0, m_applicationPath);
+        fsPath.insert(0, m_applicationPath);
+    }
+
     if (m_programs.find(name) != m_programs.end())
     {
         return m_programs[name];
     }
     else
     {
+        //create the new image
         auto newProgram = std::make_shared<GLProgram>(m_applicationPath, vsRelativePath, fsRelativePath);
         newProgram->setProgramName(name);
+
+        //store it in the manager
         m_programs[name] = newProgram;
+        m_programKeys[name].push_back(vsRelativePath, fsRelativePath);
+
         return newProgram;
     }
 }
@@ -123,30 +239,22 @@ std::string ResourceManager::getApplicationPath() const
     return m_applicationPath;
 }
 
-std::shared_ptr<Material> ResourceManager::createMaterial(std::string programName)
+std::shared_ptr<Mesh> ResourceManager::getMesh(std::string name) const
 {
-    if (m_programs.find(programName) == m_programs.end())
-    {
-        std::cout << "error when creating material with name : " << programName << " there is no program with this name" << std::endl;
-        return nullptr;
-    }
-
-    auto newMat = std::shared_ptr<Material>(new Material(m_programs[programName]));
-    return newMat;
+    return m_meshes[name];
 }
 
-std::shared_ptr<Material> ResourceManager::createMaterial(std::string programName, std::vector<std::shared_ptr<gl::Image> > textures)
+std::shared_ptr<Image> ResourceManager::getImage(std::string name) const
 {
-    if (m_programs.find(programName) == m_programs.end())
-    {
-        std::cout << "error when creating material with name : " << programName << " there is no program with this name" << std::endl;
-        return nullptr;
-    }
-
-    auto newMat = std::shared_ptr<Material>(new Material(m_programs[programName], textures));
-    return newMat;
+    return m_images[name];
 }
 
+std::shared_ptr<GLProgram> ResourceManager::getProgram(std::string name) const
+{
+    return m_programs[name];
+}
+
+}
 
 /*
 std::unique_ptr<Image> loadImage(const FilePath& filepath)

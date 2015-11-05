@@ -28,9 +28,6 @@ public:
     GLProgram(const std::string& vsPath, const std::string& fsPath, const std::string& name = "default");
     virtual ~GLProgram();
 
-
-    void initUniforms(std::vector<std::string> uniformNames, std::vector<gl::UNIFORM_TYPE> uniformType);
-    virtual void initUniforms();
     void use();
 
     std::string getProgramName() const;

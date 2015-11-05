@@ -57,6 +57,14 @@ void Mesh::pushToGPU()
     }
 }
 
+void Mesh::popFromGPU()
+{
+    for (int i = 0; i < m_entities.size(); ++i)
+    {
+        m_entities[i].popFromGPU();
+    }
+}
+
 //std::shared_ptr<Material> Mesh::getMaterial() const
 //{
 //	return m_material;

@@ -4,7 +4,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <memory>
 #include <glm/glm.hpp>
+#include <gl/glew.h>
 
 namespace te{
 
@@ -12,21 +14,27 @@ class Image
 {
 
 private:
-    unsigned int m_nWidth = 0u;
-    unsigned int m_nHeight = 0u;
+    std::string m_name;
+    unsigned int m_width = 0u;
+    unsigned int m_height = 0u;
     std::unique_ptr<glm::vec4[]> m_Pixels;
+    GLuint m_glId;
 
 public:
-    Image(unsigned int width, unsigned int height):
-        m_nWidth(width), m_nHeight(height), m_Pixels(new glm::vec4[width * height]) {
+    Image(std::string name, unsigned int width, unsigned int height);
+    void pushToGPU();
+    void popFromGPU();
+
+    inline std::string getName() const {
+        return m_name;
     }
 
     unsigned int getWidth() const {
-        return m_nWidth;
+        return m_width;
     }
 
     unsigned int getHeight() const {
-        return m_nHeight;
+        return m_height;
     }
 
     const glm::vec4* getPixels() const {

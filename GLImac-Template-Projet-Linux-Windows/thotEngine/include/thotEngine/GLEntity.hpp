@@ -64,8 +64,11 @@ public:
     GLEntity& operator=(const GLEntity& other);
 
     void init(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
-    void pushToGPU();
     void clear();
+
+    void pushToGPU();
+    void popFromGPU();
+
     void draw();
     unsigned int getMaterialIndex() const;
     void setMaterialIndex(unsigned int index);
