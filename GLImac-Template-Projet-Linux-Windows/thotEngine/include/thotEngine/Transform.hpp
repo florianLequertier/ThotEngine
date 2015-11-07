@@ -26,13 +26,13 @@ public :
     glm::quat getRotation() const;
     glm::vec3 getScale() const;
     glm::vec3 getTranslation() const;
-    glm::mat4 getModelMat() const;
+    glm::mat4 getModelMatrix() const;
 
     void setRotation(glm::quat rotation);
     void setScale(glm::vec3 scale);
     void setTranslation(glm::vec3 translation);
 
-    void computeModelMat();
+    void computeModelMatrix();
 
 };
 

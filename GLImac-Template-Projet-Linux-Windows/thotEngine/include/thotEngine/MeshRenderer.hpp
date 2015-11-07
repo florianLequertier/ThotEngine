@@ -4,32 +4,44 @@
 #include "thotEngine/Mesh.hpp"
 #include "thotEngine/Material.hpp"
 #include "thotEngine/ResourceManager.hpp"
+#include "thotEngine/MaterialManager.hpp"
+#include "thotEngine/Component.hpp"
 
 namespace te {
 
-class MeshRenderer
+class MeshRenderer : public Component
 {
 private:
-    std::shared_ptr<ResourceManager> m_resourceManager;
+//    std::weak_ptr<ResourceManager> m_resourceManager;
+//    std::weak_ptr<MaterialManager> m_materialManager;
 
     std::string m_meshName;
     std::string m_materialName;
 
-    GLuint m_meshGlId;
-    GLuint m_materialGlId;
+    std::weak_ptr<Mesh> m_meshPtr;
+    std::weak_ptr<Material> m_materialPtr;
 
 
 public:
-MeshRenderer(std::shared_ptr<ResourceManager> resourceManager);
+MeshRenderer();
 ~MeshRenderer();
 
 void pushToGPU(); //init meshPtr and materialPtr
 void popFromGPU();
 
-GLuint getMeshGlId() const;
-GLuint getMaterialGlId() const;
 void setMesh(std::string mesh);
 void setMaterial(std::string material);
+
+GLuint getMaterialID() const;
+
+void draw() const;
+void render(const glm::mat4& worldMat, const glm::mat4& viewMat);
+
+//operator overload
+inline bool operator<(const MeshRenderer& other )
+{
+    return getMaterialID() < other.getMaterialID();
+}
 
 };
 

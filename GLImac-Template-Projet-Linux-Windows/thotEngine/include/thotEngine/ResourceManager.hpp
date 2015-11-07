@@ -45,8 +45,9 @@ private:
     std::string m_applicationPath;
 
 public:
-    ResourceManager();
-    ResourceManager(std::string applicationPath);
+
+    //singleton
+    static ResourceManager& getInstance();
     ~ResourceManager();
     void init(std::string applicationPath);
 
@@ -56,7 +57,7 @@ public:
     void popImageFromGPU(std::string name);
 
     std::shared_ptr<Mesh> loadMesh(std::string name, std::string path, bool relative = true);
-    std::shared_ptr<Mesh> loadMesh(std::string name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, bool relative = true);
+    std::shared_ptr<Mesh> loadMesh(std::string name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
 
     std::shared_ptr<Image> loadImage(std::string name, std::string path, bool relative = true);
 
@@ -64,9 +65,15 @@ public:
 
     std::string getApplicationPath() const;
 
-    std::shared_ptr<Mesh> getMesh(std::string name) const;
-    std::shared_ptr<Image> getImage(std::string name) const;
-    std::shared_ptr<GLProgram> getProgram(std::string name) const;
+    std::shared_ptr<Mesh> getMesh(std::string name);
+    std::shared_ptr<Image> getImage(std::string name);
+    std::shared_ptr<GLProgram> getProgram(std::string name);
+
+private :
+    ResourceManager();
+    ResourceManager(const ResourceManager& other);
+    ResourceManager(const ResourceManager&& other);
+    ResourceManager& operator=(const ResourceManager& other);
 
 };
 

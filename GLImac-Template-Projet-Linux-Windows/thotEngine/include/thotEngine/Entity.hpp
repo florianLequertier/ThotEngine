@@ -18,7 +18,8 @@ private:
     std::string m_name;
     int m_thisIndex;
 
-    std::vector<std::shared_ptr<IHandler>> m_components;
+    std::vector<ExternalHandler<WorldObject>> m_components;
+    //std::vector<IHandler*> m_components;
 
 public:
     Entity();
@@ -31,27 +32,35 @@ public:
     void setName(std::string name);
 
     template<typename T>
-    ExternalHandler<T> addComponent(ExternalHandler<T> component);
+    ExternalHandler<T> addComponent(World& world);
 
     template<typename T>
-    ExternalHandler<T> removeComponent();
+    ExternalHandler<T> removeComponent(World& world);
 
     template<typename T>
     ExternalHandler<T> getComponent();
 
 
-    template<typename T>
-    ExternalHandler<T> addComponent(World& worldptr, ExternalHandler<T> component);
+//    template<typename T>
+//    ExternalHandler<T> addComponent(World& worldptr, ExternalHandler<T> component);
 
     template<typename T>
-    bool removeComponent(World& worldptr);
-
-private :
-    template<typename T>
-    ExternalHandler<T> addComponent(World& world);
+    ExternalHandler<T> addComponent(ExternalHandler<T> component);
 
     template<typename T>
-    ExternalHandler<T> removeComponent(World& world);
+    ExternalHandler<T> removeComponent();
+
+
+//    template<typename T>
+//    bool removeComponent(World& worldptr);
+
+//operator overload
+    bool operator<(const Entity& other)
+    {
+        return m_thisIndex < other.m_thisIndex;
+    }
+
+
 };
 
 template<typename T>
@@ -61,13 +70,13 @@ ExternalHandler<T> Entity::getComponent()
     {
         if(m_components[i]->istypeof( typeid(T) ))
         {
-            return *std::static_pointer_cast<ExternalHandler<T>>(m_components[i]);
+            return *(static_cast<ExternalHandler<T>*>(m_components[i]));
         }
     }
 }
 
 template<typename T>
-ExternalHandler<T> Entity::addComponent(ExternalHandler<T> component)
+ExternalHandler<T> Entity::addComponent(ExternalHandler<te::Entity::T> component)
 {
     m_components.push_back(component);
 }
@@ -91,22 +100,38 @@ ExternalHandler<T> Entity::removeComponent()
 
 }
 
-#include "thotEngine/World.hpp"
-
-namespace te {
-
-template<typename T>
-ExternalHandler<T> Entity::addComponent(World& worldPtr)
-{
-    return worldPtr.attachTo<T>(thisHandler());
-}
+//forward declaration of Component
+namespace te{
 
 template<typename T>
-ExternalHandler<T> Entity::removeComponent(World& worldPtr)
+ExternalHandler<T> Component::getComponent()
 {
-    return worldPtr.removeFrom<T>(thisHandler());
+    return m_owner->getComponent<T>();
+}
+
+ExternalHandler<Transform> Component::transform()
+{
+    return m_owner->getComponent<Transform>();
 }
 
 }
+
+//#include "thotEngine/World.hpp"
+
+//namespace te {
+
+//template<typename T>
+//ExternalHandler<T> Entity::addComponent(World& worldPtr)
+//{
+//    return worldPtr.attachTo<T>(thisHandler());
+//}
+
+//template<typename T>
+//ExternalHandler<T> Entity::removeComponent(World& worldPtr)
+//{
+//    return worldPtr.removeFrom<T>(thisHandler());
+//}
+
+//}
 
 #endif // ENTITY_HPP

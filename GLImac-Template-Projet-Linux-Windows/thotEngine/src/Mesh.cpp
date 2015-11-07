@@ -40,7 +40,7 @@ bool Mesh::load(const std::string& path)
     const aiScene* pScene = Importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
 
     if (pScene) {
-        Ret = initFromScene(applicationPath, pScene, path);
+        Ret = initFromScene(pScene, path);
     }
     else {
         std::cout << "Error parsing " << path << " : " << Importer.GetErrorString() << std::endl;
@@ -103,7 +103,7 @@ void Mesh::initMesh(unsigned int Index, const aiMesh* paiMesh)
 {
     m_entities[Index].setMaterialIndex(paiMesh->mMaterialIndex);
 
-    std::vector<gl::Vertex > Vertices;
+    std::vector<Vertex > Vertices;
     std::vector<GLuint> Indices;
 
     const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
@@ -113,7 +113,7 @@ void Mesh::initMesh(unsigned int Index, const aiMesh* paiMesh)
         const aiVector3D* pNormal = paiMesh->HasNormals() ? &(paiMesh->mNormals[i]) : &Zero3D;
         const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
 
-        gl::Vertex v(glm::vec3(pPos->x, pPos->y, pPos->z),
+        Vertex v(glm::vec3(pPos->x, pPos->y, pPos->z),
             glm::vec3(pNormal->x, pNormal->y, pNormal->z),
             glm::vec2(pTexCoord->x, pTexCoord->y));
 
@@ -131,7 +131,7 @@ void Mesh::initMesh(unsigned int Index, const aiMesh* paiMesh)
     m_entities[Index].init(Vertices, Indices);
 }
 
-void Mesh::init(const std::vector<gl::Vertex>& vertices, const std::vector<uint32_t>& indices/*, std::shared_ptr<Material> material*/)
+void Mesh::init(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices/*, std::shared_ptr<Material> material*/)
 {
     m_entities.clear();
 

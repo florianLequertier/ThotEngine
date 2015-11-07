@@ -15,13 +15,13 @@ TestSystem::~TestSystem()
 
 }
 
-void TestSystem::update(std::shared_ptr<CArray<Component> > components)
+void TestSystem::update(std::shared_ptr<CArray<Entity> > entities)
 {
     //auto container = std::static_pointer_cast<CArray<Component>>(components);
-    for(int i = 0; i < components->size(); ++i)
+    for(int i = 0; i < entities->size(); ++i)
     {
-        if(components->isActive(i))
-        std::cout<<"component : "<<components->operator[](i).getName()<<std::endl;
+        if(entities->isActive(i))
+        std::cout<<"component : "<<entities->operator[](i).getName()<<std::endl;
     }
 }
 

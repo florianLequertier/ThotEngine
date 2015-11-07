@@ -2,7 +2,7 @@
 #define TESTSYSTEM_HPP
 
 #include "thotEngine/CArray.hpp"
-#include "thotEngine/Component.hpp"
+#include "thotEngine/Entity.hpp"
 
 namespace te{
 
@@ -12,7 +12,7 @@ public :
     TestSystem();
     ~TestSystem();
 
-    void update(std::shared_ptr<CArray<Component>> components);
+    void update(std::shared_ptr<CArray<Entity>> components);
 };
 
 }

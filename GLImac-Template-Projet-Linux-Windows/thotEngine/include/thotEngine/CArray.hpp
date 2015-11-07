@@ -11,6 +11,10 @@
 
 namespace te{
 
+class WorldObject{
+
+};
+
 //class ICArrayUser
 //{
 //    template<typename T>
@@ -43,9 +47,14 @@ public:
        return (type == *m_type);
    }
 
-   inline int index() const
+   inline int getIndex() const
    {
        return m_index;
+   }
+
+   inline std::shared_ptr<std::type_index> getType() const
+   {
+       return m_type;
    }
 
    operator bool() const
@@ -154,8 +163,8 @@ ExternalHandler<T>::ExternalHandler(CMap* user, int index): Handler(typeid(T), i
 template<typename T>
 ExternalHandler<T>::ExternalHandler(const Handler& handler, CMap* user)
 {
-    m_index = handler.m_index;
-    m_type = handler.m_type;
+    m_index = handler.getIndex();
+    m_type = handler.getType();
     m_user = user;
 }
 
@@ -248,9 +257,9 @@ int CArray<T>::instantiate(T element)
 template<typename T>
 void CArray<T>::remove(const Handler& handler)
 {
-    m_status[handler.index()] = false;
-    m_inactives.push_back(handler.index());
-    if(m_size - 1 == handler.index())
+    m_status[handler.getIndex()] = false;
+    m_inactives.push_back(handler.getIndex());
+    if(m_size - 1 == handler.getIndex())
     {
         while(!m_status[m_size - 1] && (m_size - 1)>=0)
         {
@@ -262,7 +271,7 @@ void CArray<T>::remove(const Handler& handler)
 template<typename T>
 T& CArray<T>::get(const Handler& handler)
 {
-    return m_content[ m_pointers[handler.index()] ];
+    return m_content[ m_pointers[handler.getIndex()] ];
 }
 
 template<typename T>
@@ -282,6 +291,7 @@ void CArray<T>::sort()
 {
     std::sort(m_content.begin(), m_content.end());
 }
+
 
 }
 

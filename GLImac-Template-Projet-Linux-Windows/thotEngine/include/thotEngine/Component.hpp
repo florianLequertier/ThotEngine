@@ -13,7 +13,7 @@ class Transform;
 class Component
 {
 
-private :
+protected :
     std::string m_name;
 
     ExternalHandler<Entity> m_owner;
@@ -27,26 +27,33 @@ public :
 
     ExternalHandler<Transform> transform();
 
+//operator overload
+    bool operator<(const Component& other)
+    {
+        return m_name < other.m_name;
+    }
+
 };
-}
-
-
-#include "thotEngine/Entity.hpp"
-
-namespace te
-{
-
-template<typename T>
-ExternalHandler<T> Component::getComponent()
-{
-    return m_owner->getComponent<T>();
-}
-
-ExternalHandler<Transform> Component::transform()
-{
-    return m_owner->getComponent<Transform>();
-}
 
 }
+
+
+//#include "thotEngine/Entity.hpp"
+
+//namespace te
+//{
+
+//template<typename T>
+//ExternalHandler<T> Component::getComponent()
+//{
+//    return m_owner->getComponent<T>();
+//}
+
+//ExternalHandler<Transform> Component::transform()
+//{
+//    return m_owner->getComponent<Transform>();
+//}
+
+//}
 
 #endif // COMPONENT_HPP

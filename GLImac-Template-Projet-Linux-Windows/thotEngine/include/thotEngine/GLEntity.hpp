@@ -8,6 +8,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+
 namespace te{
 
 struct Vertex
@@ -75,5 +76,8 @@ public:
 };
 
 }
+
+
+
 
 #endif // GLENTITY_HPP

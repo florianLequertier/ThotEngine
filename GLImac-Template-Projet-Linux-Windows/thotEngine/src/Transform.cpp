@@ -20,7 +20,7 @@ glm::vec3 Transform::getTranslation() const
     return m_translation;
 }
 
-glm::mat4 Transform::getModelMat() const
+glm::mat4 Transform::getModelMatrix() const
 {
     return m_modelMat;
 }
@@ -30,26 +30,26 @@ void Transform::setRotation(glm::quat rotation)
     m_rotation = rotation;
     m_rotationMat = glm::mat4_cast(m_rotation);
 
-    computeModelMat();
+    computeModelMatrix();
 }
 
 void Transform::setScale(glm::vec3 scale)
 {
     m_scale = scale;
-    m_scaleMat = glm::scale(m_scaleValues);
+    m_scaleMat = glm::scale(glm::mat4(1), m_scale);
 
-    computeModelMat();
+    computeModelMatrix();
 }
 
 void Transform::setTranslation(glm::vec3 translation)
 {
     m_translation = translation;
-    m_translationMat = glm::translate(glm::mat4(1), m_translateVector);
+    m_translationMat = glm::translate(glm::mat4(1), m_translation);
 
-    computeModelMat();
+    computeModelMatrix();
 }
 
-void Transform::computeModelMat()
+void Transform::computeModelMatrix()
 {
     m_modelMat = m_translationMat*m_rotationMat*m_scaleMat;
 }

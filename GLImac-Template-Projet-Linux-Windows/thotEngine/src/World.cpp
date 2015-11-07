@@ -20,10 +20,19 @@ void World::init()
 
     m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
     m_ptrToMeshRenderers = std::static_pointer_cast<CArray<MeshRenderer>>(m_content[typeid(MeshRenderer)]);
-
-    m_resourceManager = std::make_shared<ResourceManager>();
-    m_materialManager = std::make_shared<MaterialManager>();
 }
+
+//void World::init(std::shared_ptr<ResourceManager> resourceManager, std::shared_ptr<MaterialManager> materialManager)
+//{
+//    m_content[typeid(Entity)] = std::make_shared< CArray<Entity> >();
+//    m_content[typeid(MeshRenderer)] = std::make_shared< CArray<MeshRenderer> >();
+
+//    m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
+//    m_ptrToMeshRenderers = std::static_pointer_cast<CArray<MeshRenderer>>(m_content[typeid(MeshRenderer)]);
+
+//    m_resourceManager = resourceManager;
+//    m_materialManager = materialManager;
+//}
 
 void World::pushToGPU()
 {
@@ -43,7 +52,10 @@ void World::popFromGPU()
 
 void World::update()
 {
-    m_testSystem.update(m_ptrToComponents);
+    m_testSystem.update(m_ptrToEntities);
+
+    // TODO
+    m_renderer.render(glm::mat4(1), glm::mat4(1), m_ptrToMeshRenderers);
 }
 
 }

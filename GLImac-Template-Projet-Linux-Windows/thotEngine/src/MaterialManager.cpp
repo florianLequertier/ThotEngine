@@ -3,26 +3,34 @@
 
 namespace te{
 
-MaterialManager::MaterialManager()
+//singleton (c++11 implementation)
+MaterialManager& MaterialManager::getInstance()
 {
-
+    static MaterialManager instance;
+    return instance;
 }
+
+//privates
+MaterialManager::MaterialManager(){}
+MaterialManager::MaterialManager(const MaterialManager& other){}
+MaterialManager::MaterialManager(const MaterialManager&& other){}
+MaterialManager& MaterialManager::operator=(const MaterialManager& other){return *this;}
 
 MaterialManager::~MaterialManager()
 {
 
 }
 
-void MaterialManager::init(std::shared_ptr<ResourceManager> resourceManager)
-{
-    m_resourceManager = resourceManager;
-}
+//void MaterialManager::init(std::shared_ptr<ResourceManager> resourceManager)
+//{
+//    m_resourceManager = resourceManager;
+//}
 
 
 void MaterialManager::pushMaterialToGPU(std::string name)
 {
     //try to found material name among meshes which have already been loaded
-    assert( std::find(m_materials.begin(), m_materials.end(), name) != m_materials.end() );
+    assert( m_materials.find(name)!= m_materials.end()  );
 
     //if material isn't present in scene (hasn't already be pushed to gpu)
     if(m_materialCount[name] == 0)
@@ -37,7 +45,7 @@ void MaterialManager::pushMaterialToGPU(std::string name)
 void MaterialManager::popMaterialFromGPU(std::string name)
 {
     //try to found material name among meshes which have already been loaded
-    assert( std::find(m_materials.begin(), m_materials.end(), name) != m_materials.end() );
+    assert( m_materials.find(name)!= m_materials.end() );
 
     //update material use counter
     m_materialCount[name]--;
@@ -51,7 +59,7 @@ void MaterialManager::popMaterialFromGPU(std::string name)
 
 std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)
 {
-    auto program = m_resourceManager->getProgram(programName);
+    auto program = ResourceManager::getInstance().getProgram(programName);
 
     if (!program)
     {
@@ -60,7 +68,7 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
     }
 
     //make a new material instance, with name [parameter : name], and with a program which name is programName
-    auto newMat = std::shared_ptr<Material>(new Material(m_resourceManager, program));
+    auto newMat = std::shared_ptr<Material>(new Material( program ));
 
     //store it in the manager
     m_materials[name] = newMat;
@@ -69,9 +77,14 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
     return newMat;
 }
 
-std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::shared_ptr<Image> > textures)
+std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string > imgNames)
 {
-    auto program = m_resourceManager->getProgram(programName);
+    auto program = ResourceManager::getInstance().getProgram(programName);
+    std::vector<std::shared_ptr<Image>> images;
+    for(auto imgName : imgNames)
+    {
+        images.push_back(ResourceManager::getInstance().getImage(imgName));
+    }
 
     if (!program)
     {
@@ -80,13 +93,20 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
     }
 
     //make a new material instance, with name [parameter : name], and with a program which name is programName
-    auto newMat = std::shared_ptr<Material>(new Material(m_resourceManager, program, textures));
+    auto newMat = std::shared_ptr<Material>(new Material( program, images ));
 
     //store it in the manager
     m_materials[name] = newMat;
     m_materialCount[name] = 0;
 
     return newMat;
+}
+
+std::shared_ptr<Material> MaterialManager::getMaterial(std::string name)
+{
+    assert( m_materials.find(name)!= m_materials.end() );
+
+    return m_materials[name];
 }
 
 //std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)

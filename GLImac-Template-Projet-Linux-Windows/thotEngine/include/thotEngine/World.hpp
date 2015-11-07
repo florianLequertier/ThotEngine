@@ -5,15 +5,11 @@
 #include <map>
 #include <memory>
 
-#include "Entity.hpp"
-#include "component.hpp"
 #include "CArray.hpp"
 
+//systems
 #include "TestSystem.hpp"
-
-#include "MeshRenderer.hpp"
-#include "ResourceManager.hpp"
-#include "MaterialManager.hpp"
+#include "Renderer.hpp"
 
 namespace te{
 
@@ -26,19 +22,21 @@ private:
 
     //systems
     TestSystem m_testSystem;
+    Renderer m_renderer;
 
     //shortcup to CArrays in the CMap, to improve performance
-    std::shared_ptr<CArray<Component>> m_ptrToEntities;
+    std::shared_ptr<CArray<Entity>> m_ptrToEntities;
     std::shared_ptr<CArray<MeshRenderer>> m_ptrToMeshRenderers;
 
     //resources
-    std::shared_ptr<ResourceManager> m_resourceManager;
-    std::shared_ptr<MaterialManager> m_materialManager;
+    //std::shared_ptr<ResourceManager> m_resourceManager;
+    //std::shared_ptr<MaterialManager> m_materialManager;
 
 public :
     World();
     ~World();
     void init();
+    //void init(std::shared_ptr<ResourceManager> resourceManager, std::shared_ptr<MaterialManager> materialManager);
 
     void pushToGPU();
     void popFromGPU();
@@ -51,13 +49,13 @@ public :
     void destroy(ExternalHandler<T> target);
 
     template<typename T>
-    ExternalHandler<T> attachTo(ExternalHandler<Entity> entity);
+    ExternalHandler<T> attachTo(Handler entity);
 
     template<typename T>
-    ExternalHandler<T> removeFrom(ExternalHandler<Entity> entity);
+    ExternalHandler<T> removeFrom(Handler entity);
 
     template<typename T>
-    ExternalHandler<T> makeExternal(const Handler& handler);
+    ExternalHandler<T>& makeExternal(const Handler& handler);
 
     void update();
 
@@ -84,24 +82,41 @@ void World::destroy(ExternalHandler<T> target)
 }
 
 template<typename T>
-ExternalHandler<T> World::attachTo(ExternalHandler<Entity> entity)
+ExternalHandler<T> World::attachTo(Handler entity)
 {
     auto newComponent = InstantiateNew<T>();
-    entity->addComponent<T>(newComponent);
+    makeExternal<Entity>(entity)->addComponent<T>(newComponent);
     return newComponent;
 }
 
 template<typename T>
-ExternalHandler<T> World::removeFrom(ExternalHandler<Entity> entity)
+ExternalHandler<T> World::removeFrom(Handler entity)
 {
-    auto removed = entity->removeComponent<T>();
+    auto removed = makeExternal<Entity>(entity)->removeComponent<T>();
     destroy(removed);
 }
 
 template<typename T>
-ExternalHandler<T> World::makeExternal(const Handler& handler)
+ExternalHandler<T> &World::makeExternal(const Handler& handler)
 {
-    return ExternalHandler<T>(handler, m_content);
+    return ExternalHandler<T>(handler, &m_content);
+}
+
+}
+
+//forward declaration of Entity
+namespace te {
+
+template<typename T>
+ExternalHandler<T> Entity::addComponent(World& worldPtr)
+{
+    return worldPtr.attachTo<T>(thisHandler());
+}
+
+template<typename T>
+ExternalHandler<T> Entity::removeComponent(World& worldPtr)
+{
+    return worldPtr.removeFrom<T>(thisHandler());
 }
 
 }

@@ -18,27 +18,28 @@ void Image::pushToGPU()
         //glEnable(GL_BLEND);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        if(confData.getMipMapFilter())
-        {
+        // TODO add a global state for texture resolution
+//        if(confData.getMipMapFilter())
+//        {
             glEnable(GL_TEXTURE_2D);
             glGenerateMipmap(GL_TEXTURE_2D);  //Generate mipmaps now!!!
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        }
-        else
-        {
-            if(confData.getMinFilter()==0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            else if(confData.getMinFilter()==1)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//        }
+//        else
+//        {
+//            if(confData.getMinFilter()==0)
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//            else if(confData.getMinFilter()==1)
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-            if(confData.getMaxFilter()==0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            if(confData.getMaxFilter()==1)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
+//            if(confData.getMaxFilter()==0)
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//            if(confData.getMaxFilter()==1)
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//        }
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -46,6 +47,11 @@ void Image::pushToGPU()
 void Image::popFromGPU()
 {
     glDeleteTextures(1, &m_glId);
+}
+
+GLuint Image::getId() const
+{
+    return m_glId;
 }
 
 }

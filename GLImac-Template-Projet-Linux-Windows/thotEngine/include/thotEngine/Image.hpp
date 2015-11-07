@@ -25,6 +25,8 @@ public:
     void pushToGPU();
     void popFromGPU();
 
+    GLuint getId() const;
+
     inline std::string getName() const {
         return m_name;
     }

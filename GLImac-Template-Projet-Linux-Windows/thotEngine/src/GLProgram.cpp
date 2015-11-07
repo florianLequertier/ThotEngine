@@ -7,19 +7,8 @@
 
 namespace te{
 
-GLProgram::GLProgram(const std::string& applicationPath, const std::string& name ) : m_name(name)
-{
-    m_programID = loadShaders(applicationPath + "shaders/3D.vs.glsl", applicationPath + "shaders/3D.fs.glsl");
-    std::cout << "program " << std::to_string(m_programID) << applicationPath << "shaders/3D.vs.glsl" << applicationPath << "shaders/3D.fs.glsl" << std::endl;
-}
 
-GLProgram::GLProgram(const std::string& applicationPath, const std::string& vsRelativePath, const std::string& fsRelativePath, const std::string& name) : m_name(name)
-{
-    m_programID = loadShaders(applicationPath + vsRelativePath, applicationPath + fsRelativePath);
-    std::cout << "program : " << std::to_string(m_programID) << " _vs : " << applicationPath << vsRelativePath << " _fs : " << applicationPath << fsRelativePath << std::endl;
-}
-
-GLProgram::GLProgram(const std::string& vsPath, const std::string& fsPath, const std::string& name) : m_name(name)
+GLProgram::GLProgram(const std::string& name, const std::string& vsPath, const std::string& fsPath) : m_name(name)
 {
     m_programID = loadShaders(vsPath, fsPath);
     std::cout << "program " << std::to_string(m_programID) << vsPath << fsPath << std::endl;
@@ -27,7 +16,6 @@ GLProgram::GLProgram(const std::string& vsPath, const std::string& fsPath, const
 
 GLProgram::~GLProgram()
 {
-    m_uniforms.clear();
     glDeleteProgram(m_programID);
 }
 
@@ -44,6 +32,11 @@ std::string GLProgram::getProgramName() const
 void GLProgram::setProgramName(std::string name)
 {
     m_name = name;
+}
+
+GLuint GLProgram::getId() const
+{
+    return m_programID;
 }
 
 GLuint loadShaders(const std::string& vertex_file_path, const std::string& fragment_file_path)
