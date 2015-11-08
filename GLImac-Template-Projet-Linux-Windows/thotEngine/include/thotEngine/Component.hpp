@@ -10,7 +10,7 @@ namespace te{
 class Entity;
 class Transform;
 
-class Component
+class Component : public WorldObject
 {
 
 protected :
@@ -21,6 +21,8 @@ protected :
 public :
     std::string getName() const;
     void setName(std::string name);
+
+    void setOwner(ExternalHandler<Entity> owner);
 
     template<typename T>
     ExternalHandler<T> getComponent();

@@ -27,6 +27,7 @@ private:
     //shortcup to CArrays in the CMap, to improve performance
     std::shared_ptr<CArray<Entity>> m_ptrToEntities;
     std::shared_ptr<CArray<MeshRenderer>> m_ptrToMeshRenderers;
+    std::shared_ptr<CArray<Transform>> m_ptrToTransforms;
 
     //resources
     //std::shared_ptr<ResourceManager> m_resourceManager;
@@ -55,7 +56,7 @@ public :
     ExternalHandler<T> removeFrom(Handler entity);
 
     template<typename T>
-    ExternalHandler<T>& makeExternal(const Handler& handler);
+    ExternalHandler<T> makeExternal(const Handler& handler);
 
     void update();
 
@@ -85,7 +86,9 @@ template<typename T>
 ExternalHandler<T> World::attachTo(Handler entity)
 {
     auto newComponent = InstantiateNew<T>();
-    makeExternal<Entity>(entity)->addComponent<T>(newComponent);
+    auto tmpExternal = makeExternal<Entity>(entity);
+    newComponent->setOwner(tmpExternal);
+    tmpExternal->addComponent<T>(newComponent);
     return newComponent;
 }
 
@@ -97,7 +100,7 @@ ExternalHandler<T> World::removeFrom(Handler entity)
 }
 
 template<typename T>
-ExternalHandler<T> &World::makeExternal(const Handler& handler)
+ExternalHandler<T> World::makeExternal(const Handler& handler)
 {
     return ExternalHandler<T>(handler, &m_content);
 }
@@ -106,6 +109,7 @@ ExternalHandler<T> &World::makeExternal(const Handler& handler)
 
 //forward declaration of Entity
 namespace te {
+
 
 template<typename T>
 ExternalHandler<T> Entity::addComponent(World& worldPtr)

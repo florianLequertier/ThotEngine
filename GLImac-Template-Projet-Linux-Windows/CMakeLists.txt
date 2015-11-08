@@ -34,12 +34,12 @@ if(UPEMLV)
     set(OPENGL_LIBRARIES /usr/lib/x86_64-linux-gnu/libGL.so.1)
 endif(UPEMLV)
 
-include_directories(${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${ASSIMP_INCLUDE_DIR} glimac/include thotEngine/include third-party/include)
+include_directories(${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${ASSIMP_INCLUDE_DIR} thotEngine/include third-party/include) #glimac/include
 
-set(ALL_LIBRARIES glimac thotEngine ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY} ${ASSIMP_LIBRARY})
+set(ALL_LIBRARIES thotEngine ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY} ${ASSIMP_LIBRARY}) #glimac
 
-# Add the glimac library
-add_subdirectory(glimac)
+# Add the library
+#add_subdirectory(glimac)
 add_subdirectory(thotEngine)
 
 # A macro to add a directory containing shaders. Each file ".glsl" is considered to be a shader and a target

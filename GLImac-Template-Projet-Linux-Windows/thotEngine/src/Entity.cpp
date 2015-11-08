@@ -16,16 +16,6 @@ Entity::~Entity()
 
 }
 
-void Entity::init(int index)
-{
-    m_thisIndex = index;
-}
-
-Handler Entity::thisHandler()
-{
-    return Handler(typeid(Entity), m_thisIndex);
-}
-
 std::string Entity::getName() const
 {
     return m_name;

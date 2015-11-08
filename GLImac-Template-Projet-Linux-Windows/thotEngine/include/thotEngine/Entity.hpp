@@ -12,21 +12,16 @@ namespace te{
 //Forward
 class World;
 
-class Entity
+class Entity : public WorldObject
 {
 private:
     std::string m_name;
-    int m_thisIndex;
 
     std::vector<ExternalHandler<WorldObject>> m_components;
-    //std::vector<IHandler*> m_components;
 
 public:
     Entity();
     ~Entity();
-    void init(int index);
-
-    Handler thisHandler();
 
     std::string getName() const;
     void setName(std::string name);
@@ -57,7 +52,7 @@ public:
 //operator overload
     bool operator<(const Entity& other)
     {
-        return m_thisIndex < other.m_thisIndex;
+        return m_index < other.m_index;
     }
 
 
@@ -68,15 +63,16 @@ ExternalHandler<T> Entity::getComponent()
 {
     for(int i = 0; i < m_components.size(); ++i)
     {
-        if(m_components[i]->istypeof( typeid(T) ))
+        if(m_components[i].istypeof( typeid(T) ))
         {
-            return *(static_cast<ExternalHandler<T>*>(m_components[i]));
+            return m_components[i];
         }
     }
+    ExternalHandler<T>();
 }
 
 template<typename T>
-ExternalHandler<T> Entity::addComponent(ExternalHandler<te::Entity::T> component)
+ExternalHandler<T> Entity::addComponent(ExternalHandler<T> component)
 {
     m_components.push_back(component);
 }
@@ -107,11 +103,6 @@ template<typename T>
 ExternalHandler<T> Component::getComponent()
 {
     return m_owner->getComponent<T>();
-}
-
-ExternalHandler<Transform> Component::transform()
-{
-    return m_owner->getComponent<Transform>();
 }
 
 }

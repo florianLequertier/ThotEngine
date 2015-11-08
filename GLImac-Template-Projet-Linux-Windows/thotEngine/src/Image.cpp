@@ -1,4 +1,3 @@
-
 #include "thotEngine/Image.hpp"
 
 namespace te{

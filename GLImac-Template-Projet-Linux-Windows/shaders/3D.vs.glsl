@@ -26,4 +26,4 @@ void main()
 	v_texCoords = a_texCoords;
 
     gl_Position = u_MVPMatrix * vertexPosition;
-}
+};

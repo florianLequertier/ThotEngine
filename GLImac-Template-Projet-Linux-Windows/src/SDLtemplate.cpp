@@ -1,3 +1,4 @@
+/*
 #include <glimac/SDLWindowManager.hpp>
 #include <GL/glew.h>
 #include <iostream>
@@ -317,9 +318,7 @@ void jeu( FilePath& applicationPath, SDLWindowManager& windowManager,int optionM
            joueur.updatePosition(map_test);
            joueur.updateForces(windowManager.getTime());
 
-           /*********************************
-            * HERE SHOULD COME THE RENDERING CODE
-            *********************************/
+
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -349,7 +348,7 @@ void jeu( FilePath& applicationPath, SDLWindowManager& windowManager,int optionM
 
            itemManager.draw(Projection, View, texture_cube, windowManager.getTime()/400.f);
 
-    //        test_model.Draw(Projection, View /*, lightManager, joueur.getPosition()*/);
+    //        test_model.Draw(Projection, View );
 
            particuleManager.update((windowManager.getTime() - tpPre)/1000.f, joueur.getHead().getPosition());
            particuleManager.draw(Projection, View);

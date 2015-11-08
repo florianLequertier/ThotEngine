@@ -132,6 +132,7 @@ std::shared_ptr<Mesh> ResourceManager::loadMesh(std::string name, std::string pa
         m_meshKeys[name] = path;
         m_meshCount[name] = 0;
 
+        std::cout<< "loaded mesh " << path << "successfully !" << std::endl;
         return newMesh;
     }
 }
@@ -199,6 +200,7 @@ std::shared_ptr<Image> ResourceManager::loadImage(std::string name, std::string 
         m_imageKeys[name] = path;
         m_imageCount[name] = 0;
 
+        std::cout<< "loaded image " << path << "successfully !" << std::endl;
         return pImage;
     }
 }
@@ -218,7 +220,7 @@ std::shared_ptr<GLProgram> ResourceManager::loadProgram(std::string name, std::s
     }
     else
     {
-        //create the new image
+        //create the new program
         auto newProgram = std::make_shared<GLProgram>(name, vsPath, fsPath);
         newProgram->setProgramName(name);
 
@@ -227,6 +229,7 @@ std::shared_ptr<GLProgram> ResourceManager::loadProgram(std::string name, std::s
         m_programKeys[name].push_back( vsPath);
         m_programKeys[name].push_back( fsPath);
 
+        std::cout<< "loaded program " << vsPath <<", "<<fsPath<< " successfully !" << std::endl;
         return newProgram;
     }
 }

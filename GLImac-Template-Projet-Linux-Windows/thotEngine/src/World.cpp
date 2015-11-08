@@ -17,9 +17,11 @@ void World::init()
 {
     m_content[typeid(Entity)] = std::make_shared< CArray<Entity> >();
     m_content[typeid(MeshRenderer)] = std::make_shared< CArray<MeshRenderer> >();
+    m_content[typeid(Transform)] = std::make_shared<CArray<Transform> >();
 
     m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
     m_ptrToMeshRenderers = std::static_pointer_cast<CArray<MeshRenderer>>(m_content[typeid(MeshRenderer)]);
+    m_ptrToTransforms = std::static_pointer_cast<CArray<Transform>>(m_content[typeid(Transform)]);
 }
 
 //void World::init(std::shared_ptr<ResourceManager> resourceManager, std::shared_ptr<MaterialManager> materialManager)

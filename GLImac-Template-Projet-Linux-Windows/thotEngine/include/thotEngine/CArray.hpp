@@ -11,9 +11,6 @@
 
 namespace te{
 
-class WorldObject{
-
-};
 
 //class ICArrayUser
 //{
@@ -44,7 +41,7 @@ public:
 
    inline virtual bool istypeof(const std::type_index& type) override
    {
-       return (type == *m_type);
+       return (type == m_type);
    }
 
    inline int getIndex() const
@@ -52,7 +49,7 @@ public:
        return m_index;
    }
 
-   inline std::shared_ptr<std::type_index> getType() const
+   inline std::type_index getType() const
    {
        return m_type;
    }
@@ -62,9 +59,15 @@ public:
        return m_index >=0;
    }
 
+   bool isValid() const
+   {
+       return m_valid;
+   }
+
 protected :
+   bool m_valid;
    int m_index;
-   std::shared_ptr<std::type_index> m_type;
+   std::type_index m_type;
 };
 
 template<typename T>
@@ -74,17 +77,66 @@ public :
     ExternalHandler();
     ExternalHandler(CMap* user, int index);
     ExternalHandler(const Handler& handler, CMap *user);
+    ExternalHandler(CMap* user, int index, std::type_index type);
 
     T* operator->();
 
+    template<typename U>
+    operator ExternalHandler<U>()
+    {
+        ExternalHandler<U> result(m_user, m_index, typeid(T));
+        return result;
+    }
+    template<typename U>
+    ExternalHandler(const ExternalHandler<U>& other)
+    {
+        m_valid = other.m_valid;
+        m_user = other.m_user;
+        m_index = other.m_index;
+        m_type = other.m_type;
+    }
+    template<typename U>
+    ExternalHandler& operator=(const ExternalHandler<U>& other)
+    {
+        m_valid = other.m_valid;
+        m_user = other.m_user;
+        m_index = other.m_index;
+        m_type = other.m_type;
+
+        return *this;
+    }
+
     operator bool() const
     {
-        return m_index >=0;
+        return m_valid;
     }
 
 private :
     CMap* m_user;
 
+};
+
+class WorldObject{
+protected:
+    int m_index;
+public :
+    WorldObject():m_index(0){}
+
+    virtual void init(int index){
+        m_index = index;
+    }
+
+    Handler thisHandler(){
+        return Handler(typeid(*this), m_index); // !!!
+    }
+
+    void setIndex(int i){
+        m_index = i;
+    }
+
+    int getIndex() const{
+        return m_index;
+    }
 };
 
 
@@ -137,21 +189,16 @@ private :
 
 };
 
-
-Handler::Handler(): m_index(-1)
-{
-
-}
-
-Handler::Handler(std::type_index type, int index): m_index(index)
-{
-    m_type = std::make_shared<std::type_index>(type);
-}
-
 template<typename T>
 ExternalHandler<T>::ExternalHandler(): Handler()
 {
 
+}
+
+template<typename T>
+ExternalHandler<T>::ExternalHandler(CMap* user, int index, std::type_index type): Handler(type, index)
+{
+    m_user = user;
 }
 
 template<typename T>
@@ -163,6 +210,7 @@ ExternalHandler<T>::ExternalHandler(CMap* user, int index): Handler(typeid(T), i
 template<typename T>
 ExternalHandler<T>::ExternalHandler(const Handler& handler, CMap* user)
 {
+    m_valid = handler.isValid();
     m_index = handler.getIndex();
     m_type = handler.getType();
     m_user = user;
@@ -181,6 +229,21 @@ CArray<T>::CArray() : m_size(0)
     m_pointers.resize(10);
     m_content.resize(10);
     m_status.resize(10);
+
+    for(int i = 0; i < 10; i++)
+    {
+        m_content[i].setIndex(i);
+    }
+
+    for(int i = 0; i < 10; i++)
+    {
+        m_status[i] = false;
+    }
+
+    for(int i = 0; i < 10; i++)
+    {
+        m_pointers[i] = i;
+    }
 }
 
 template<typename T>
@@ -200,6 +263,7 @@ int CArray<T>::instantiate()
             index = m_content.size();
             m_pointers.push_back(index);
             m_content.push_back(T());
+            m_content.back().init(index);
             m_status.push_back(true);
         }
         else

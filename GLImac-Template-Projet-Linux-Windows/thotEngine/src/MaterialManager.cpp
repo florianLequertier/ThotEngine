@@ -99,6 +99,7 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
     m_materials[name] = newMat;
     m_materialCount[name] = 0;
 
+    std::cout<<"creating new material : "<<name<<" successfully !"<<std::endl;
     return newMat;
 }
 
