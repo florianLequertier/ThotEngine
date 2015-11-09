@@ -13,6 +13,7 @@
 
 #include "thotEngine/CArray.hpp"
 #include "thotEngine/MeshRenderer.hpp"
+#include "thotEngine/Camera.hpp"
 
 namespace te{
 
@@ -21,7 +22,7 @@ class Renderer
 
 public :
     void render(glm::mat4 const& worldMat, glm::mat4 const& viewMat, std::shared_ptr<CArray<MeshRenderer>> meshes);
-
+    void render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> meshes);
 };
 
 }

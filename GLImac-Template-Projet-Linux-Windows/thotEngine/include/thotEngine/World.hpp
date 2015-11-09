@@ -7,6 +7,9 @@
 
 #include "CArray.hpp"
 
+#include "Camera.hpp"
+#include "Script.hpp"
+
 //systems
 #include "TestSystem.hpp"
 #include "Renderer.hpp"
@@ -28,6 +31,8 @@ private:
     std::shared_ptr<CArray<Entity>> m_ptrToEntities;
     std::shared_ptr<CArray<MeshRenderer>> m_ptrToMeshRenderers;
     std::shared_ptr<CArray<Transform>> m_ptrToTransforms;
+    std::shared_ptr<CArray<Camera>> m_ptrToCameras;
+    std::shared_ptr<CArray<Script>> m_ptrToScripts;
 
     //resources
     //std::shared_ptr<ResourceManager> m_resourceManager;
@@ -59,6 +64,7 @@ public :
     ExternalHandler<T> makeExternal(const Handler& handler);
 
     void update();
+    void render();
 
 };
 

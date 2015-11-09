@@ -44,7 +44,6 @@ int main(int argc, char** argv)
 
     //create world
     te::World world;
-    world.init();
 
     //populate world
 
@@ -60,6 +59,7 @@ int main(int argc, char** argv)
     entityHandler = world.InstantiateNew<te::Entity>();
     entityHandler->setName("test01");
     entityHandler->addComponent<te::Transform>(world);
+    entityHandler->addComponent<te::Camera>(world);
 
     //test 02
     entityHandler = world.InstantiateNew<te::Entity>();
@@ -72,9 +72,11 @@ int main(int argc, char** argv)
     //finalize openGL context
     world.pushToGPU();
 
-    bool done = false;
+    //init world
+    world.init();
 
     //main loop
+    bool done = false;
     while(!done)
     {
         // Event loop:
@@ -90,7 +92,12 @@ int main(int argc, char** argv)
             }
         }
 
+        //updates
         world.update();
+
+        //render
+        world.render();
+        windowManager.swapBuffers();
 
     }
 

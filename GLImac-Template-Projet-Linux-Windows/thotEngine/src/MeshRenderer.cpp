@@ -53,13 +53,13 @@ void MeshRenderer::draw() const
 
 void MeshRenderer::render(const glm::mat4& worldMat, const glm::mat4& viewMat)
 {
-    GLuint matID = m_materialPtr.lock()->getGlId();
-
-    //matrix uniforms
+    //uniform matrix
     glm::mat4 modelMat = m_owner->getComponent<Transform>()->getModelMatrix();
 
+    //set uniforms of the current material
     m_materialPtr.lock()->setUniforms(modelMat, worldMat, viewMat);
 
+    //call opengl draw call
     draw();
 }
 

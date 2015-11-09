@@ -30,6 +30,10 @@ void Transform::setRotation(glm::quat rotation)
     m_rotation = rotation;
     m_rotationMat = glm::mat4_cast(m_rotation);
 
+    m_forward = glm::vec3(m_rotationMat*glm::vec4(1,0,0,0));
+    m_right = glm::vec3(m_rotationMat*glm::vec4(0,-1,0,0));
+    m_up = glm::vec3(m_rotationMat*glm::vec4(0,0,1,0));
+
     computeModelMatrix();
 }
 
@@ -47,6 +51,21 @@ void Transform::setTranslation(glm::vec3 translation)
     m_translationMat = glm::translate(glm::mat4(1), m_translation);
 
     computeModelMatrix();
+}
+
+glm::vec3 Transform::getForward() const
+{
+    return m_forward;
+}
+
+glm::vec3 Transform::getUp() const
+{
+    return m_up;
+}
+
+glm::vec3 Transform::getRight() const
+{
+    return m_right;
 }
 
 void Transform::computeModelMatrix()

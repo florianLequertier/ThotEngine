@@ -16,7 +16,6 @@ out vec3 v_normal_vs;
 
 void main()
 {
-	//coordonnées homogénes
 	vec4 vertexPosition = vec4(a_vertexPosition, 1);
 	vec4 vertexNormal = vec4(a_vertexNormal, 0);
 
