@@ -1,8 +1,7 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include "glm.hpp"
 
 #include "thotEngine/Component.hpp"
 
@@ -35,6 +34,12 @@ public :
     void setRotation(glm::quat rotation);
     void setScale(glm::vec3 scale);
     void setTranslation(glm::vec3 translation);
+
+    void rotateAround(float angle, glm::vec3 axis);
+    void translate(glm::vec3 delta);
+    void localTranslate(glm::vec3 delta);
+    void translate(float x, float y, float z);
+    void localTranslate(float x, float y, float z);
 
     glm::vec3 getForward() const;
     glm::vec3 getUp() const;

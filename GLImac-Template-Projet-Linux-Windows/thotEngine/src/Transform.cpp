@@ -53,6 +53,31 @@ void Transform::setTranslation(glm::vec3 translation)
     computeModelMatrix();
 }
 
+void Transform::rotateAround(float angle, glm::vec3 axis)
+{
+    setRotation(m_rotation * glm::angleAxis(angle, axis.x, axis.y, axis.z));
+}
+
+void Transform::translate(glm::vec3 delta)
+{
+    setTranslation(m_translation + delta);
+}
+
+void Transform::localTranslate(glm::vec3 delta)
+{
+    setTranslation(delta.x*m_forward + delta.y*(-m_right) + delta.z*m_up);
+}
+
+void Transform::translate(float x, float y, float z)
+{
+    setTranslation(m_translation + glm::vec3(x, y, z));
+}
+
+void Transform::localTranslate(float x, float y, float z)
+{
+    setTranslation(x*m_forward + y*(-m_right) + z*m_up);
+}
+
 glm::vec3 Transform::getForward() const
 {
     return m_forward;

@@ -5,7 +5,7 @@
 
 namespace te{
 
-class Script : Component
+class Script : public Component
 {
 public:
     virtual void init() = 0;

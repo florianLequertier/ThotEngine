@@ -1,5 +1,6 @@
 #include <cmath>
 #include "thotEngine/FreeFlyCam.hpp"
+#include "thotEngine/Transform.hpp"
 
 namespace te{
 
@@ -66,27 +67,27 @@ void FreeFlyCam::updateLookAt(float x, float y)
     //m_right = glm::cross(m_forward, glm::vec3(0,1,0));
 }
 
-void FreeFlyCam::move(CAMERA_MOVEMENT mouvement)
+void FreeFlyCam::move(te::Camera::CAMERA_MOVEMENT mouvement)
 {
     switch(mouvement)
     {
-    case FORWARD :
-        m_position += m_forward * m_translationSpeed;
+    case te::Camera::FORWARD :
+        m_transformPtr->localTranslate(m_translationSpeed, 0, 0);
         break;
-    case BACKWARD :
-        m_position -= m_forward * m_translationSpeed;
+    case te::Camera::BACKWARD :
+        m_transformPtr->localTranslate(-m_translationSpeed, 0, 0);
         break;
-    case RIGHT:
-        m_position += m_right * m_translationSpeed;
+    case te::Camera::RIGHT:
+        m_transformPtr->localTranslate(0, m_translationSpeed, 0);
         break;
-    case LEFT:
-        m_position -= m_right * m_translationSpeed;
+    case te::Camera::LEFT:
+        m_transformPtr->localTranslate(0, -m_translationSpeed, 0);
         break;
-    case UP :
-        m_position += glm::cross(m_right, m_forward) * m_translationSpeed; //cross(right, foward) = vecteur up.
+    case te::Camera::UP :
+        m_transformPtr->localTranslate(0, 0, m_translationSpeed);
         break;
-    case DOWN :
-        m_position -= glm::cross(m_right, m_forward) * m_translationSpeed;
+    case te::Camera::DOWN :
+        m_transformPtr->localTranslate(0, 0, -m_translationSpeed);
         break;
     }
 }
