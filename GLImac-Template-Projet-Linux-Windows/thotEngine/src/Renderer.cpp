@@ -32,7 +32,8 @@ void Renderer::render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> mesh
     glm::mat4 viewMat = camera.getViewMatrix();
 
     //clear
-    glClear(GL_DEPTH_BUFFER_BIT || GL_COLOR_BUFFER_BIT);
+    //glDisable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     for(int i = 0; i < meshes->size(); ++i)
     {

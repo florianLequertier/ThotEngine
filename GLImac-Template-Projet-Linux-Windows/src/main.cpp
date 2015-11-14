@@ -10,7 +10,11 @@
 #include "thotEngine/ResourceManager.hpp"
 #include "thotEngine/MaterialManager.hpp"
 
-#include "thotEngine/SDLWindowManager.hpp"
+#include "thotEngine/WindowManager.hpp"
+#include "thotEngine/Input.hpp"
+
+//scripts
+# include "thotEngine/FreeFlyCam.hpp"
 
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
@@ -19,7 +23,9 @@ int main(int argc, char** argv)
 {
 
     // Initialize SDL and open a window
-    te::SDLWindowManager windowManager(WINDOW_WIDTH, WINDOW_HEIGHT, "ThotEngine");
+    te::WindowManager windowManager(WINDOW_WIDTH, WINDOW_HEIGHT, "ThotEngine");
+
+    SDL_EnableKeyRepeat(10,10);
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -50,7 +56,7 @@ int main(int argc, char** argv)
     //ship 01
     auto entityHandler = world.InstantiateNew<te::Entity>();
     entityHandler->setName("ship01");
-    entityHandler->addComponent<te::Transform>(world);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,0,10);
     auto componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
@@ -60,6 +66,7 @@ int main(int argc, char** argv)
     entityHandler->setName("test01");
     entityHandler->addComponent<te::Transform>(world);
     entityHandler->addComponent<te::Camera>(world);
+    entityHandler->addComponent<te::FreeFlyCam>(world);
 
     //test 02
     entityHandler = world.InstantiateNew<te::Entity>();
@@ -82,12 +89,16 @@ int main(int argc, char** argv)
         // Event loop:
         SDL_Event event;
 
-        while(windowManager.pollEvent(event))
+        while(te::Input::pollEvent(event))
         {
             switch (event.type)
             {
                 case SDL_QUIT:
                     done = true; // Leave the loop after this iteration
+                break;
+                case SDL_KEYDOWN:
+                    if(event.key.keysym.sym == SDLK_ESCAPE)
+                        done = true;
                 break;
             }
         }

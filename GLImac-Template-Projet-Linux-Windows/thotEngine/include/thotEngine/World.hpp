@@ -13,6 +13,7 @@
 //systems
 #include "TestSystem.hpp"
 #include "Renderer.hpp"
+#include "scriptsystem.hpp"
 
 namespace te{
 
@@ -26,13 +27,14 @@ private:
     //systems
     TestSystem m_testSystem;
     Renderer m_renderer;
+    ScriptSystem m_scriptSystem;
 
     //shortcup to CArrays in the CMap, to improve performance
     std::shared_ptr<CArray<Entity>> m_ptrToEntities;
     std::shared_ptr<CArray<MeshRenderer>> m_ptrToMeshRenderers;
     std::shared_ptr<CArray<Transform>> m_ptrToTransforms;
     std::shared_ptr<CArray<Camera>> m_ptrToCameras;
-    std::shared_ptr<CArray<Script>> m_ptrToScripts;
+    std::vector<std::shared_ptr<CArray<Script>>> m_ptrsToScripts;
 
     //resources
     //std::shared_ptr<ResourceManager> m_resourceManager;
@@ -71,6 +73,14 @@ public :
 template<typename T>
 ExternalHandler<T> World::InstantiateNew()
 {
+    if( m_content.find( typeid(T) ) == m_content.end() )
+    {
+        m_content[typeid(T)] = std::make_shared< CArray<T> >();
+
+        //put a ref to the new CArray into scriptsPtrs.
+        m_ptrsToScripts.push_back( std::static_pointer_cast<CArray<Script>>(m_content[typeid(T)]) );
+    }
+
     int index = std::static_pointer_cast<CArray<T>>(m_content[typeid(T)])->instantiate();
     return ExternalHandler<T>(&m_content, index);
 }
@@ -78,6 +88,9 @@ ExternalHandler<T> World::InstantiateNew()
 template<typename T>
 ExternalHandler<T> World::Instantiate(T model)
 {
+    if( m_content.find( typeid(T) ) != m_content.end() )
+        m_content[typeid(T)] = std::make_shared< CArray<T> >();
+
     int index = std::static_pointer_cast<CArray<T>>(m_content[typeid(T)])->instantiate(model);
     return ExternalHandler<T>(&m_content, index);
 }

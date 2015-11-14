@@ -8,8 +8,8 @@ namespace te{
 class Script : public Component
 {
 public:
-    virtual void init() = 0;
-    virtual void update() = 0;
+    virtual void start();
+    virtual void update();
 };
 
 }

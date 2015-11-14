@@ -22,6 +22,10 @@ void Camera::updateViewMatrix()
 {
     auto ownerTransform = transform();
 
+    glm::vec3 translation = ownerTransform->getTranslation();
+    glm::vec3 forward = ownerTransform->getForward();
+    glm::vec3 up = ownerTransform->getUp();
+
     m_viewMatrix = glm::lookAt(
         ownerTransform->getTranslation(), // Camera is at (4,3,3), in World Space
         ownerTransform->getTranslation() + ownerTransform->getForward(), // and looks at the origin

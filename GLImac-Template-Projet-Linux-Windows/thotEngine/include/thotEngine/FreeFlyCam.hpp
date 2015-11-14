@@ -1,7 +1,7 @@
 #ifndef FREEFLYCAM_HPP
 #define FREEFLYCAM_HPP
 
-#include "SDLWindowManager.hpp"
+#include "WindowManager.hpp"
 #include "Camera.hpp"
 #include "Component.hpp"
 #include "CArray.hpp"
@@ -24,8 +24,8 @@ public:
     FreeFlyCam();
     ~FreeFlyCam();
 
-    virtual void init();
-    virtual void update();
+    virtual void start() override;
+    virtual void update() override;
 
     void updateLookAt(float x, float y);
     void move(te::Camera::CAMERA_MOVEMENT mouvement);

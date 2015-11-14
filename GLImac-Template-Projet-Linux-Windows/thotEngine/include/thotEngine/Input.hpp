@@ -9,8 +9,8 @@
 
 namespace te{
 
-class Input
-{
+namespace Input
+{/*
 private:
     static std::vector<SDLKey> m_keyPressed;
     static std::vector<Uint8> m_mouseButtonPressed;
@@ -36,12 +36,25 @@ public:
     static bool getMouseUp(Uint8 button);
 
     static glm::vec2 getMousePosition();
-    static void setMousePosition(const glm::vec2& mousePosition);
+    static void setMousePosition(const glm::vec2& mousePosition);*/
+//private:
+    //glm::ivec2 m_mousePos(0,0);
 
-public:
-    Input();
-    ~Input();
-};
+//public:
+    void updateEvents();
+
+    bool getKey(SDLKey key);
+
+    bool getMouse(uint32_t button);
+
+    glm::ivec2 getMousePosition();
+
+    bool pollEvent(SDL_Event& e);
+
+//public:
+//    Input();
+//    ~Input();
+}
 
 }
 
