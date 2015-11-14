@@ -9,6 +9,7 @@
 
 #include "Camera.hpp"
 #include "Script.hpp"
+#include "prefab.hpp"
 
 //systems
 #include "TestSystem.hpp"
@@ -49,15 +50,24 @@ public :
     void pushToGPU();
     void popFromGPU();
 
+
     template<typename T>
     ExternalHandler<T> InstantiateNew();
+
     template<typename T>
-    ExternalHandler<T> Instantiate(T model);
+    ExternalHandler<T> Instantiate(T& model);
+
+    ExternalHandler<Entity> instantiate();
+    ExternalHandler<Entity> instantiate(std::shared_ptr<Prefab> prefab);
+
     template<typename T>
     void destroy(ExternalHandler<T> target);
 
     template<typename T>
     ExternalHandler<T> attachTo(Handler entity);
+
+    template<typename T>
+    ExternalHandler<T> attachTo(Handler entity, std::shared_ptr<T> model);
 
     template<typename T>
     ExternalHandler<T> removeFrom(Handler entity);
@@ -86,7 +96,7 @@ ExternalHandler<T> World::InstantiateNew()
 }
 
 template<typename T>
-ExternalHandler<T> World::Instantiate(T model)
+ExternalHandler<T> World::Instantiate(T& model)
 {
     if( m_content.find( typeid(T) ) != m_content.end() )
         m_content[typeid(T)] = std::make_shared< CArray<T> >();
@@ -105,6 +115,16 @@ template<typename T>
 ExternalHandler<T> World::attachTo(Handler entity)
 {
     auto newComponent = InstantiateNew<T>();
+    auto tmpExternal = makeExternal<Entity>(entity);
+    newComponent->setOwner(tmpExternal);
+    tmpExternal->addComponent<T>(newComponent);
+    return newComponent;
+}
+
+template<typename T>
+ExternalHandler<T> World::attachTo(Handler entity, std::shared_ptr<T> model)
+{
+    auto newComponent = Instantiate<T>(*model);
     auto tmpExternal = makeExternal<Entity>(entity);
     newComponent->setOwner(tmpExternal);
     tmpExternal->addComponent<T>(newComponent);
@@ -140,6 +160,13 @@ template<typename T>
 ExternalHandler<T> Entity::removeComponent(World& worldPtr)
 {
     return worldPtr.removeFrom<T>(thisHandler());
+}
+
+
+template<typename T>
+ExternalHandler<T> Entity::addComponent(World& worldPtr, T& model)
+{
+    return worldPtr.attachTo<T>(thisHandler(), model);
 }
 
 }

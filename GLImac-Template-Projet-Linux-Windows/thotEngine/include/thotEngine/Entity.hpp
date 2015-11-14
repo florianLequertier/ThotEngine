@@ -30,6 +30,9 @@ public:
     ExternalHandler<T> addComponent(World& world);
 
     template<typename T>
+    ExternalHandler<T> addComponent(World& world, T& model);
+
+    template<typename T>
     ExternalHandler<T> removeComponent(World& world);
 
     template<typename T>
@@ -40,7 +43,7 @@ public:
 //    ExternalHandler<T> addComponent(World& worldptr, ExternalHandler<T> component);
 
     template<typename T>
-    ExternalHandler<T> addComponent(ExternalHandler<T> component);
+    void addComponent(ExternalHandler<T> component);
 
     template<typename T>
     ExternalHandler<T> removeComponent();
@@ -68,11 +71,11 @@ ExternalHandler<T> Entity::getComponent()
             return m_components[i];
         }
     }
-    ExternalHandler<T>();
+    return ExternalHandler<T>();
 }
 
 template<typename T>
-ExternalHandler<T> Entity::addComponent(ExternalHandler<T> component)
+void Entity::addComponent(ExternalHandler<T> component)
 {
     m_components.push_back(component);
 }

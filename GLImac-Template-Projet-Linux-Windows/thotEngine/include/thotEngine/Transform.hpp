@@ -25,6 +25,8 @@ private :
     glm::vec3 m_up;
     glm::vec3 m_right;
 
+    glm::vec3 m_eulerAngles;
+
 public :
     Transform();
     ~Transform();
@@ -38,6 +40,9 @@ public :
     void setScale(glm::vec3 scale);
     void setTranslation(glm::vec3 translation);
 
+    void rotate(float x, float y, float z);
+    void localRotate(float x, float y, float z);
+
     void setRotation( glm::vec3 eulerAngles);
     void setRotation(float x, float y, float z);
     void setScale(float x, float y, float z);
@@ -46,6 +51,7 @@ public :
 
 
     void rotateAround(float angle, glm::vec3 axis);
+    void rotateAround(float angle, float x, float y, float z);
     void localRotateAround(float angle, float x, float y, float z);
     void localRotateAround(float angle, glm::vec3 axis);
     void translate(glm::vec3 delta);

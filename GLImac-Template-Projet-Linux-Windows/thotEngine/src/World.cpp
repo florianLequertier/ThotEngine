@@ -56,6 +56,26 @@ void World::popFromGPU()
     }
 }
 
+ExternalHandler<Entity> World::instantiate()
+{
+    int index = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)])->instantiate();
+    return ExternalHandler<Entity>(&m_content, index);
+}
+
+ExternalHandler<Entity> World::instantiate(std::shared_ptr<Prefab> prefab)
+{
+    int index = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)])->instantiate();
+    ExternalHandler<Entity> handler(&m_content, index);
+
+    for(int i = 0; i < prefab->componentCount(); ++i)
+    {
+        std::shared_ptr<WorldObject> newComponent;
+        attachTo<decltype(*newComponent)>( handler, std::static_pointer_cast<decltype(newComponent)>(newComponent) );
+    }
+
+    return handler;
+}
+
 void World::update()
 {
     m_testSystem.update(m_ptrToEntities);
