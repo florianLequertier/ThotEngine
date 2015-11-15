@@ -31,4 +31,14 @@ int Prefab::componentCount() const
     return m_components.size();
 }
 
+void Prefab::setMakeFunction(std::function<void(ExternalHandler<Entity>, World&)> makeFunction)
+{
+    m_makeFunction = makeFunction;
+}
+
+void Prefab::make(ExternalHandler<Entity> handler, World& world)
+{
+    m_makeFunction(handler, world);
+}
+
 }

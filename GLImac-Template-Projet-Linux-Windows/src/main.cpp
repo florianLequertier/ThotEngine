@@ -54,13 +54,17 @@ int main(int argc, char** argv)
 
     //make a prefab
 
-    //ship 01
-    te::Prefab prefab01;
-    prefab01.setName("prefab01");
-    prefab01.addComponent<te::Transform>()->setTranslation(0,0,10);
-    auto prefabComponentHandler = prefab01.addComponent<te::MeshRenderer>();
-    prefabComponentHandler->setMaterial("ship_mat");
-    prefabComponentHandler->setMesh("ship");
+    //prefab 01
+    std::shared_ptr<te::Prefab> prefab01 = std::make_shared<te::Prefab>();
+    prefab01->setMakeFunction([](te::ExternalHandler<te::Entity> entity, te::World& world){
+
+        entity->setName("prefab01");
+        entity->addComponent<te::Transform>(world)->setTranslation(0,0,0);
+        auto prefabComponentHandler = entity->addComponent<te::MeshRenderer>(world);
+        prefabComponentHandler->setMaterial("ship_mat");
+        prefabComponentHandler->setMesh("ship");
+
+    });
 
     //populate world
 
@@ -88,12 +92,7 @@ int main(int argc, char** argv)
     componentHandler->setMesh("ship");
 
     //test 03
-    entityHandler = world.InstantiateNew<te::Entity>();
-    entityHandler->setName("ship03");
-    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,0,0);
-    componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
-    componentHandler->setMaterial("ship_mat");
-    componentHandler->setMesh("ship");
+    entityHandler = world.instantiate(prefab01);
 
 //    world.destroy(entityHandler);
 

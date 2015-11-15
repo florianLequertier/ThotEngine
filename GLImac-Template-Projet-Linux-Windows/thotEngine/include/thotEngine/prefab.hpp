@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <functional>
 #include "thotEngine/CArray.hpp"
 
 namespace te{
@@ -17,6 +18,8 @@ private:
     std::string m_name;
 
     std::vector< std::shared_ptr<WorldObject> > m_components;
+
+    std::function<void(ExternalHandler<Entity>,World&)> m_makeFunction;
 
 public:
     Prefab();
@@ -35,6 +38,11 @@ public:
     void removeComponent();
 
     int componentCount() const;
+
+    void setMakeFunction(std::function<void(ExternalHandler<Entity>, World&)> makeFunction);
+
+    void make(ExternalHandler<Entity> handler, World& world);
+
 
 };
 

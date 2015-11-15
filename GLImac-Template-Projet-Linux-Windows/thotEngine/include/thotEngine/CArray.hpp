@@ -98,10 +98,10 @@ public :
     template<typename U>
     ExternalHandler& operator=(const ExternalHandler<U>& other)
     {
-        m_valid = other.m_valid;
-        m_user = other.m_user;
-        m_index = other.m_index;
-        m_type = other.m_type;
+        m_valid = other.isValid();
+        m_user = other.getUser();
+        m_index = other.getIndex();
+        m_type = other.getType();
 
         return *this;
     }
@@ -109,6 +109,11 @@ public :
     operator bool() const
     {
         return m_valid;
+    }
+
+    inline CMap* getUser() const
+    {
+        return m_user;
     }
 
 private :

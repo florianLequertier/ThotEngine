@@ -64,14 +64,18 @@ ExternalHandler<Entity> World::instantiate()
 
 ExternalHandler<Entity> World::instantiate(std::shared_ptr<Prefab> prefab)
 {
-    int index = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)])->instantiate();
-    ExternalHandler<Entity> handler(&m_content, index);
+//    int index = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)])->instantiate();
+//    ExternalHandler<Entity> handler(&m_content, index);
 
-    for(int i = 0; i < prefab->componentCount(); ++i)
-    {
-        std::shared_ptr<WorldObject> newComponent;
-        attachTo<decltype(*newComponent)>( handler, std::static_pointer_cast<decltype(newComponent)>(newComponent) );
-    }
+//    for(int i = 0; i < prefab->componentCount(); ++i)
+//    {
+//        std::shared_ptr<WorldObject> newComponent;
+//        attachTo<decltype(*newComponent)>( handler, std::static_pointer_cast<decltype(newComponent)>(newComponent) );
+//    }
+
+    auto handler = InstantiateNew<te::Entity>();
+
+    prefab->make(handler, *this);
 
     return handler;
 }
