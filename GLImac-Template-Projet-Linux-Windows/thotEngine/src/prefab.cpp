@@ -6,7 +6,7 @@
 
 namespace te {
 
-Prefab::Prefab()
+Prefab::Prefab(const std::string& prefabName): m_name(prefabName)
 {
 
 }
@@ -24,11 +24,6 @@ std::string Prefab::getName() const
 void Prefab::setName(std::string name)
 {
     m_name = name;
-}
-
-int Prefab::componentCount() const
-{
-    return m_components.size();
 }
 
 void Prefab::setMakeFunction(std::function<void(ExternalHandler<Entity>, World&)> makeFunction)

@@ -33,6 +33,8 @@ public:
 
     std::shared_ptr<Material> getMaterial(std::string name);
 
+    bool containsMaterial(std::string name);
+
 private:
     MaterialManager();
     MaterialManager(const MaterialManager& other);

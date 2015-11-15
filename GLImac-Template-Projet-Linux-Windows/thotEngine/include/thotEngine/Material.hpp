@@ -31,6 +31,8 @@ public:
     void initUniforms();
     virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat);
 
+    void use();
+
 };
 
 }

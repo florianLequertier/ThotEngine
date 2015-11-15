@@ -241,17 +241,41 @@ std::string ResourceManager::getApplicationPath() const
 
 std::shared_ptr<Mesh> ResourceManager::getMesh(std::string name)
 {
-    return m_meshes[name];
+    if(m_meshes.find(name) != m_meshes.end())
+        return m_meshes[name];
+    else
+        return std::shared_ptr<Mesh>();
 }
 
 std::shared_ptr<Image> ResourceManager::getImage(std::string name)
 {
-    return m_images[name];
+    if(m_images.find(name) != m_images.end())
+        return m_images[name];
+    else
+        return std::shared_ptr<Image>();
 }
 
 std::shared_ptr<GLProgram> ResourceManager::getProgram(std::string name)
 {
-    return m_programs[name];
+    if(m_programs.find(name) != m_programs.end())
+        return m_programs[name];
+    else
+        return std::shared_ptr<GLProgram>();
+}
+
+bool ResourceManager::containsMesh(std::string name)
+{
+    return m_meshes.find(name) != m_meshes.end();
+}
+
+bool ResourceManager::containsImage(std::string name)
+{
+    return m_images.find(name) != m_images.end();
+}
+
+bool ResourceManager::containsProgram(std::string name)
+{
+    return m_programs.find(name) != m_programs.end();
 }
 
 }

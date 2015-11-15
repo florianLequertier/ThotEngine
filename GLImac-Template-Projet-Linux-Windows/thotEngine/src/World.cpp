@@ -1,4 +1,5 @@
 #include "thotEngine/World.hpp"
+#include "thotEngine/prefabmanager.hpp"
 #include <memory>
 
 namespace te{
@@ -28,18 +29,6 @@ void World::init()
     m_scriptSystem.init(m_ptrsToScripts);
 }
 
-//void World::init(std::shared_ptr<ResourceManager> resourceManager, std::shared_ptr<MaterialManager> materialManager)
-//{
-//    m_content[typeid(Entity)] = std::make_shared< CArray<Entity> >();
-//    m_content[typeid(MeshRenderer)] = std::make_shared< CArray<MeshRenderer> >();
-
-//    m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
-//    m_ptrToMeshRenderers = std::static_pointer_cast<CArray<MeshRenderer>>(m_content[typeid(MeshRenderer)]);
-
-//    m_resourceManager = resourceManager;
-//    m_materialManager = materialManager;
-//}
-
 void World::pushToGPU()
 {
     for(int i = 0; i < m_ptrToMeshRenderers->size(); ++i)
@@ -64,20 +53,28 @@ ExternalHandler<Entity> World::instantiate()
 
 ExternalHandler<Entity> World::instantiate(std::shared_ptr<Prefab> prefab)
 {
-//    int index = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)])->instantiate();
-//    ExternalHandler<Entity> handler(&m_content, index);
-
-//    for(int i = 0; i < prefab->componentCount(); ++i)
-//    {
-//        std::shared_ptr<WorldObject> newComponent;
-//        attachTo<decltype(*newComponent)>( handler, std::static_pointer_cast<decltype(newComponent)>(newComponent) );
-//    }
-
-    auto handler = InstantiateNew<te::Entity>();
+    auto handler = instantiateNew<te::Entity>();
 
     prefab->make(handler, *this);
 
     return handler;
+}
+
+ExternalHandler<Entity> World::instantiate(std::string prefabName)
+{
+    if(PrefabManager::getInstance().contains(prefabName))
+    {
+        auto handler = instantiateNew<te::Entity>();
+
+        PrefabManager::getInstance().make(prefabName, handler, *this);
+
+        return handler;
+    }
+    else
+    {
+        std::cerr<<"error while instantiating the prefab \""<<prefabName<<"\". This name doesn't refer to a valid prefab."<<std::endl;
+        return ExternalHandler<Entity>();
+    }
 }
 
 void World::update()

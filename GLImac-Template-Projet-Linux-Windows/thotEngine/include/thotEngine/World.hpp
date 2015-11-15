@@ -45,20 +45,13 @@ public :
     World();
     ~World();
     void init();
-    //void init(std::shared_ptr<ResourceManager> resourceManager, std::shared_ptr<MaterialManager> materialManager);
 
     void pushToGPU();
     void popFromGPU();
 
-
-    template<typename T>
-    ExternalHandler<T> InstantiateNew();
-
-    template<typename T>
-    ExternalHandler<T> Instantiate(T& model);
-
     ExternalHandler<Entity> instantiate();
     ExternalHandler<Entity> instantiate(std::shared_ptr<Prefab> prefab);
+    ExternalHandler<Entity> instantiate(std::string prefabName);
 
     template<typename T>
     void destroy(ExternalHandler<T> target);
@@ -78,10 +71,17 @@ public :
     void update();
     void render();
 
+private:
+    template<typename T>
+    ExternalHandler<T> instantiateNew();
+
+    template<typename T>
+    ExternalHandler<T> instantiateFrom(T& model);
+
 };
 
 template<typename T>
-ExternalHandler<T> World::InstantiateNew()
+ExternalHandler<T> World::instantiateNew()
 {
     if( m_content.find( typeid(T) ) == m_content.end() )
     {
@@ -96,7 +96,7 @@ ExternalHandler<T> World::InstantiateNew()
 }
 
 template<typename T>
-ExternalHandler<T> World::Instantiate(T& model)
+ExternalHandler<T> World::instantiateFrom(T& model)
 {
     if( m_content.find( typeid(T) ) != m_content.end() )
         m_content[typeid(T)] = std::make_shared< CArray<T> >();
@@ -114,7 +114,7 @@ void World::destroy(ExternalHandler<T> target)
 template<typename T>
 ExternalHandler<T> World::attachTo(Handler entity)
 {
-    auto newComponent = InstantiateNew<T>();
+    auto newComponent = instantiateNew<T>();
     auto tmpExternal = makeExternal<Entity>(entity);
     newComponent->setOwner(tmpExternal);
     tmpExternal->addComponent<T>(newComponent);
@@ -124,7 +124,7 @@ ExternalHandler<T> World::attachTo(Handler entity)
 template<typename T>
 ExternalHandler<T> World::attachTo(Handler entity, std::shared_ptr<T> model)
 {
-    auto newComponent = Instantiate<T>(*model);
+    auto newComponent = instantiateFrom<T>(*model);
     auto tmpExternal = makeExternal<Entity>(entity);
     newComponent->setOwner(tmpExternal);
     tmpExternal->addComponent<T>(newComponent);

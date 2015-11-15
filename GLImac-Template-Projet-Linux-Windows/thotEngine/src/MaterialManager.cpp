@@ -105,9 +105,20 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
 
 std::shared_ptr<Material> MaterialManager::getMaterial(std::string name)
 {
-    assert( m_materials.find(name)!= m_materials.end() );
+    if( m_materials.find(name)!= m_materials.end() )
+    {
+        return m_materials[name];
+    }
+    else
+    {
+        return std::shared_ptr<Material>();
+    }
 
-    return m_materials[name];
+}
+
+bool MaterialManager::containsMaterial(std::string name)
+{
+    return m_materials.find(name)!= m_materials.end();
 }
 
 //std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)

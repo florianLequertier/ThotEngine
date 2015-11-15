@@ -33,7 +33,8 @@ void Renderer::render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> mesh
 
     //clear
     //glDisable(GL_DEPTH_TEST);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    camera.clear();
 
     for(int i = 0; i < meshes->size(); ++i)
     {

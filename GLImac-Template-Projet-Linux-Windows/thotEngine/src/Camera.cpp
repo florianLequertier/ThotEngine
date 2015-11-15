@@ -1,4 +1,4 @@
-
+#include <GL/glew.h>
 #include "thotEngine/CArray.hpp"
 #include "thotEngine/Transform.hpp"
 
@@ -11,6 +11,7 @@ Camera::Camera()
     setPerspectiveParameters(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
     setOrthoParameters(0, 800, 600, 0);
     setProjectionMode(ProjectionMode::PERSPECTIVE);
+    m_clearFunction = &Camera::clearWithColor;
 }
 
 Camera::~Camera()
@@ -77,6 +78,49 @@ glm::mat4 Camera::getViewMatrix()
 {
     updateViewMatrix();
     return m_viewMatrix;
+}
+
+void Camera::setUseSkybox(bool state)
+{
+    if(state && m_skybox.isInitialized())
+    {
+        m_useSkybox = true;
+        m_clearFunction = &Camera::clearWithSkybox;
+    }
+    else
+    {
+        m_useSkybox = false;
+        m_clearFunction = &Camera::clearWithColor;
+    }
+}
+
+bool Camera::useSkybox() const
+{
+    return m_useSkybox;
+}
+
+void Camera::setSkyboxMaterial(std::string materialName)
+{
+    m_skybox.setMaterial(materialName);
+}
+
+void Camera::clearWithSkybox()
+{
+    auto ownerTransform = transform();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if(m_useSkybox)
+        m_skybox.render( glm::translate(ownerTransform->getTranslation()), m_worldMatrix, m_viewMatrix);
+}
+
+void Camera::clearWithColor()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Camera::clear()
+{
+    m_clearFunction(this);
 }
 
 }

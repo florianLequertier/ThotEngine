@@ -77,4 +77,9 @@ void Material::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat,
         glUniform1i( m_uniforms[3], m_images[0].lock()->getId());
 }
 
+void Material::use()
+{
+    m_program.lock()->use();
+}
+
 }

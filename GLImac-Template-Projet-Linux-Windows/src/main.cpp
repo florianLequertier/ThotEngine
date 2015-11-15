@@ -10,6 +10,7 @@
 #include "thotEngine/prefab.hpp"
 #include "thotEngine/ResourceManager.hpp"
 #include "thotEngine/MaterialManager.hpp"
+#include "thotEngine/prefabmanager.hpp"
 
 #include "thotEngine/WindowManager.hpp"
 #include "thotEngine/Input.hpp"
@@ -42,12 +43,15 @@ int main(int argc, char** argv)
     //load resources
     te::ResourceManager& resourceManager = te::ResourceManager::getInstance();
     resourceManager.loadImage("ship_tex_dif", "assets/textures/cobble2.png");
+    resourceManager.loadImage("skybox_tex_dif", "assets/textures/skybox_texture.png");
     resourceManager.loadMesh("ship", "assets/models/cube.obj");
     resourceManager.loadProgram("glProg_3D", "shaders/3D.vs.glsl", "shaders/3D.fs.glsl");
+    resourceManager.loadProgram("glProg_skybox", "shaders/skyShader.vs.glsl", "shaders/skyShader.fs.glsl");
 
     //make materials
     te::MaterialManager& materialManager = te::MaterialManager::getInstance();
     materialManager.createMaterial("ship_mat", "glProg_3D", {"ship_tex_dif"});
+    materialManager.createMaterial("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
 
     //create world
     te::World world;
@@ -55,7 +59,7 @@ int main(int argc, char** argv)
     //make a prefab
 
     //prefab 01
-    std::shared_ptr<te::Prefab> prefab01 = std::make_shared<te::Prefab>();
+    std::shared_ptr<te::Prefab> prefab01 = std::make_shared<te::Prefab>("prefab01");
     prefab01->setMakeFunction([](te::ExternalHandler<te::Entity> entity, te::World& world){
 
         entity->setName("prefab01");
@@ -66,10 +70,12 @@ int main(int argc, char** argv)
 
     });
 
+    te::PrefabManager::getInstance().add(prefab01);
+
     //populate world
 
     //ship 01
-    auto entityHandler = world.InstantiateNew<te::Entity>();
+    auto entityHandler = world.instantiate();
     entityHandler->setName("ship01");
     entityHandler->addComponent<te::Transform>(world)->setTranslation(0,0,10);
     auto componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
@@ -77,14 +83,16 @@ int main(int argc, char** argv)
     componentHandler->setMesh("ship");
 
     //test 01
-    entityHandler = world.InstantiateNew<te::Entity>();
+    entityHandler = world.instantiate();
     entityHandler->setName("test01");
     entityHandler->addComponent<te::Transform>(world);
-    entityHandler->addComponent<te::Camera>(world);
+    auto cameraHandler = entityHandler->addComponent<te::Camera>(world);
+    cameraHandler->setSkyboxMaterial("skybox_mat");
+    cameraHandler->setUseSkybox(true);
     entityHandler->addComponent<te::FreeFlyCam>(world);
 
     //test 02
-    entityHandler = world.InstantiateNew<te::Entity>();
+    entityHandler = world.instantiate();
     entityHandler->setName("ship02");
     entityHandler->addComponent<te::Transform>(world)->setTranslation(0,10,10);
     componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
@@ -93,6 +101,10 @@ int main(int argc, char** argv)
 
     //test 03
     entityHandler = world.instantiate(prefab01);
+
+    //test 04
+    entityHandler = world.instantiate("prefab01");
+    entityHandler->getComponent<te::Transform>()->setTranslation(10,0,0);
 
 //    world.destroy(entityHandler);
 

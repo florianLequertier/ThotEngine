@@ -1,8 +1,10 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+#include <functional>
 #include "glm.hpp"
 #include "thotEngine/Component.hpp"
+#include "skybox.hpp"
 
 namespace te{
 
@@ -36,6 +38,12 @@ private:
     OrthoParameters m_orthoParameters;
     PerspectiveParameters m_perspectiveParameters;
     ProjectionMode m_projectionMode;
+
+    Skybox m_skybox;
+    bool m_useSkybox;
+
+    std::function<void(Camera*)> m_clearFunction;
+
 public :
     Camera();
     ~Camera();
@@ -49,6 +57,14 @@ public :
 
     glm::mat4 getWorldMatrix() const;
     glm::mat4 getViewMatrix();
+
+    void setUseSkybox(bool state);
+    bool useSkybox() const;
+    void setSkyboxMaterial(std::string materialName);
+
+    void clearWithSkybox();
+    void clearWithColor();
+    void clear();
 
 };
 

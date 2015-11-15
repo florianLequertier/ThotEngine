@@ -1,11 +1,11 @@
 #version 330
 
-in vec2 vTextureCoord;
+in vec2 v_texCoords;
 out vec4 fragColor;
-//uniform samplerCube cubemap_texture;
-uniform sampler2D cubemapTexture;
+
+uniform sampler2D u_diffuse;
 
 void main (void) {
 
-    fragColor = vec4( texture(cubemapTexture, vTextureCoord).xyz, 1 );
+    fragColor = vec4( texture(u_diffuse, v_texCoords).xyz, 1 );
 }

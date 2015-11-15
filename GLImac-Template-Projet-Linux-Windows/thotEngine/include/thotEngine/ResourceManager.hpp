@@ -69,6 +69,10 @@ public:
     std::shared_ptr<Image> getImage(std::string name);
     std::shared_ptr<GLProgram> getProgram(std::string name);
 
+    bool containsMesh(std::string name);
+    bool containsImage(std::string name);
+    bool containsProgram(std::string name);
+
 private :
     ResourceManager();
     ResourceManager(const ResourceManager& other);
