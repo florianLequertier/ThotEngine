@@ -5,12 +5,16 @@
 #include "GLProgram.hpp"
 #include "Image.hpp"
 #include "ResourceManager.hpp"
+#include "light.hpp"
 
 namespace te{
 
+static const int NB_POINT_LIGHT = 20;
+static const int NB_DIRECTIONAL_LIGHT = 20;
+
 class Material
 {
-private:
+protected:
 
     //std::weak_ptr<ResourceManager> m_resourceManager;
 
@@ -21,6 +25,7 @@ private:
 public:
     Material( std::shared_ptr<GLProgram> program );
     Material( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images );
+    Material( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
     ~Material();
 
     void pushToGPU();
@@ -28,10 +33,46 @@ public:
 
     GLuint getGlId() const;
 
-    void initUniforms();
-    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat);
+    virtual void initUniforms() = 0;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) = 0;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) = 0;
 
     void use();
+
+};
+
+class UnlitMaterial : public Material
+{
+private:
+
+
+public:
+    UnlitMaterial( std::shared_ptr<GLProgram> program );
+    UnlitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images );
+    UnlitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
+    ~UnlitMaterial();
+
+    virtual void initUniforms() override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
+
+};
+
+class LitMaterial : public Material
+{
+private:
+    float m_specularValue;
+    float m_shininessValue;
+
+public:
+    LitMaterial( std::shared_ptr<GLProgram> program );
+    LitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images );
+    LitMaterial(std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
+    ~LitMaterial();
+
+    virtual void initUniforms() override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
 
 };
 

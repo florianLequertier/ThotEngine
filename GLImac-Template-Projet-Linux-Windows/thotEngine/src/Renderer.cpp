@@ -1,3 +1,4 @@
+#include "thotEngine/Transform.hpp"
 
 #include "thotEngine/Renderer.hpp"
 
@@ -23,13 +24,14 @@ void Renderer::render(glm::mat4 const& worldMat, glm::mat4 const& viewMat, std::
     }
 }
 
-void Renderer::render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> meshes)
+void Renderer::render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> meshes, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights)
 {
     GLuint matID = -1;
 
     camera.updateViewMatrix();
     glm::mat4 worldMat = camera.getWorldMatrix();
     glm::mat4 viewMat = camera.getViewMatrix();
+    glm::vec3 viewPosition = camera.transform()->getTranslation();
 
     //clear
     //glDisable(GL_DEPTH_TEST);
@@ -45,7 +47,7 @@ void Renderer::render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> mesh
             glUseProgram(matID);
         }
 
-        meshes->parse(i).render(worldMat, viewMat);
+        meshes->parse(i).render(worldMat, viewMat, pointLights, directionalLights, viewPosition);
     }
 }
 

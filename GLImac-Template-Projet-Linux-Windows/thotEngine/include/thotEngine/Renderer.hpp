@@ -22,7 +22,7 @@ class Renderer
 
 public :
     void render(glm::mat4 const& worldMat, glm::mat4 const& viewMat, std::shared_ptr<CArray<MeshRenderer>> meshes);
-    void render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> meshes);
+    void render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> meshes, std::shared_ptr<CArray<PointLight> > pointLights, std::shared_ptr<CArray<DirectionalLight> > directionalLights);
 };
 
 }

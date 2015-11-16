@@ -7,6 +7,8 @@
 #include "thotEngine/MaterialManager.hpp"
 #include "thotEngine/Component.hpp"
 
+#include "thotEngine/light.hpp"
+
 namespace te {
 
 class MeshRenderer : public Component
@@ -36,6 +38,7 @@ GLuint getMaterialID() const;
 
 void draw() const;
 void render(const glm::mat4& worldMat, const glm::mat4& viewMat);
+void render(const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition);
 
 //operator overload
 inline bool operator<(const MeshRenderer& other )

@@ -47,11 +47,13 @@ int main(int argc, char** argv)
     resourceManager.loadMesh("ship", "assets/models/cube.obj");
     resourceManager.loadProgram("glProg_3D", "shaders/3D.vs.glsl", "shaders/3D.fs.glsl");
     resourceManager.loadProgram("glProg_skybox", "shaders/skyShader.vs.glsl", "shaders/skyShader.fs.glsl");
+    resourceManager.loadProgram("glProg_3DLight", "shaders/3DLight.vs.glsl", "shaders/3DLight.fs.glsl");
 
     //make materials
     te::MaterialManager& materialManager = te::MaterialManager::getInstance();
-    materialManager.createMaterial("ship_mat", "glProg_3D", {"ship_tex_dif"});
-    materialManager.createMaterial("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
+    materialManager.createMaterial<te::UnlitMaterial>("ship_mat", "glProg_3D", {"ship_tex_dif"});
+    materialManager.createMaterial<te::UnlitMaterial>("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
+    materialManager.createMaterial<te::LitMaterial>("ship02_mat", "glProg_3DLight", {"ship_tex_dif"}, {1,100});
 
     //create world
     te::World world;

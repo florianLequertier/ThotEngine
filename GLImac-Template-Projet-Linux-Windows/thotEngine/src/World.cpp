@@ -10,11 +10,15 @@ World::World()
     m_content[typeid(MeshRenderer)] = std::make_shared< CArray<MeshRenderer> >();
     m_content[typeid(Transform)] = std::make_shared<CArray<Transform> >();
     m_content[typeid(Camera)] = std::make_shared<CArray<Camera> >();
+    m_content[typeid(PointLight)] = std::make_shared<CArray<PointLight> >();
+    m_content[typeid(DirectionalLight)] = std::make_shared<CArray<DirectionalLight> >();
 
     m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
     m_ptrToMeshRenderers = std::static_pointer_cast<CArray<MeshRenderer>>(m_content[typeid(MeshRenderer)]);
     m_ptrToTransforms = std::static_pointer_cast<CArray<Transform>>(m_content[typeid(Transform)]);
     m_ptrToCameras = std::static_pointer_cast<CArray<Camera>>(m_content[typeid(Camera)]);
+    m_ptrToPointLights = std::static_pointer_cast<CArray<PointLight>>(m_content[typeid(PointLight)]);
+    m_ptrToDirectionalLights = std::static_pointer_cast<CArray<DirectionalLight>>(m_content[typeid(DirectionalLight)]);
 
 }
 
@@ -86,7 +90,7 @@ void World::update()
 
 void World::render()
 {
-    m_renderer.render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers);
+    m_renderer.render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
 }
 
 }

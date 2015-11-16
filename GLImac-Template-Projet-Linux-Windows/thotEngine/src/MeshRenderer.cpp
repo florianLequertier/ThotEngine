@@ -63,4 +63,16 @@ void MeshRenderer::render(const glm::mat4& worldMat, const glm::mat4& viewMat)
     draw();
 }
 
+void MeshRenderer::render(const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
+{
+    //uniform matrix
+    glm::mat4 modelMat = m_owner->getComponent<Transform>()->getModelMatrix();
+
+    //set uniforms of the current material
+    m_materialPtr.lock()->setUniforms(modelMat, worldMat, viewMat, pointLights, directionalLights, viewPosition);
+
+    //call opengl draw call
+    draw();
+}
+
 }

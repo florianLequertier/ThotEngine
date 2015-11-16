@@ -57,52 +57,6 @@ void MaterialManager::popMaterialFromGPU(std::string name)
     }
 }
 
-std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)
-{
-    auto program = ResourceManager::getInstance().getProgram(programName);
-
-    if (!program)
-    {
-        std::cout << "error when creating material with name : " << programName << " there is no program with this name" << std::endl;
-        return nullptr;
-    }
-
-    //make a new material instance, with name [parameter : name], and with a program which name is programName
-    auto newMat = std::shared_ptr<Material>(new Material( program ));
-
-    //store it in the manager
-    m_materials[name] = newMat;
-    m_materialCount[name] = 0;
-
-    return newMat;
-}
-
-std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string > imgNames)
-{
-    auto program = ResourceManager::getInstance().getProgram(programName);
-    std::vector<std::shared_ptr<Image>> images;
-    for(auto imgName : imgNames)
-    {
-        images.push_back(ResourceManager::getInstance().getImage(imgName));
-    }
-
-    if (!program)
-    {
-        std::cout << "error when creating material with name : " << programName << " there is no program with this name" << std::endl;
-        return nullptr;
-    }
-
-    //make a new material instance, with name [parameter : name], and with a program which name is programName
-    auto newMat = std::shared_ptr<Material>(new Material( program, images ));
-
-    //store it in the manager
-    m_materials[name] = newMat;
-    m_materialCount[name] = 0;
-
-    std::cout<<"creating new material : "<<name<<" successfully !"<<std::endl;
-    return newMat;
-}
-
 std::shared_ptr<Material> MaterialManager::getMaterial(std::string name)
 {
     if( m_materials.find(name)!= m_materials.end() )

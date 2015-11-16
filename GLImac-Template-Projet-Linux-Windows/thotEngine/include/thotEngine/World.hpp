@@ -10,6 +10,7 @@
 #include "Camera.hpp"
 #include "Script.hpp"
 #include "prefab.hpp"
+#include "light.hpp"
 
 //systems
 #include "TestSystem.hpp"
@@ -36,6 +37,8 @@ private:
     std::shared_ptr<CArray<Transform>> m_ptrToTransforms;
     std::shared_ptr<CArray<Camera>> m_ptrToCameras;
     std::vector<std::shared_ptr<CArray<Script>>> m_ptrsToScripts;
+    std::shared_ptr<CArray<PointLight>> m_ptrToPointLights;
+    std::shared_ptr<CArray<DirectionalLight>> m_ptrToDirectionalLights;
 
     //resources
     //std::shared_ptr<ResourceManager> m_resourceManager;
