@@ -248,8 +248,9 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldM
         glUniform1i( m_uniforms[3], 0);
     }
 
-    glUniform1ui( m_uniforms[4], pointLights->size());
-    glUniform1ui( m_uniforms[5], directionalLights->size());
+    int ptLightSize = pointLights->size();
+    glUniform1i( m_uniforms[4], pointLights->size());
+    glUniform1i( m_uniforms[5], directionalLights->size());
 
     for(int i = 0, k = 0; i < pointLights->size(); ++i, k+=3)
     {

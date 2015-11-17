@@ -9,7 +9,6 @@ namespace te{
 class PointLight : public Component
 {
 private:
-    glm::vec3 m_position;
     glm::vec3 m_color;
     float m_radius;
 
@@ -19,9 +18,9 @@ public:
     ~PointLight();
 
     glm::vec3 getPosition() const;
-    void setPosition(const glm::vec3 &position);
     glm::vec3 getColor() const;
     void setColor(const glm::vec3 &color);
+    void setColor( float red, float green, float blue);
     float getRadius() const;
     void setRadius(float radius);
 };
@@ -41,6 +40,7 @@ public:
     void setDirection(const glm::vec3 &direction);
     glm::vec3 getColor() const;
     void setColor(const glm::vec3 &color);
+    void setColor( float red, float green, float blue);
 };
 
 }

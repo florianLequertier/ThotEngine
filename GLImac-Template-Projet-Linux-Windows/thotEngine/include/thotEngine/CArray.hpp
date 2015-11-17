@@ -30,7 +30,7 @@ typedef std::map<std::type_index, std::shared_ptr<BaseCArray> > CMap;
 class IHandler
 {
 public:
-    virtual bool istypeof(const std::type_index& type) = 0;
+    virtual bool istypeof(const std::type_index& type) const = 0;
 };
 
 class Handler : public IHandler
@@ -39,7 +39,7 @@ public:
    Handler();
    Handler(std::type_index type, int index);
 
-   inline virtual bool istypeof(const std::type_index& type) override
+   inline virtual bool istypeof(const std::type_index& type) const override
    {
        return (type == m_type);
    }
@@ -79,7 +79,7 @@ public :
     ExternalHandler(const Handler& handler, CMap *user);
     ExternalHandler(CMap* user, int index, std::type_index type);
 
-    T* operator->();
+    T* operator->() const;
 
     template<typename U>
     operator ExternalHandler<U>()
@@ -90,10 +90,10 @@ public :
     template<typename U>
     ExternalHandler(const ExternalHandler<U>& other)
     {
-        m_valid = other.m_valid;
-        m_user = other.m_user;
-        m_index = other.m_index;
-        m_type = other.m_type;
+        m_valid = other.isValid();
+        m_user = other.getUser();
+        m_index = other.getIndex();
+        m_type = other.getType();
     }
     template<typename U>
     ExternalHandler& operator=(const ExternalHandler<U>& other)
@@ -222,7 +222,7 @@ ExternalHandler<T>::ExternalHandler(const Handler& handler, CMap* user)
 }
 
 template<typename T>
-T* ExternalHandler<T>::operator->()
+T* ExternalHandler<T>::operator->() const
 {
     //return m_user->getArrayElement<T>();
     return &std::static_pointer_cast<CArray<T>>( (*m_user)[typeid(T)] )->operator[](m_index);

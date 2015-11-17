@@ -19,6 +19,11 @@ protected :
     ExternalHandler<Entity> m_owner;
 
 public :
+    Component();
+    ~Component();
+
+    static bool isScriptable();
+
     std::string getName() const;
     void setName(std::string name);
 
@@ -27,7 +32,7 @@ public :
     template<typename T>
     ExternalHandler<T> getComponent();
 
-    ExternalHandler<Transform> transform();
+    ExternalHandler<Transform> transform() const;
 
 //operator overload
     bool operator<(const Component& other)

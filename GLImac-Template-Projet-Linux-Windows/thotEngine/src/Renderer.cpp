@@ -34,9 +34,10 @@ void Renderer::render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> mesh
     glm::vec3 viewPosition = camera.transform()->getTranslation();
 
     //clear
-    //glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     camera.clear();
+
 
     for(int i = 0; i < meshes->size(); ++i)
     {

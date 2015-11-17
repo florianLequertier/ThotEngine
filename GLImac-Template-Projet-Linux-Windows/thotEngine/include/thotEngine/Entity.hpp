@@ -36,7 +36,7 @@ public:
     ExternalHandler<T> removeComponent(World& world);
 
     template<typename T>
-    ExternalHandler<T> getComponent();
+    ExternalHandler<T> getComponent() const;
 
 
 //    template<typename T>
@@ -62,7 +62,7 @@ public:
 };
 
 template<typename T>
-ExternalHandler<T> Entity::getComponent()
+ExternalHandler<T> Entity::getComponent() const
 {
     for(int i = 0; i < m_components.size(); ++i)
     {

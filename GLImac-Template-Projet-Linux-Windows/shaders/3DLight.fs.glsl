@@ -1,3 +1,5 @@
+#version 330 core
+
 in vec3 v_color;
 in vec2 v_texCoords;
 in vec3 v_normals;
@@ -15,12 +17,12 @@ struct PointLight
 
 struct DirectionalLight
 {
-    vec4 color;
+    vec3 color;
     vec3 direction;
 };
 
-int NB_POINT_LIGHT = 20;
-int NB_DIRECTIONAL_LIGHT = 20;
+const int NB_POINT_LIGHT = 20;
+const int NB_DIRECTIONAL_LIGHT = 20;
 
 uniform PointLight u_pointLights[NB_POINT_LIGHT];
 uniform DirectionalLight u_directionalLights[NB_DIRECTIONAL_LIGHT];
@@ -50,16 +52,48 @@ vec3 computePointLight(int i)
 
     float diffuse = max(dot(norm, lightDir),0.0);
 
-    float specular = u_specularValue*pow(max(dot(viewDir, reflectDir),0.0),32);
+    float specular = u_specularValue*pow(max(dot(viewDir, reflectDir),0.0),32.0);
 
     return (diffuse + specular) * u_pointLights[i].color * attenuation;
 
 }
 
+vec3 computeDirectionalLight(int i)
+{
+    vec3 norm = normalize(v_normals);
+    vec3 lightDir = normalize(-u_directionalLights[i].direction );
+    vec3 viewDir = normalize(u_viewPosition - v_fragPos);
+
+    vec3 reflectDir = reflect(-lightDir, norm);
+
+    float diffuse = max(dot(norm, lightDir),0.0);
+
+    float specular = u_specularValue*pow(max(dot(viewDir, reflectDir),0.0),32.0);
+
+    return (diffuse + specular) * u_directionalLights[i].color;
+
+}
+
 void main()
 {
+    vec3 lighting = vec3(0.1,0.1,0.1); //ambiant
 
+    vec3 pointLighting = vec3(0.0,0.0,0.0);
+    for(int i = 0; i < u_nbPointLight; i++)
+    {
+        pointLighting += computePointLight(i) / u_nbPointLight;
+    }
+
+    vec3 directionalLighting = vec3(0.0,0.0,0.0);
+    for(int i = 0; i < u_nbDirectionalLight; i++)
+    {
+        directionalLighting += computeDirectionalLight(i) / u_nbDirectionalLight;
+    }
+
+    lighting += pointLighting;
+    lighting += directionalLighting;
 
     vec4 texColor = texture(u_diffuse, v_texCoords);
-    fFragColor = vec4(v_color * vec3(texColor), texColor.a); //vec4(0, 200, 0, 255);
+
+    fFragColor = vec4(v_color * vec3(texColor) * lighting, texColor.a); //vec4(0, 200, 0, 255);
 };

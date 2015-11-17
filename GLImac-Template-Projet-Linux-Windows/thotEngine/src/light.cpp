@@ -1,14 +1,14 @@
-
+#include "thotEngine/Transform.hpp"
 #include "thotEngine/light.hpp"
 
 namespace te{
 
-PointLight::PointLight(): m_position(0,0,0), m_color(1,1,1), m_radius(10)
+PointLight::PointLight(): m_color(1,1,1), m_radius(10)
 {
 
 }
 
-PointLight::PointLight(const glm::vec3& position, const glm::vec3& color, float radius): m_position(position), m_color(color), m_radius(radius)
+PointLight::PointLight(const glm::vec3& position, const glm::vec3& color, float radius): m_color(color), m_radius(radius)
 {
 
 }
@@ -20,12 +20,7 @@ PointLight::~PointLight()
 
 glm::vec3 PointLight::getPosition() const
 {
-    return m_position;
-}
-
-void PointLight::setPosition(const glm::vec3 &position)
-{
-    m_position = position;
+    return transform()->getTranslation();
 }
 
 glm::vec3 PointLight::getColor() const
@@ -36,6 +31,11 @@ glm::vec3 PointLight::getColor() const
 void PointLight::setColor(const glm::vec3 &color)
 {
     m_color = color;
+}
+
+void PointLight::setColor( float red, float green, float blue)
+{
+    m_color = glm::vec3(red, green, blue);
 }
 
 float PointLight::getRadius() const
@@ -83,6 +83,11 @@ glm::vec3 DirectionalLight::getColor() const
 void DirectionalLight::setColor(const glm::vec3 &color)
 {
     m_color = color;
+}
+
+void DirectionalLight::setColor( float red, float green, float blue)
+{
+    m_color = glm::vec3(red, green, blue);
 }
 
 }
