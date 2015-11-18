@@ -9,8 +9,8 @@
 
 namespace te{
 
-static const int NB_POINT_LIGHT = 20;
-static const int NB_DIRECTIONAL_LIGHT = 20;
+static const int NB_POINT_LIGHT = 5;
+static const int NB_DIRECTIONAL_LIGHT = 5;
 
 class Material
 {
@@ -26,7 +26,7 @@ public:
     Material( std::shared_ptr<GLProgram> program );
     Material( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images );
     Material( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
-    ~Material();
+    virtual ~Material();
 
     void pushToGPU();
     void popFromGPU();
@@ -50,7 +50,7 @@ public:
     UnlitMaterial( std::shared_ptr<GLProgram> program );
     UnlitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images );
     UnlitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
-    ~UnlitMaterial();
+    virtual ~UnlitMaterial();
 
     virtual void initUniforms() override;
     virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) override;
@@ -68,7 +68,7 @@ public:
     LitMaterial( std::shared_ptr<GLProgram> program );
     LitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images );
     LitMaterial(std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
-    ~LitMaterial();
+    virtual ~LitMaterial();
 
     virtual void initUniforms() override;
     virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) override;

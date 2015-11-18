@@ -155,9 +155,9 @@ LitMaterial::LitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::s
 {
     //set specular and shininess parameters
     if(parameters.size()>0)
-        m_specularValue = parameters[0];
+        m_specularValue = parameters[0.9];
     if(parameters.size()>1)
-        m_shininessValue = parameters[1];
+        m_shininessValue = parameters[300];
 }
 
 LitMaterial::~LitMaterial()
@@ -184,12 +184,14 @@ void LitMaterial::initUniforms()
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].position").c_str() ));
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].color").c_str()));
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].radius").c_str()));
+        m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].intensity").c_str()));
     }
     for(int i = 0; i < NB_DIRECTIONAL_LIGHT; ++i)
     {
         std::string index = std::to_string(i);
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_directionalLights["+index+"].direction").c_str()));
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_directionalLights["+index+"].color").c_str()));
+        m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_directionalLights["+index+"].intensity").c_str()));
     }
 
      m_uniforms.push_back( glGetUniformLocation(programId, "u_viewPosition"));
@@ -206,7 +208,7 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldM
     //matrix uniforms
     glm::mat4 MV = viewMat * modelMat;
     glm::mat4 MVP = worldMat * MV; //modelViewProjection
-    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MV));
+    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(modelMat));
 
 
     //set program uniforms...
@@ -229,47 +231,62 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldM
 void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
 {
     GLuint glId = m_program.lock()->getId();
+    int k = 0;
 
     //matrix uniforms
     glm::mat4 MV = viewMat * modelMat;
     glm::mat4 MVP = worldMat * MV; //modelViewProjection
-    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MV));
+    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(modelMat));
 
 
     //set program uniforms...
-    glUniformMatrix4fv( m_uniforms[0] , 1, false, &modelMat[0][0] );
-    glUniformMatrix4fv( m_uniforms[1] , 1, false, &MVP[0][0] );
-    glUniformMatrix4fv( m_uniforms[2] , 1, false, &NormalMatrix[0][0] );
+    glUniformMatrix4fv( m_uniforms[k++] , 1, false, &modelMat[0][0] );
+    glUniformMatrix4fv( m_uniforms[k++] , 1, false, &MVP[0][0] );
+    glUniformMatrix4fv( m_uniforms[k++] , 1, false, &NormalMatrix[0][0] );
 
     if(m_images.size() > 0)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_images[0].lock()->getId());
-        glUniform1i( m_uniforms[3], 0);
+        glUniform1i( m_uniforms[k], 0);
     }
+    k++;
 
-    int ptLightSize = pointLights->size();
-    glUniform1i( m_uniforms[4], pointLights->size());
-    glUniform1i( m_uniforms[5], directionalLights->size());
+    glUniform1i( m_uniforms[k++], pointLights->size());
+    glUniform1i( m_uniforms[k++], directionalLights->size());
 
-    for(int i = 0, k = 0; i < pointLights->size(); ++i, k+=3)
+
+    for(int i = 0; i < NB_POINT_LIGHT; ++i)
     {
-        PointLight currentLight = pointLights->parse(i);
-        glUniform3fv(m_uniforms[5+k+1], 1, &currentLight.getPosition()[0]);
-        glUniform3fv(m_uniforms[5+k+2], 1, &currentLight.getColor()[0]);
-        glUniform1f(m_uniforms[5+k+3], currentLight.getRadius());
+        if(i < pointLights->size())
+        {
+            PointLight currentLight = pointLights->parse(i);
+            glUniform3fv(m_uniforms[k++], 1, &(currentLight.getPosition())[0]);
+            glUniform3fv(m_uniforms[k++], 1, &(currentLight.getColor())[0]);
+            glUniform1f(m_uniforms[k++], currentLight.getRadius());
+            glUniform1f(m_uniforms[k++], currentLight.getIntensity());
+        }
+        else
+            k+=4;
     }
-    for(int i = 0, k = 0; i < directionalLights->size(); ++i, k+=2)
+
+    for(int i = 0; i < NB_DIRECTIONAL_LIGHT; ++i)
     {
-        DirectionalLight currentLight = directionalLights->parse(i);
-        glUniform3fv(m_uniforms[5 + pointLights->size() + k], 1, &currentLight.getDirection()[0]);
-        glUniform3fv(m_uniforms[5 + pointLights->size() + k + 1], 1, &currentLight.getColor()[0]);
+        if(i < directionalLights->size())
+        {
+            DirectionalLight currentLight = directionalLights->parse(i);
+            glUniform3fv(m_uniforms[k++], 1, &(currentLight.getDirection())[0]);
+            glUniform3fv(m_uniforms[k++], 1, &(currentLight.getColor())[0]);
+            glUniform1f(m_uniforms[k++], currentLight.getIntensity());
+        }
+        else
+            k+=3;
     }
 
-    glUniform3fv(m_uniforms[5 + pointLights->size() + directionalLights->size() - 1], 1, &viewPosition[0]);
+    glUniform3fv(m_uniforms[k++], 1, &viewPosition[0]);
 
-    glUniform1f(m_uniforms[5 + pointLights->size() + directionalLights->size()], m_specularValue);
-    glUniform1f(m_uniforms[5 + pointLights->size() + directionalLights->size() + 1], m_shininessValue);
+    glUniform1f(m_uniforms[k++], m_specularValue);
+    glUniform1f(m_uniforms[k++], m_shininessValue);
 
 }
 

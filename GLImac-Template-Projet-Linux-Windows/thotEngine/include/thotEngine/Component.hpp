@@ -20,7 +20,7 @@ protected :
 
 public :
     Component();
-    ~Component();
+    virtual ~Component();
 
     static bool isScriptable();
 

@@ -8,6 +8,9 @@ namespace te{
 class Script : public Component
 {
 public:
+    Script();
+    virtual ~Script();
+
     virtual void start();
     virtual void update();
 };

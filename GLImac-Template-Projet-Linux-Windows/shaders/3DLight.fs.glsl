@@ -13,16 +13,18 @@ struct PointLight
     vec3 color;
     vec3 position;
     float radius;
+    float intensity;
 };
 
 struct DirectionalLight
 {
     vec3 color;
     vec3 direction;
+    float intensity;
 };
 
-const int NB_POINT_LIGHT = 20;
-const int NB_DIRECTIONAL_LIGHT = 20;
+const int NB_POINT_LIGHT = 5;
+const int NB_DIRECTIONAL_LIGHT = 5;
 
 uniform PointLight u_pointLights[NB_POINT_LIGHT];
 uniform DirectionalLight u_directionalLights[NB_DIRECTIONAL_LIGHT];
@@ -44,15 +46,15 @@ vec3 computePointLight(int i)
     vec3 lightDir = normalize(u_pointLights[i].position - v_fragPos);
     float lightDis = length(u_pointLights[i].position - v_fragPos);
     vec3 viewDir = normalize(u_viewPosition - v_fragPos);
+    vec3 halfDir = normalize(viewDir + lightDir);
+    //vec3 reflectDir = reflect(-lightDir, norm);
 
     float invRadius = 1.0 / u_pointLights[i].radius;
-    float attenuation = 1.0/(1.0+invRadius*lightDis+invRadius*lightDis*lightDis);
-
-    vec3 reflectDir = reflect(-lightDir, norm);
+    float attenuation = u_pointLights[i].intensity/(1.0+invRadius*lightDis+invRadius*lightDis*lightDis);
 
     float diffuse = max(dot(norm, lightDir),0.0);
 
-    float specular = u_specularValue*pow(max(dot(viewDir, reflectDir),0.0),32.0);
+    float specular = u_specularValue*pow(max(dot(viewDir, halfDir),0.0),u_shininessValue);
 
     return (diffuse + specular) * u_pointLights[i].color * attenuation;
 
@@ -63,20 +65,20 @@ vec3 computeDirectionalLight(int i)
     vec3 norm = normalize(v_normals);
     vec3 lightDir = normalize(-u_directionalLights[i].direction );
     vec3 viewDir = normalize(u_viewPosition - v_fragPos);
-
-    vec3 reflectDir = reflect(-lightDir, norm);
+    vec3 halfDir = normalize(viewDir + lightDir);
+    //vec3 reflectDir = reflect(-lightDir, norm);
 
     float diffuse = max(dot(norm, lightDir),0.0);
 
-    float specular = u_specularValue*pow(max(dot(viewDir, reflectDir),0.0),32.0);
+    float specular = u_specularValue*pow(max(dot(viewDir, halfDir),0.0),u_shininessValue);
 
-    return (diffuse + specular) * u_directionalLights[i].color;
+    return (diffuse + specular) * u_directionalLights[i].color * u_directionalLights[i].intensity;
 
 }
 
 void main()
 {
-    vec3 lighting = vec3(0.1,0.1,0.1); //ambiant
+    vec3 lighting = vec3(0.01,0.01,0.01); //ambiant
 
     vec3 pointLighting = vec3(0.0,0.0,0.0);
     for(int i = 0; i < u_nbPointLight; i++)

@@ -2,6 +2,16 @@
 
 namespace te{
 
+Script::Script()
+{
+
+}
+
+Script::~Script()
+{
+
+}
+
 void Script::start()
 {
     //nothing

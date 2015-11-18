@@ -8,7 +8,7 @@ namespace te{
 
 Camera::Camera()
 {
-    setPerspectiveParameters(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+    setPerspectiveParameters(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
     setOrthoParameters(0, 800, 600, 0);
     setProjectionMode(ProjectionMode::PERSPECTIVE);
     m_clearFunction = &Camera::clearWithColor;

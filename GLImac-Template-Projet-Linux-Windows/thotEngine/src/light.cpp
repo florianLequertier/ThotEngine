@@ -48,6 +48,16 @@ void PointLight::setRadius(float radius)
     m_radius = radius;
 }
 
+float PointLight::getIntensity() const
+{
+    return m_intensity;
+}
+
+void PointLight::setIntensity(float intensity)
+{
+    m_intensity = intensity;
+}
+
 /////// DirectionalLight ///////
 
 DirectionalLight::DirectionalLight(): m_direction(1,0,0), m_color(1,1,1)
@@ -88,6 +98,16 @@ void DirectionalLight::setColor(const glm::vec3 &color)
 void DirectionalLight::setColor( float red, float green, float blue)
 {
     m_color = glm::vec3(red, green, blue);
+}
+
+float DirectionalLight::getIntensity() const
+{
+    return m_intensity;
+}
+
+void DirectionalLight::setIntensity(float intensity)
+{
+    m_intensity = intensity;
 }
 
 }

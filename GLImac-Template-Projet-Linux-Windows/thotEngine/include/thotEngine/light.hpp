@@ -11,6 +11,7 @@ class PointLight : public Component
 private:
     glm::vec3 m_color;
     float m_radius;
+    float m_intensity;
 
 public:
     PointLight();
@@ -23,6 +24,8 @@ public:
     void setColor( float red, float green, float blue);
     float getRadius() const;
     void setRadius(float radius);
+    float getIntensity() const;
+    void setIntensity(float intensity);
 };
 
 class DirectionalLight : public Component
@@ -30,6 +33,7 @@ class DirectionalLight : public Component
 private:
     glm::vec3 m_direction;
     glm::vec3 m_color;
+    float m_intensity;
 
 public:
     DirectionalLight();
@@ -41,6 +45,8 @@ public:
     glm::vec3 getColor() const;
     void setColor(const glm::vec3 &color);
     void setColor( float red, float green, float blue);
+    float getIntensity() const;
+    void setIntensity(float intensity);
 };
 
 }

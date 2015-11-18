@@ -53,7 +53,8 @@ int main(int argc, char** argv)
     te::MaterialManager& materialManager = te::MaterialManager::getInstance();
     materialManager.createMaterial<te::UnlitMaterial>("ship_unlit_mat", "glProg_3D", {"ship_tex_dif"});
     materialManager.createMaterial<te::UnlitMaterial>("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
-    materialManager.createMaterial<te::LitMaterial>("ship_mat", "glProg_3DLight", {"ship_tex_dif"}, {1,100});
+    materialManager.createMaterial<te::LitMaterial>("ship_mat", "glProg_3DLight", {"ship_tex_dif"}, {0.9,256});
+    materialManager.createMaterial<te::LitMaterial>("ship_02_mat", "glProg_3DLight", {}, {10,256});
 
     //create world
     te::World world;
@@ -67,7 +68,7 @@ int main(int argc, char** argv)
         entity->setName("prefab01");
         entity->addComponent<te::Transform>(world)->setTranslation(0,0,0);
         auto prefabComponentHandler = entity->addComponent<te::MeshRenderer>(world);
-        prefabComponentHandler->setMaterial("ship_mat");
+        prefabComponentHandler->setMaterial("ship_02_mat");
         prefabComponentHandler->setMesh("ship");
 
     });
@@ -92,27 +93,37 @@ int main(int argc, char** argv)
     cameraHandler->setSkyboxMaterial("skybox_mat");
     cameraHandler->setUseSkybox(true);
     entityHandler->addComponent<te::FreeFlyCam>(world);
-    auto DirectionallightHandler = entityHandler->addComponent<te::DirectionalLight>(world);
-    DirectionallightHandler->setDirection(glm::vec3(0,1,0));
-    DirectionallightHandler->setColor(1,0,0);
+//    auto DirectionallightHandler = entityHandler->addComponent<te::DirectionalLight>(world);
+//    DirectionallightHandler->setDirection(glm::vec3(0,1,0));
+//    DirectionallightHandler->setColor(1,0,0);
+//    DirectionallightHandler->setIntensity(0.5);
+
 
     //test 02
     entityHandler = world.instantiate();
     entityHandler->setName("ship02");
-    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,10,10);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,20,10);
     componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
-//    auto PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
-//    PointlightHandler->setRadius(100);
-//    PointlightHandler->setColor(1,0,0);
+    auto PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
+    PointlightHandler->setRadius(100);
+    PointlightHandler->setColor(0,1,0);
+    PointlightHandler->setIntensity(1);
+
 
     //test 03
     entityHandler = world.instantiate(prefab01);
+    entityHandler->getComponent<te::Transform>()->setScale(50,50,1);
 
     //test 04
     entityHandler = world.instantiate("prefab01");
-    entityHandler->getComponent<te::Transform>()->setTranslation(10,0,0);
+    entityHandler->getComponent<te::Transform>()->setTranslation(20,0,10);
+    PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
+    PointlightHandler->setRadius(100);
+    PointlightHandler->setColor(1,1,0);
+    PointlightHandler->setIntensity(1);
+
 
 //    world.destroy(entityHandler);
 
