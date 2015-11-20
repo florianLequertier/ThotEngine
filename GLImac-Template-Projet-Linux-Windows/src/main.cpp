@@ -18,8 +18,8 @@
 //scripts
 # include "thotEngine/FreeFlyCam.hpp"
 
-#define WINDOW_WIDTH 400
-#define WINDOW_HEIGHT 400
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 
 int main(int argc, char** argv)
 {
@@ -53,8 +53,8 @@ int main(int argc, char** argv)
     te::MaterialManager& materialManager = te::MaterialManager::getInstance();
     materialManager.createMaterial<te::UnlitMaterial>("ship_unlit_mat", "glProg_3D", {"ship_tex_dif"});
     materialManager.createMaterial<te::UnlitMaterial>("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
-    materialManager.createMaterial<te::LitMaterial>("ship_mat", "glProg_3DLight", {"ship_tex_dif"}, {0.9,256});
-    materialManager.createMaterial<te::LitMaterial>("ship_02_mat", "glProg_3DLight", {}, {10,256});
+    materialManager.createMaterial<te::LitMaterial>("ship_mat", "glProg_3DLight", {"ship_tex_dif"}, {0.9f,32.f});
+    materialManager.createMaterial<te::LitMaterial>("ship_02_mat", "glProg_3DLight", {}, {0.4f,32.f});
 
     //create world
     te::World world;
@@ -93,10 +93,10 @@ int main(int argc, char** argv)
     cameraHandler->setSkyboxMaterial("skybox_mat");
     cameraHandler->setUseSkybox(true);
     entityHandler->addComponent<te::FreeFlyCam>(world);
-//    auto DirectionallightHandler = entityHandler->addComponent<te::DirectionalLight>(world);
-//    DirectionallightHandler->setDirection(glm::vec3(0,1,0));
-//    DirectionallightHandler->setColor(1,0,0);
-//    DirectionallightHandler->setIntensity(0.5);
+    auto DirectionallightHandler = entityHandler->addComponent<te::DirectionalLight>(world);
+    DirectionallightHandler->setDirection(glm::vec3(0,1,0));
+    DirectionallightHandler->setColor(1,1,1);
+    DirectionallightHandler->setIntensity(0.4);
 
 
     //test 02
@@ -107,9 +107,9 @@ int main(int argc, char** argv)
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
     auto PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
-    PointlightHandler->setRadius(100);
+    PointlightHandler->setRadius(400);
     PointlightHandler->setColor(0,1,0);
-    PointlightHandler->setIntensity(1);
+    PointlightHandler->setIntensity(10);
 
 
     //test 03
@@ -120,9 +120,9 @@ int main(int argc, char** argv)
     entityHandler = world.instantiate("prefab01");
     entityHandler->getComponent<te::Transform>()->setTranslation(20,0,10);
     PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
-    PointlightHandler->setRadius(100);
+    PointlightHandler->setRadius(400);
     PointlightHandler->setColor(1,1,0);
-    PointlightHandler->setIntensity(1);
+    PointlightHandler->setIntensity(10);
 
 
 //    world.destroy(entityHandler);

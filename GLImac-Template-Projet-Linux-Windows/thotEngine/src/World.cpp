@@ -90,7 +90,8 @@ void World::update()
 
 void World::render()
 {
-    m_renderer.render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
+    //m_renderer.render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
+    m_renderer.deferred_render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
 }
 
 }

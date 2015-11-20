@@ -24,8 +24,11 @@ protected :
 
 public:
 
+    GLProgram();
     GLProgram(const std::string& name, const std::string& vsPath, const std::string& fsPath);
     GLProgram(const std::string& name, const std::string& shaderPath, ShaderType shaderType);
+    void init(const std::string& name, const std::string& shaderPath, ShaderType shaderType);
+    void init(const std::string& name, const std::string& vsPath, const std::string& fsPath);
     virtual ~GLProgram();
 
     void use();

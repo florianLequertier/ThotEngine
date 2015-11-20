@@ -9,9 +9,6 @@
 
 namespace te{
 
-static const int NB_POINT_LIGHT = 5;
-static const int NB_DIRECTIONAL_LIGHT = 5;
-
 class Material
 {
 protected:

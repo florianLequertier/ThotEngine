@@ -7,6 +7,10 @@
 
 namespace te{
 
+GLProgram::GLProgram() : m_name("GLProgram"), m_programID(0)
+{
+
+}
 
 GLProgram::GLProgram(const std::string& name, const std::string& vsPath, const std::string& fsPath) : m_name(name)
 {
@@ -18,6 +22,22 @@ GLProgram::GLProgram(const std::string& name, const std::string& shaderPath, Sha
 {
     m_programID = loadShader(shaderPath, shaderType);
     std::cout << "program " << std::to_string(m_programID) <<" : " << shaderPath << std::endl;
+}
+
+void GLProgram::init(const std::string& name, const std::string& shaderPath, ShaderType shaderType)
+{
+    m_name = name;
+
+    m_programID = loadShader(shaderPath, shaderType);
+    std::cout << "program " << std::to_string(m_programID) <<" : " << shaderPath << std::endl;
+}
+
+void GLProgram::init(const std::string& name, const std::string& vsPath, const std::string& fsPath)
+{
+    m_name = name;
+
+    m_programID = loadShaders(vsPath, fsPath);
+    std::cout << "program " << std::to_string(m_programID) <<" : "<< vsPath << fsPath << std::endl;
 }
 
 GLProgram::~GLProgram()

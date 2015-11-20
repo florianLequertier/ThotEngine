@@ -1,3 +1,4 @@
+#include "thotEngine/GLConfig.hpp"
 
 #include "thotEngine/Material.hpp"
 
@@ -151,13 +152,15 @@ LitMaterial::LitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::s
     initUniforms();
 }
 
-LitMaterial::LitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters) : LitMaterial(program, images)
+LitMaterial::LitMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters) : Material(program, images)
 {
     //set specular and shininess parameters
     if(parameters.size()>0)
-        m_specularValue = parameters[0.9];
+        m_specularValue = parameters[0];
     if(parameters.size()>1)
-        m_shininessValue = parameters[300];
+        m_shininessValue = parameters[1];
+
+    initUniforms();
 }
 
 LitMaterial::~LitMaterial()
@@ -167,6 +170,7 @@ LitMaterial::~LitMaterial()
 
 void LitMaterial::initUniforms()
 {
+    m_uniforms.clear();
 
     GLuint programId = m_program.lock()->getId();
     m_uniforms.push_back(glGetUniformLocation(programId, "u_ModelMatrix"));
@@ -178,7 +182,7 @@ void LitMaterial::initUniforms()
     m_uniforms.push_back( glGetUniformLocation(programId, "u_nbPointLight"));
     m_uniforms.push_back( glGetUniformLocation(programId, "u_nbDirectionalLight"));
 
-    for(int i = 0; i < NB_POINT_LIGHT; ++i)
+    for(int i = 0; i < gl::NB_POINT_LIGHT; ++i)
     {
         std::string index = std::to_string(i);
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].position").c_str() ));
@@ -186,7 +190,7 @@ void LitMaterial::initUniforms()
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].radius").c_str()));
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].intensity").c_str()));
     }
-    for(int i = 0; i < NB_DIRECTIONAL_LIGHT; ++i)
+    for(int i = 0; i < gl::NB_DIRECTIONAL_LIGHT; ++i)
     {
         std::string index = std::to_string(i);
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_directionalLights["+index+"].direction").c_str()));
@@ -256,7 +260,7 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldM
     glUniform1i( m_uniforms[k++], directionalLights->size());
 
 
-    for(int i = 0; i < NB_POINT_LIGHT; ++i)
+    for(int i = 0; i < gl::NB_POINT_LIGHT; ++i)
     {
         if(i < pointLights->size())
         {
@@ -270,7 +274,7 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldM
             k+=4;
     }
 
-    for(int i = 0; i < NB_DIRECTIONAL_LIGHT; ++i)
+    for(int i = 0; i < gl::NB_DIRECTIONAL_LIGHT; ++i)
     {
         if(i < directionalLights->size())
         {
