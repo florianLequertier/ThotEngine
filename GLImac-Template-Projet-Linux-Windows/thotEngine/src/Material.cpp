@@ -114,13 +114,13 @@ void UnlitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worl
     }
 }
 
-void UnlitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
+void UnlitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
 {
     GLuint glId = m_program.lock()->getId();
 
     //matrix uniforms
     glm::mat4 MV = viewMat * modelMat;
-    glm::mat4 MVP = worldMat * MV; //modelViewProjection
+    glm::mat4 MVP = projectionMat * MV; //modelViewProjection
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MV));
 
 
@@ -205,13 +205,13 @@ void LitMaterial::initUniforms()
 
 }
 
-void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat)
+void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat)
 {
     GLuint glId = m_program.lock()->getId();
 
     //matrix uniforms
     glm::mat4 MV = viewMat * modelMat;
-    glm::mat4 MVP = worldMat * MV; //modelViewProjection
+    glm::mat4 MVP = projectionMat * MV; //modelViewProjection
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(modelMat));
 
 
@@ -232,14 +232,14 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldM
     glUniform1ui( m_uniforms[5], 0);
 }
 
-void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
+void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
 {
     GLuint glId = m_program.lock()->getId();
     int k = 0;
 
     //matrix uniforms
     glm::mat4 MV = viewMat * modelMat;
-    glm::mat4 MVP = worldMat * MV; //modelViewProjection
+    glm::mat4 MVP = projectionMat * MV; //modelViewProjection
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(modelMat));
 
 
@@ -292,6 +292,123 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldM
     glUniform1f(m_uniforms[k++], m_specularValue);
     glUniform1f(m_uniforms[k++], m_shininessValue);
 
+}
+
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////// UnlitMaterial ////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+SkyboxMaterial::SkyboxMaterial( std::shared_ptr<GLProgram> program ) : Material(program)
+{
+    initUniforms();
+}
+
+SkyboxMaterial::SkyboxMaterial(std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image> > images ) : Material(program)
+{
+    for(auto image : images)
+        m_images.push_back(image);
+
+    initUniforms();
+}
+
+SkyboxMaterial::SkyboxMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters) : Material(program)
+{
+    for(auto image : images)
+        m_images.push_back(image);
+
+    initUniforms();
+}
+
+SkyboxMaterial::SkyboxMaterial(std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<CubeMap> > cubeMaps ) : Material(program)
+{
+    for(auto cubeMap : cubeMaps)
+        m_cubeMaps.push_back(cubeMap);
+
+    initUniforms();
+}
+
+SkyboxMaterial::SkyboxMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<CubeMap>> cubeMaps, std::vector<float> parameters) : Material(program)
+{
+    for(auto cubeMap : cubeMaps)
+        m_cubeMaps.push_back(cubeMap);
+
+    initUniforms();
+}
+
+SkyboxMaterial::~SkyboxMaterial()
+{
+
+}
+
+void SkyboxMaterial::pushToGPU()
+{
+    Material::pushToGPU(); //push images if any
+
+    for(auto cubeMap : m_cubeMaps)
+    {
+        ResourceManager::getInstance().pushCubeMapToGPU(cubeMap.lock()->getName());
+    }
+
+}
+
+void SkyboxMaterial::popFromGPU()
+{
+    Material::popFromGPU(); //popImages if any
+
+    for(auto cubeMap : m_cubeMaps)
+    {
+        ResourceManager::getInstance().popCubeMapFromGPU(cubeMap.lock()->getName());
+    }
+}
+
+void SkyboxMaterial::initUniforms()
+{
+    GLuint programId = m_program.lock()->getId();
+    m_uniforms.push_back(glGetUniformLocation(programId, "u_viewMat"));
+    m_uniforms.push_back(glGetUniformLocation(programId, "u_projectionMat"));
+    m_uniforms.push_back(glGetUniformLocation(programId, "u_diffuse"));
+}
+
+void SkyboxMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat)
+{
+    GLuint glId = m_program.lock()->getId();
+
+    //matrix uniforms
+    glm::mat4 view =  glm::mat4( glm::mat3(viewMat) ); //projection * view
+
+    //set program uniforms...
+    glUniformMatrix4fv( m_uniforms[0] , 1, false, &view[0][0] );
+    glUniformMatrix4fv( m_uniforms[1] , 1, false, &projectionMat[0][0] );
+
+
+    if(m_cubeMaps.size() > 0)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMaps[0].lock()->getId());
+        glUniform1i( m_uniforms[2], 0);
+    }
+
+}
+
+void SkyboxMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
+{
+    GLuint glId = m_program.lock()->getId();
+
+    //matrix uniforms
+    glm::mat4 view =  glm::mat4( glm::mat3(viewMat) ); //projection * view
+
+
+    //set program uniforms...
+    glUniformMatrix4fv( m_uniforms[0] , 1, false, &view[0][0] );
+    glUniformMatrix4fv( m_uniforms[1] , 1, false, &projectionMat[0][0] );
+
+
+    if(m_cubeMaps.size() > 0)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMaps[0].lock()->getId());
+        glUniform1i( m_uniforms[2], 0);
+    }
 }
 
 

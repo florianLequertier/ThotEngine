@@ -4,6 +4,13 @@
 
 namespace te{
 
+
+const glm::vec3 Transform::m_forward = glm::vec3(0,0,1);
+const glm::vec3 Transform::m_up = glm::vec3(0,1,0);
+const glm::vec3 Transform::m_right = glm::vec3(1,0,0);
+
+
+
 Transform::Transform() : m_translation(0,0,0), m_scale(1,1,1)
 {
     setRotation(m_rotation);
@@ -41,9 +48,9 @@ void Transform::setRotation(glm::quat rotation)
     m_rotation = rotation;
     m_rotationMat = glm::mat4_cast(m_rotation);
 
-    m_forward = glm::vec3(m_rotationMat*glm::vec4(1,0,0,0));
-    m_right = glm::vec3(m_rotationMat*glm::vec4(0,-1,0,0));
-    m_up = glm::vec3(m_rotationMat*glm::vec4(0,0,1,0));
+    m_localForward = glm::vec3(m_rotation*glm::vec4(m_forward,0));
+    m_localRight = glm::vec3(m_rotation*glm::vec4(m_right,0));
+    m_localUp = glm::vec3(m_rotation*glm::vec4(m_up,0));
 
     computeModelMatrix();
 }
@@ -61,9 +68,9 @@ void Transform::setRotation( glm::vec3 eulerAngles)
     m_rotation = glm::quat(glm::orientate3(eulerAngles));
     m_rotationMat = glm::mat4_cast(m_rotation);
 
-    m_forward = glm::vec3(m_rotation*glm::vec4(1,0,0,0));
-    m_right = glm::vec3(m_rotation*glm::vec4(0,-1,0,0));
-    m_up = glm::vec3(m_rotation*glm::vec4(0,0,1,0));
+    m_localForward = glm::vec3(m_rotation*glm::vec4(m_forward,0));
+    m_localRight = glm::vec3(m_rotation*glm::vec4(m_right,0));
+    m_localUp = glm::vec3(m_rotation*glm::vec4(m_up,0));
 
     computeModelMatrix();
 }
@@ -73,9 +80,9 @@ void Transform::setRotation(float x, float y, float z)
     m_rotation = glm::quat(glm::orientate3(glm::vec3(x,y,z)));
     m_rotationMat = glm::mat4_cast(m_rotation);
 
-    m_forward = glm::vec3(m_rotation*glm::vec4(1,0,0,0));
-    m_right = glm::vec3(m_rotation*glm::vec4(0,-1,0,0));
-    m_up = glm::vec3(m_rotation*glm::vec4(0,0,1,0));
+    m_localForward = glm::vec3(m_rotation*glm::vec4(m_forward,0));
+    m_localRight = glm::vec3(m_rotation*glm::vec4(m_right,0));
+    m_localUp = glm::vec3(m_rotation*glm::vec4(m_up,0));
 
     computeModelMatrix();
 }
@@ -124,12 +131,12 @@ void Transform::rotateAround(float angle, float x, float y, float z)
 
 void Transform::localRotateAround(float angle, glm::vec3 axis)
 {
-    setRotation(m_rotation * glm::angleAxis(angle, axis.x*m_forward + axis.y*(-m_right) + axis.z*m_up ) );
+    setRotation( glm::angleAxis(angle, axis.z*m_localForward + axis.x*m_localRight + axis.y*m_localUp ) *m_rotation);
 }
 
 void Transform::localRotateAround(float angle, float x, float y, float z)
 {
-    setRotation( glm::angleAxis(angle, x*m_forward + y*(-m_right) + z*m_up ) * m_rotation);
+    setRotation( glm::angleAxis(angle, z*m_localForward + x*m_localRight + y*m_localUp ) * m_rotation);
 }
 
 void Transform::translate(glm::vec3 delta)
@@ -139,7 +146,7 @@ void Transform::translate(glm::vec3 delta)
 
 void Transform::localTranslate(glm::vec3 delta)
 {
-    translate(delta.x*m_forward + delta.y*(-m_right) + delta.z*m_up);
+    translate(delta.z*m_localForward + delta.x*m_localRight + delta.y*m_localUp);
 }
 
 void Transform::translate(float x, float y, float z)
@@ -149,23 +156,40 @@ void Transform::translate(float x, float y, float z)
 
 void Transform::localTranslate(float x, float y, float z)
 {
-    translate(x*m_forward + y*(-m_right) + z*m_up);
+    translate(z*m_localForward + x*m_localRight + y*m_localUp);
 }
 
-glm::vec3 Transform::getForward() const
+glm::vec3 Transform::getForward()
 {
     return m_forward;
 }
 
-glm::vec3 Transform::getUp() const
+glm::vec3 Transform::getUp()
 {
     return m_up;
 }
 
-glm::vec3 Transform::getRight() const
+glm::vec3 Transform::getRight()
 {
     return m_right;
 }
+
+glm::vec3 Transform::getLocalForward() const
+{
+    return m_localForward;
+}
+
+glm::vec3 Transform::getLocalUp() const
+{
+    return m_localUp;
+}
+
+glm::vec3 Transform::getLocalRight() const
+{
+    return m_localRight;
+}
+
+
 
 void Transform::computeModelMatrix()
 {

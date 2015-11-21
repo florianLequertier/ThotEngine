@@ -108,6 +108,36 @@ void ResourceManager::popImageFromGPU(std::string name)
     }
 }
 
+void ResourceManager::pushCubeMapToGPU(std::string name)
+{
+    //try to found image name among meshes which have already been loaded
+    assert( m_cubeMapKeys.find(name) != m_cubeMapKeys.end() );
+
+    //if image isn't present in scene (hasn't already be pushed to gpu)
+    if(m_cubeMapCount[name] == 0)
+    {
+        //push the image to the gpu
+       m_cubeMaps[name]->pushToGPU();
+    }
+    //update image use counter
+    m_cubeMapCount[name]++;
+}
+
+void ResourceManager::popCubeMapFromGPU(std::string name)
+{
+    //try to found image name among meshes which have already been loaded
+    assert( m_cubeMapKeys.find(name) != m_cubeMapKeys.end() );
+
+    //update image use counter
+    m_cubeMapCount[name]--;
+    //if image has totaly disappeared from the sceen
+    if(m_cubeMapCount[name] == 0)
+    {
+       //pop the image to the gpu
+       m_cubeMaps[name]->popFromGPU();
+    }
+}
+
 std::shared_ptr<Mesh> ResourceManager::loadMesh(std::string name, std::string path, bool relative)
 {
     //complete path if the given path is relative
@@ -234,6 +264,68 @@ std::shared_ptr<GLProgram> ResourceManager::loadProgram(std::string name, std::s
     }
 }
 
+std::shared_ptr<CubeMap> ResourceManager::loadCubeMap(std::string name, std::vector<std::string> paths, bool relative)
+{
+    //complete path if the given path is relative
+    if(relative)
+    {
+        for(int i = 0; i < paths.size(); ++i)
+            paths[i].insert(0, m_applicationPath);
+    }
+
+    if (m_cubeMaps.find(name) != m_cubeMaps.end())
+    {
+        //if an image with same name has already been created, return it
+        return m_cubeMaps[name];
+    }
+    else
+    {
+        std::shared_ptr<CubeMap> newCubeMap = std::make_shared<CubeMap>(name);
+
+        int imgIndex = 0;
+        bool firstPass = true;
+        for(std::string path : paths)
+        {
+            //create the new image
+            int x, y, n;
+            unsigned char *data = stbi_load(path.c_str(), &x, &y, &n, 4);
+            if(!data) {
+                std::cerr << "loading image " << path << " error: " << stbi_failure_reason() << std::endl;
+                return std::shared_ptr<CubeMap>();
+            }
+
+            if(firstPass)
+                newCubeMap->setImgDim(x,y);
+
+            newCubeMap->addEmptyImage();
+            unsigned int size = x * y;
+            auto scale = 1.f / 255;
+            auto ptr = newCubeMap->getPixels(imgIndex);
+            for(auto i = 0u; i < size; ++i) {
+                auto offset = 4 * i;
+                ptr->r = data[offset] * scale;
+                ptr->g = data[offset + 1] * scale;
+                ptr->b = data[offset + 2] * scale;
+                ptr->a = data[offset + 3] * scale;
+                ++ptr;
+            }
+            stbi_image_free(data);
+            imgIndex++;
+            firstPass = false;
+        }
+
+
+        //store the new image in the manager
+        m_cubeMaps[name] = newCubeMap;
+        for(auto path : paths)
+            m_cubeMapKeys[name].push_back(path);
+        m_cubeMapCount[name] = 0;
+
+        std::cout<< "loaded cubemap " << paths[0] << "successfully !" << std::endl;
+        return newCubeMap;
+    }
+}
+
 std::string ResourceManager::getApplicationPath() const
 {
     return m_applicationPath;
@@ -263,6 +355,14 @@ std::shared_ptr<GLProgram> ResourceManager::getProgram(std::string name)
         return std::shared_ptr<GLProgram>();
 }
 
+std::shared_ptr<CubeMap> ResourceManager::getCubeMap(std::string name)
+{
+    if(m_cubeMaps.find(name) != m_cubeMaps.end())
+        return m_cubeMaps[name];
+    else
+        return std::shared_ptr<CubeMap>();
+}
+
 bool ResourceManager::containsMesh(std::string name)
 {
     return m_meshes.find(name) != m_meshes.end();
@@ -276,6 +376,11 @@ bool ResourceManager::containsImage(std::string name)
 bool ResourceManager::containsProgram(std::string name)
 {
     return m_programs.find(name) != m_programs.end();
+}
+
+bool ResourceManager::containsCubeMap(std::string name)
+{
+    return m_cubeMaps.find(name) != m_cubeMaps.end();
 }
 
 }

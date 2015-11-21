@@ -30,10 +30,18 @@ public:
 
     template<typename MaterialType>
     std::shared_ptr<Material> createMaterial(std::string name, std::string programName);
+
+    //std::shared_ptr<Material> createMaterial<SkyboxMaterial>(std::string name, std::string programName);
+
     template<typename MaterialType>
     std::shared_ptr<Material> createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames);
+
+    //std::shared_ptr<Material> createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames);
+
     template<typename MaterialType>
     std::shared_ptr<Material> createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters);
+
+    //std::shared_ptr<Material> createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters);
 
     std::shared_ptr<Material> getMaterial(std::string name);
 
@@ -47,8 +55,12 @@ private:
 
 };
 
+
+
+
+
 template<typename MaterialType>
-std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)
+inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)
 {
     auto program = ResourceManager::getInstance().getProgram(programName);
 
@@ -69,7 +81,7 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
 }
 
 template<typename MaterialType>
-std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames)
+inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames)
 {
     auto program = ResourceManager::getInstance().getProgram(programName);
     std::vector<std::shared_ptr<Image>> images;
@@ -96,7 +108,7 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
 }
 
 template<typename MaterialType>
-std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters)
+inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters)
 {
     auto program = ResourceManager::getInstance().getProgram(programName);
     std::vector<std::shared_ptr<Image>> images;
@@ -122,6 +134,16 @@ std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std:
     return newMat;
 }
 
+template<>
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName);
+template<>
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames);
+template<>
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters);
+
+
+
 }
+
 
 #endif // MATERIALMANAGER_HPP

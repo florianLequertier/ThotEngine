@@ -6,6 +6,7 @@
 #include "Image.hpp"
 #include "ResourceManager.hpp"
 #include "light.hpp"
+#include "cubemap.hpp"
 
 namespace te{
 
@@ -25,14 +26,14 @@ public:
     Material( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
     virtual ~Material();
 
-    void pushToGPU();
-    void popFromGPU();
+    virtual void pushToGPU();
+    virtual void popFromGPU();
 
     GLuint getGlId() const;
 
     virtual void initUniforms() = 0;
-    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) = 0;
-    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) = 0;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat) = 0;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) = 0;
 
     void use();
 
@@ -50,8 +51,8 @@ public:
     virtual ~UnlitMaterial();
 
     virtual void initUniforms() override;
-    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) override;
-    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
 
 };
 
@@ -68,8 +69,31 @@ public:
     virtual ~LitMaterial();
 
     virtual void initUniforms() override;
-    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat) override;
-    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
+
+};
+
+class SkyboxMaterial : public Material
+{
+private:
+    std::vector<std::weak_ptr<CubeMap>> m_cubeMaps;
+public:
+    SkyboxMaterial( std::shared_ptr<GLProgram> program );
+    SkyboxMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<CubeMap>> cubeMaps );
+    SkyboxMaterial(std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<CubeMap>> cubeMaps, std::vector<float> parameters);
+
+    SkyboxMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images);
+    SkyboxMaterial( std::shared_ptr<GLProgram> program, std::vector<std::shared_ptr<Image>> images, std::vector<float> parameters);
+
+    virtual ~SkyboxMaterial();
+
+    virtual void pushToGPU() override;
+    virtual void popFromGPU() override;
+
+    virtual void initUniforms() override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
 
 };
 

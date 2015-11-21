@@ -145,7 +145,7 @@ void Renderer::deferred_render(Camera& camera, std::shared_ptr<CArray<MeshRender
     glm::mat4 viewMat = camera.getViewMatrix();
     glm::vec3 viewPosition = camera.transform()->getTranslation();
 
-    glClearColor(1.0, 1.0, 1.0, 0.0);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_DEPTH_TEST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_gBuffer);
@@ -160,19 +160,21 @@ void Renderer::deferred_render(Camera& camera, std::shared_ptr<CArray<MeshRender
     //glDisable(GL_DEPTH_TEST);
 
     //clear
-    camera.clear();
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(m_lProgram.getId());
     setDeferredUniforms(viewPosition, pointLights, directionalLights);
     m_postProdQuad.draw();
 
-//    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_gBuffer);
-//    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-//    glBlitFramebuffer( 0, 0, WindowManager::getWindowDim().x, WindowManager::getWindowDim().y, 0, 0, WindowManager::getWindowDim().x, WindowManager::getWindowDim().y, GL_DEPTH_BUFFER_BIT, GL_NEAREST );
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_gBuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer( 0, 0, WindowManager::getWindowDim().x, WindowManager::getWindowDim().y, 0, 0, WindowManager::getWindowDim().x, WindowManager::getWindowDim().y, GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDepthFunc(GL_LEQUAL);
+    camera.renderSkybox();
+    glDepthFunc(GL_LESS);
 
 }
 

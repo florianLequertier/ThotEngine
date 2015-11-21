@@ -75,6 +75,83 @@ bool MaterialManager::containsMaterial(std::string name)
     return m_materials.find(name)!= m_materials.end();
 }
 
+//Specialization for skybox material (deals with cubeMaps)
+
+template<>
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName)
+{
+    auto program = ResourceManager::getInstance().getProgram(programName);
+
+    if (!program)
+    {
+        std::cout << "error when creating material with name : " << programName << " there is no program with this name" << std::endl;
+        return nullptr;
+    }
+
+    //make a new material instance, with name [parameter : name], and with a program which name is programName
+    auto newMat = std::make_shared<SkyboxMaterial>(program); //std::shared_ptr<Material>(new Material( program ));
+
+    //store it in the manager
+    m_materials[name] = newMat;
+    m_materialCount[name] = 0;
+
+    return newMat;
+}
+
+template<>
+std::shared_ptr<Material> te::MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames)
+{
+    auto program = ResourceManager::getInstance().getProgram(programName);
+    std::vector<std::shared_ptr<CubeMap>> images;
+    for(auto imgName : imgNames)
+    {
+        images.push_back(ResourceManager::getInstance().getCubeMap(imgName));
+    }
+
+    if (!program)
+    {
+        std::cout << "error when creating material with name : " << programName << " there is no program with this name" << std::endl;
+        return nullptr;
+    }
+
+    //make a new material instance, with name [parameter : name], and with a program which name is programName
+    auto newMat = std::make_shared<SkyboxMaterial>(program, images); //std::shared_ptr<Material>(new Material( program, images ));
+
+    //store it in the manager
+    m_materials[name] = newMat;
+    m_materialCount[name] = 0;
+
+    std::cout<<"creating new material : "<<name<<" successfully !"<<std::endl;
+    return newMat;
+}
+
+template<>
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters)
+{
+    auto program = ResourceManager::getInstance().getProgram(programName);
+    std::vector<std::shared_ptr<CubeMap>> images;
+    for(auto imgName : imgNames)
+    {
+        images.push_back(ResourceManager::getInstance().getCubeMap(imgName));
+    }
+
+    if (!program)
+    {
+        std::cout << "error when creating material with name : " << programName << " there is no program with this name" << std::endl;
+        return nullptr;
+    }
+
+    //make a new material instance, with name [parameter : name], and with a program which name is programName
+    auto newMat = std::make_shared<SkyboxMaterial>(program, images, parameters); //std::shared_ptr<Material>(new Material( program, images ));
+
+    //store it in the manager
+    m_materials[name] = newMat;
+    m_materialCount[name] = 0;
+
+    std::cout<<"creating new material : "<<name<<" successfully !"<<std::endl;
+    return newMat;
+}
+
 //std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)
 //{
 //    if (m_programs.find(programName) == m_programs.end())

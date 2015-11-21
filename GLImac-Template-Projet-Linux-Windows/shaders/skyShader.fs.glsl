@@ -1,11 +1,11 @@
 #version 330
 
-in vec2 v_texCoords;
+in vec3 v_texCoords;
 out vec4 fragColor;
 
-uniform sampler2D u_diffuse;
+uniform samplerCube u_diffuse;
 
 void main (void) {
 
-    fragColor = vec4( texture(u_diffuse, v_texCoords).xyz, 1 );
+    fragColor = vec4(texture(u_diffuse, v_texCoords).rgb, 1);
 }

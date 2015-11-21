@@ -21,9 +21,13 @@ private :
 
     glm::mat4 m_modelMat;
 
-    glm::vec3 m_forward;
-    glm::vec3 m_up;
-    glm::vec3 m_right;
+    static const glm::vec3 m_forward;
+    static const glm::vec3 m_up;
+    static const glm::vec3 m_right;
+
+    glm::vec3 m_localForward;
+    glm::vec3 m_localUp;
+    glm::vec3 m_localRight;
 
 public :
     Transform();
@@ -53,9 +57,13 @@ public :
     void translate(float x, float y, float z);
     void localTranslate(float x, float y, float z);
 
-    glm::vec3 getForward() const;
-    glm::vec3 getUp() const;
-    glm::vec3 getRight() const;
+    static glm::vec3 getForward();
+    static glm::vec3 getUp();
+    static glm::vec3 getRight();
+
+    glm::vec3 getLocalForward() const;
+    glm::vec3 getLocalUp() const;
+    glm::vec3 getLocalRight() const;
 
     void computeModelMatrix();
 

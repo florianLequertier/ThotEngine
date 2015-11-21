@@ -23,14 +23,10 @@ void Camera::updateViewMatrix()
 {
     auto ownerTransform = transform();
 
-    glm::vec3 translation = ownerTransform->getTranslation();
-    glm::vec3 forward = ownerTransform->getForward();
-    glm::vec3 up = ownerTransform->getUp();
-
     m_viewMatrix = glm::lookAt(
         ownerTransform->getTranslation(), // Camera is at (4,3,3), in World Space
-        ownerTransform->getTranslation() + ownerTransform->getForward(), // and looks at the origin
-        ownerTransform->getUp()  // Head is up (set to 0,-1,0 to look upside-down)
+        ownerTransform->getTranslation() + ownerTransform->getLocalForward(), // and looks at the origin
+        ownerTransform->getLocalUp()  // Head is up (set to 0,-1,0 to look upside-down)
         );
 }
 
@@ -110,7 +106,11 @@ void Camera::clearWithSkybox()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(m_useSkybox)
+    {
+        glDepthMask(GL_FALSE);
         m_skybox.render( glm::translate(ownerTransform->getTranslation()), m_worldMatrix, m_viewMatrix);
+        glDepthMask(GL_TRUE);
+    }
 }
 
 void Camera::clearWithColor()
@@ -121,6 +121,14 @@ void Camera::clearWithColor()
 void Camera::clear()
 {
     m_clearFunction(this);
+}
+
+void Camera::renderSkybox()
+{
+    auto ownerTransform = transform();
+
+    m_skybox.render( glm::translate(ownerTransform->getTranslation()), m_worldMatrix, m_viewMatrix);
+
 }
 
 }

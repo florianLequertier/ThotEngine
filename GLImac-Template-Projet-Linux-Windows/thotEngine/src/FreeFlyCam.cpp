@@ -66,8 +66,8 @@ void FreeFlyCam::updateLookAt(float x, float y)
     //m_transformPtr->rotateAround( (y*glm::pi<float>() / 180) , glm::vec3(0,1,0));
     //m_transformPtr->rotateAround( (x*glm::pi<float>() / 180) , glm::vec3(0,0,-1));
 
-    m_transformPtr->localRotateAround( (y*glm::pi<float>() / 180),  0, 1, 0 );
-    m_transformPtr->rotateAround( -(x*glm::pi<float>() / 180), 0, 0, 1 );
+    m_transformPtr->localRotateAround( (y*glm::pi<float>() / 180),  Transform::getRight() );
+    m_transformPtr->rotateAround( -(x*glm::pi<float>() / 180), Transform::getUp() );
 
     //m_forward = glm::vec3(-cosf(m_alpha)*sinf(m_beta), sinf(m_alpha), cosf(m_alpha)*cosf(m_beta));
     //m_right = glm::cross(m_forward, glm::vec3(0,1,0));
@@ -78,22 +78,22 @@ void FreeFlyCam::move(te::Camera::CAMERA_MOVEMENT mouvement)
     switch(mouvement)
     {
     case te::Camera::FORWARD :
-        m_transformPtr->localTranslate(m_translationSpeed, 0, 0);
+        m_transformPtr->localTranslate(m_translationSpeed * Transform::getForward());
         break;
     case te::Camera::BACKWARD :
-        m_transformPtr->localTranslate(-m_translationSpeed, 0, 0);
+        m_transformPtr->localTranslate(-m_translationSpeed * Transform::getForward());
         break;
     case te::Camera::RIGHT:
-        m_transformPtr->localTranslate(0, -m_translationSpeed, 0);
+        m_transformPtr->localTranslate(-m_translationSpeed * Transform::getRight());
         break;
     case te::Camera::LEFT:
-        m_transformPtr->localTranslate(0, m_translationSpeed, 0);
+        m_transformPtr->localTranslate(m_translationSpeed * Transform::getRight());
         break;
     case te::Camera::UP :
-        m_transformPtr->localTranslate(0, 0, m_translationSpeed);
+        m_transformPtr->localTranslate(m_translationSpeed * Transform::getUp());
         break;
     case te::Camera::DOWN :
-        m_transformPtr->localTranslate(0, 0, -m_translationSpeed);
+        m_transformPtr->localTranslate(-m_translationSpeed * Transform::getUp());
         break;
     }
 }

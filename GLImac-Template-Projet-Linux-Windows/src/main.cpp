@@ -48,6 +48,12 @@ int main(int argc, char** argv)
     resourceManager.loadProgram("glProg_3D", "shaders/3D.vs.glsl", "shaders/3D.fs.glsl");
     resourceManager.loadProgram("glProg_skybox", "shaders/skyShader.vs.glsl", "shaders/skyShader.fs.glsl");
     resourceManager.loadProgram("glProg_3DLight", "shaders/3DLight.vs.glsl", "shaders/3DLight.fs.glsl");
+    resourceManager.loadCubeMap("skybox_cubeTex_dif", {"assets/textures/skyboxes/siege/right.png",
+                                                       "assets/textures/skyboxes/siege/left.png",
+                                                       "assets/textures/skyboxes/siege/top.png",
+                                                       "assets/textures/skyboxes/siege/top.png",
+                                                       "assets/textures/skyboxes/siege/front.png",
+                                                       "assets/textures/skyboxes/siege/back.png"});
 
     //make materials
     te::MaterialManager& materialManager = te::MaterialManager::getInstance();
@@ -55,6 +61,7 @@ int main(int argc, char** argv)
     materialManager.createMaterial<te::UnlitMaterial>("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
     materialManager.createMaterial<te::LitMaterial>("ship_mat", "glProg_3DLight", {"ship_tex_dif"}, {0.9f,32.f});
     materialManager.createMaterial<te::LitMaterial>("ship_02_mat", "glProg_3DLight", {}, {0.4f,32.f});
+    materialManager.createMaterial<te::SkyboxMaterial>("skybox_mat02", "glProg_skybox", {"skybox_cubeTex_dif"});
 
     //create world
     te::World world;
@@ -80,7 +87,7 @@ int main(int argc, char** argv)
     //ship 01
     auto entityHandler = world.instantiate();
     entityHandler->setName("ship01");
-    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,0,10);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,10,0);
     auto componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
@@ -90,7 +97,7 @@ int main(int argc, char** argv)
     entityHandler->setName("test01");
     entityHandler->addComponent<te::Transform>(world);
     auto cameraHandler = entityHandler->addComponent<te::Camera>(world);
-    cameraHandler->setSkyboxMaterial("skybox_mat");
+    cameraHandler->setSkyboxMaterial("skybox_mat02");
     cameraHandler->setUseSkybox(true);
     entityHandler->addComponent<te::FreeFlyCam>(world);
     auto DirectionallightHandler = entityHandler->addComponent<te::DirectionalLight>(world);
@@ -102,7 +109,7 @@ int main(int argc, char** argv)
     //test 02
     entityHandler = world.instantiate();
     entityHandler->setName("ship02");
-    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,20,10);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(20,10,0);
     componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
@@ -114,11 +121,11 @@ int main(int argc, char** argv)
 
     //test 03
     entityHandler = world.instantiate(prefab01);
-    entityHandler->getComponent<te::Transform>()->setScale(50,50,1);
+    entityHandler->getComponent<te::Transform>()->setScale(50,1,50);
 
     //test 04
     entityHandler = world.instantiate("prefab01");
-    entityHandler->getComponent<te::Transform>()->setTranslation(20,0,10);
+    entityHandler->getComponent<te::Transform>()->setTranslation(0,10,20);
     PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
     PointlightHandler->setRadius(400);
     PointlightHandler->setColor(1,1,0);
