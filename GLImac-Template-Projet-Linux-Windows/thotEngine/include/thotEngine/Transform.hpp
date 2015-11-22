@@ -7,6 +7,7 @@
 
 namespace te{
 
+
 class Transform : public Component
 {
 
@@ -32,6 +33,9 @@ private :
 public :
     Transform();
     ~Transform();
+
+//    void init();
+//    void updateTransformables();
 
     glm::quat getRotation() const;
     glm::vec3 getScale() const;
@@ -67,6 +71,11 @@ public :
 
     void computeModelMatrix();
 
+};
+
+class Transformable{
+public:
+    virtual void updateTransform(const Transform& transform) = 0;
 };
 
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+﻿cmake_minimum_required(VERSION 2.8)
 
 project(ThotEngine)
 
@@ -16,9 +16,21 @@ if(WIN32)
         set(SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third-party/include/Windows)
         set(GLEW_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third-party/include/Windows)
         set(ASSIMP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third-party/include/Windows)
+	set(BULLET_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third-party/include/Windows/Bullet)
 	set(SDL_LIBRARY mingw32 ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libSDLmain.a ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libSDL.dll.a)
 	set(GLEW_LIBRARY ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libglew32.dll.a)
         set(ASSIMP_LIBRARY ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libassimp.dll.a)
+	set(BULLET_LIBRARY ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libLinearMath.a 
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBulletSoftBody.a 
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBulletDynamics.a 
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBulletCollision.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3Common.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3Collision.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3OpenCL_clew.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3Geometry.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3Dynamics.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet2FileLoader.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libOpenGLWindow.a)
 
 
         set(DLL_BINARIES ${CMAKE_SOURCE_DIR}/third-party/lib/x86/glew32.dll ${CMAKE_SOURCE_DIR}/third-party/lib/x86/SDL.dll ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libassimp.dll)
@@ -27,6 +39,7 @@ else(WIN32)
 	find_package(SDL REQUIRED)
 	find_package(GLEW REQUIRED)
 	find_package(ASSIMP REQUIRED)
+	find_package(BULLET REQUIRED)
 endif(WIN32)
 
 if(UPEMLV)
@@ -34,9 +47,9 @@ if(UPEMLV)
     set(OPENGL_LIBRARIES /usr/lib/x86_64-linux-gnu/libGL.so.1)
 endif(UPEMLV)
 
-include_directories(${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${ASSIMP_INCLUDE_DIR} thotEngine/include third-party/include) #glimac/include
+include_directories(${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${ASSIMP_INCLUDE_DIR} ${BULLET_INCLUDE_DIR} thotEngine/include third-party/include) #glimac/include
 
-set(ALL_LIBRARIES thotEngine ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY} ${ASSIMP_LIBRARY}) #glimac
+set(ALL_LIBRARIES thotEngine ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY} ${ASSIMP_LIBRARY} ${BULLET_LIBRARY}) #glimac
 
 # Add the library
 #add_subdirectory(glimac)

@@ -23,6 +23,23 @@ Transform::~Transform()
 
 }
 
+//void Transform::init()
+//{
+//    std::vector<ExternalHandler<MeshRenderer>> meshRenderers = getComponents<MeshRenderer>();
+//    for(int i = 0; i < meshRenderers; ++i)
+//    {
+//        m_managedTransformables->push_back( static_cast<Transformable*>(meshRenderers[i]->get()) );
+//    }
+//}
+
+//void Transform::updateTransformables()
+//{
+//    for(int i = 0; i < m_managedTransformables->size(); ++i)
+//    {
+//        m_managedTransformables[i]->updateTransform(*this);
+//    }
+//}
+
 glm::quat Transform::getRotation() const
 {
     return m_rotation;

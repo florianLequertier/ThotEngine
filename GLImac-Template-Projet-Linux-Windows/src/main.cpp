@@ -18,6 +18,8 @@
 //scripts
 # include "thotEngine/FreeFlyCam.hpp"
 
+#include "Bullet/btBulletCollisionCommon.h"
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
