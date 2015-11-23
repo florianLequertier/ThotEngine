@@ -14,6 +14,11 @@ MeshRenderer::~MeshRenderer()
 
 }
 
+void MeshRenderer::init()
+{
+    //nothing
+}
+
 //init meshPtr and materialPtr
 void MeshRenderer::pushToGPU()
 {

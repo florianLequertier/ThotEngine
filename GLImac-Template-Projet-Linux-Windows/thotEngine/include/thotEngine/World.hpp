@@ -11,6 +11,7 @@
 #include "Script.hpp"
 #include "prefab.hpp"
 #include "light.hpp"
+#include "rigidbody.hpp"
 
 //systems
 #include "TestSystem.hpp"
@@ -39,6 +40,9 @@ private:
     std::vector<std::shared_ptr<CArray<Script>>> m_ptrsToScripts;
     std::shared_ptr<CArray<PointLight>> m_ptrToPointLights;
     std::shared_ptr<CArray<DirectionalLight>> m_ptrToDirectionalLights;
+    std::shared_ptr<CArray<physic::RigidBody>> m_ptrToRigidBodies;
+
+    static float m_stepTime;
 
     //resources
     //std::shared_ptr<ResourceManager> m_resourceManager;
@@ -49,6 +53,10 @@ public :
     ~World();
     void init();
 
+    //delta time of a frame
+    static float getStepTime();
+    static void setDeltaTime(float delta);
+
     void pushToGPU();
     void popFromGPU();
 
@@ -56,8 +64,7 @@ public :
     ExternalHandler<Entity> instantiate(std::shared_ptr<Prefab> prefab);
     ExternalHandler<Entity> instantiate(std::string prefabName);
 
-    template<typename T>
-    void destroy(ExternalHandler<T> target);
+    void destroy(ExternalHandler<Entity> target);
 
     template<typename T>
     ExternalHandler<T> attachTo(Handler entity);
@@ -106,12 +113,6 @@ ExternalHandler<T> World::instantiateFrom(T& model)
 
     int index = std::static_pointer_cast<CArray<T>>(m_content[typeid(T)])->instantiate(model);
     return ExternalHandler<T>(&m_content, index);
-}
-
-template<typename T>
-void World::destroy(ExternalHandler<T> target)
-{
-    std::static_pointer_cast<CArray<T>>(m_content[typeid(T)])->remove(target);
 }
 
 template<typename T>

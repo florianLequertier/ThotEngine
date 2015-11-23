@@ -5,8 +5,10 @@
 
 #include "thotEngine/Component.hpp"
 
+
 namespace te{
 
+class Transformables; //forward declaration
 
 class Transform : public Component
 {
@@ -30,12 +32,14 @@ private :
     glm::vec3 m_localUp;
     glm::vec3 m_localRight;
 
+    std::vector<ExternalHandler<Transformables>> m_managedTransformables;
+
 public :
     Transform();
-    ~Transform();
+    virtual ~Transform();
 
-//    void init();
-//    void updateTransformables();
+    virtual void init() override;
+    void updateTransformables();
 
     glm::quat getRotation() const;
     glm::vec3 getScale() const;
@@ -70,6 +74,7 @@ public :
     glm::vec3 getLocalRight() const;
 
     void computeModelMatrix();
+
 
 };
 

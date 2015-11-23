@@ -47,6 +47,7 @@ private:
 public :
     Camera();
     ~Camera();
+    virtual void init() override;
 
     void updateViewMatrix();
     void setPerspectiveParameters(const float& fovy, const float& aspect, const float& near, const float& far);

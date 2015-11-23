@@ -17,6 +17,7 @@ public:
     PointLight();
     PointLight(const glm::vec3& position, const glm::vec3& color, float radius);
     ~PointLight();
+    virtual void init() override;
 
     glm::vec3 getPosition() const;
     glm::vec3 getColor() const;
@@ -26,6 +27,7 @@ public:
     void setRadius(float radius);
     float getIntensity() const;
     void setIntensity(float intensity);
+
 };
 
 class DirectionalLight : public Component
@@ -39,6 +41,7 @@ public:
     DirectionalLight();
     DirectionalLight(const glm::vec3& direction, const glm::vec3& color);
     ~DirectionalLight();
+    virtual void init() override;
 
     glm::vec3 getDirection() const;
     void setDirection(const glm::vec3 &direction);

@@ -127,10 +127,6 @@ protected:
 public :
     WorldObject():m_index(0){}
 
-    virtual void init(int index){
-        m_index = index;
-    }
-
     Handler thisHandler(){
         return Handler(typeid(*this), m_index); // !!!
     }
@@ -268,7 +264,7 @@ int CArray<T>::instantiate()
             index = m_content.size();
             m_pointers.push_back(index);
             m_content.push_back(T());
-            m_content.back().init(index);
+            m_content.back().setIndex(index);
             m_status.push_back(true);
         }
         else
@@ -301,6 +297,7 @@ int CArray<T>::instantiate(T element)
             index = m_content.size();
             m_pointers.push_back(index);
             m_content.push_back(element);
+            m_content.back().setIndex(index);
             m_status.push_back(true);
         }
         else

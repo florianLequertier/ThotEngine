@@ -28,6 +28,8 @@ public:
 MeshRenderer();
 ~MeshRenderer();
 
+virtual void init() override;
+
 void pushToGPU(); //init meshPtr and materialPtr
 void popFromGPU();
 

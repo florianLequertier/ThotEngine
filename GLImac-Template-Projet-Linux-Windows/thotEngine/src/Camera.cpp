@@ -19,6 +19,11 @@ Camera::~Camera()
 
 }
 
+void Camera::init()
+{
+
+}
+
 void Camera::updateViewMatrix()
 {
     auto ownerTransform = transform();

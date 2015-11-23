@@ -4,6 +4,8 @@
 
 namespace te{
 
+static float World::m_stepTime = 1.f/60.f;
+
 World::World()
 {
     m_content[typeid(Entity)] = std::make_shared< CArray<Entity> >();
@@ -12,6 +14,7 @@ World::World()
     m_content[typeid(Camera)] = std::make_shared<CArray<Camera> >();
     m_content[typeid(PointLight)] = std::make_shared<CArray<PointLight> >();
     m_content[typeid(DirectionalLight)] = std::make_shared<CArray<DirectionalLight> >();
+    m_content[typeid(RigidBody)] = std::make_shared<CArray<RigidBody> >();
 
     m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
     m_ptrToMeshRenderers = std::static_pointer_cast<CArray<MeshRenderer>>(m_content[typeid(MeshRenderer)]);
@@ -19,6 +22,7 @@ World::World()
     m_ptrToCameras = std::static_pointer_cast<CArray<Camera>>(m_content[typeid(Camera)]);
     m_ptrToPointLights = std::static_pointer_cast<CArray<PointLight>>(m_content[typeid(PointLight)]);
     m_ptrToDirectionalLights = std::static_pointer_cast<CArray<DirectionalLight>>(m_content[typeid(DirectionalLight)]);
+    m_ptrToRigidBodies = std::static_pointer_cast<CArray<RigidBody>>(m_content[typeid(RigidBody)]);
 
 }
 
@@ -31,6 +35,16 @@ void World::init()
 {
     //init all scripts
     m_scriptSystem.init(m_ptrsToScripts);
+}
+
+float World::getStepTime()
+{
+    return m_stepTime;
+}
+
+void World::setStepTime(float delta)
+{
+    m_stepTime = delta;
 }
 
 void World::pushToGPU()
@@ -79,6 +93,11 @@ ExternalHandler<Entity> World::instantiate(std::string prefabName)
         std::cerr<<"error while instantiating the prefab \""<<prefabName<<"\". This name doesn't refer to a valid prefab."<<std::endl;
         return ExternalHandler<Entity>();
     }
+}
+
+void World::destroy(ExternalHandler<Entity> target)
+{
+    std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)])->remove(target);
 }
 
 void World::update()

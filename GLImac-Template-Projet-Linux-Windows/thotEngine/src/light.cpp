@@ -18,6 +18,11 @@ PointLight::~PointLight()
 
 }
 
+void PointLight::init()
+{
+    //Nothing
+}
+
 glm::vec3 PointLight::getPosition() const
 {
     return transform()->getTranslation();
@@ -73,6 +78,11 @@ DirectionalLight::DirectionalLight(const glm::vec3& direction, const glm::vec3& 
 DirectionalLight::~DirectionalLight()
 {
 
+}
+
+void DirectionalLight::init()
+{
+    //Nothing
 }
 
 glm::vec3 DirectionalLight::getDirection() const

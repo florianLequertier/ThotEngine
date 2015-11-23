@@ -1,5 +1,7 @@
 
+#include "thotEngine/MeshRenderer.hpp"
 #include "thotEngine/Transform.hpp"
+#include "thotEngine/rigidbody.hpp"
 #include "thotEngine/glm.hpp"
 
 namespace te{
@@ -23,22 +25,23 @@ Transform::~Transform()
 
 }
 
-//void Transform::init()
-//{
-//    std::vector<ExternalHandler<MeshRenderer>> meshRenderers = getComponents<MeshRenderer>();
-//    for(int i = 0; i < meshRenderers; ++i)
-//    {
-//        m_managedTransformables->push_back( static_cast<Transformable*>(meshRenderers[i]->get()) );
-//    }
-//}
+void Transform::init()
+{
+    //rigidbody
+    std::vector<ExternalHandler<MeshRenderer>> meshRenderers = getComponents<RigidBody>();
+    for(int i = 0; i < meshRenderers; ++i)
+    {
+        m_managedTransformables.push_back( ExternalHandler<RigidBody>(meshRenderers[i]) );
+    }
+}
 
-//void Transform::updateTransformables()
-//{
-//    for(int i = 0; i < m_managedTransformables->size(); ++i)
-//    {
-//        m_managedTransformables[i]->updateTransform(*this);
-//    }
-//}
+void Transform::updateTransformables()
+{
+    for(int i = 0; i < m_managedTransformables->size(); ++i)
+    {
+        m_managedTransformables[i]->updateTransform(*this);
+    }
+}
 
 glm::quat Transform::getRotation() const
 {

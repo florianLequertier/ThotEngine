@@ -22,6 +22,8 @@ public :
     Component();
     virtual ~Component();
 
+    virtual void init() = 0;
+
     static bool isScriptable();
 
     std::string getName() const;
@@ -31,6 +33,9 @@ public :
 
     template<typename T>
     ExternalHandler<T> getComponent();
+
+    template<typename T>
+    std::vector<ExternalHandler<T>> getComponents();
 
     ExternalHandler<Transform> transform() const;
 
