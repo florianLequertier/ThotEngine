@@ -5,21 +5,26 @@
 #include "Bullet/btBulletDynamicsCommon.h"
 
 #include "motionstate.hpp"
-#include "Transform.hpp"
+//#include "Transform.hpp"
 #include "Component.hpp"
+#include "collider.hpp"
 
 namespace te{
 namespace physic{
 
+class Transform; //forward
 
 class RigidBody : public Component, public Transformable
 {
 
 private:
-    float m_mass;
-    glm::vec3 m_inertia;
+    btScalar m_mass;
+    btVector3 m_inertia;
 
     btRigidBody* m_target;
+
+    btCompoundShape* m_shape;
+    MotionState* m_motionState;
 
 public:
     RigidBody(float mass = 0, glm::vec3 inertia = glm::vec3(0,0,0));
@@ -31,7 +36,7 @@ public:
 
     float getMass() const;
     void setMass(float mass);
-    glm::vec3 getInertia() const;
+    btVector3 getInertia() const;
     void setInertia(const glm::vec3 &inertia);
 
     void addToPhysicWorld(btDiscreteDynamicsWorld& physicWorld);

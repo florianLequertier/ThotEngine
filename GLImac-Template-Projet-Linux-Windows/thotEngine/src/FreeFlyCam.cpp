@@ -14,7 +14,7 @@ FreeFlyCam::~FreeFlyCam()
 
 }
 
-void FreeFlyCam::start()
+void FreeFlyCam::init()
 {
     m_transformPtr = transform();
     //m_translationSpeed = 1;

@@ -3,6 +3,7 @@
 #include "thotEngine/Transform.hpp"
 #include "thotEngine/rigidbody.hpp"
 #include "thotEngine/glm.hpp"
+#include "thotEngine/Entity.hpp"
 
 namespace te{
 
@@ -28,37 +29,59 @@ Transform::~Transform()
 void Transform::init()
 {
     //rigidbody
-    std::vector<ExternalHandler<MeshRenderer>> meshRenderers = getComponents<RigidBody>();
-    for(int i = 0; i < meshRenderers; ++i)
+    std::vector< ExternalHandler<physic::RigidBody> > rigidbodies = getComponents<physic::RigidBody>();
+    for(int i = 0; i < rigidbodies.size(); ++i)
     {
-        m_managedTransformables.push_back( ExternalHandler<RigidBody>(meshRenderers[i]) );
+        m_managedTransformables.push_back( ExternalHandler<Transformable>(rigidbodies[i]) );
     }
 }
 
 void Transform::updateTransformables()
 {
-    for(int i = 0; i < m_managedTransformables->size(); ++i)
+    for(int i = 0; i < m_managedTransformables.size(); ++i)
     {
         m_managedTransformables[i]->updateTransform(*this);
     }
 }
 
+//TODO take parent into account
+
 glm::quat Transform::getRotation() const
 {
-    return m_rotation;
+    return m_globalRotation;
 }
 
 glm::vec3 Transform::getScale() const
 {
-    return m_scale;
+    return m_globalScale;
 }
 
 glm::vec3 Transform::getTranslation() const
 {
-    return m_translation;
+    return m_globalTranslation;
 }
 
 glm::mat4 Transform::getModelMatrix() const
+{
+    return m_globalModelMat;
+}
+
+glm::quat Transform::getLocalRotation() const
+{
+    return m_rotation;
+}
+
+glm::vec3 Transform::getLocalScale() const
+{
+    return m_scale;
+}
+
+glm::vec3 Transform::getLocalTranslation() const
+{
+    return m_translation;
+}
+
+glm::mat4 Transform::getLocalModelMatrix() const
 {
     return m_modelMat;
 }
@@ -209,11 +232,29 @@ glm::vec3 Transform::getLocalRight() const
     return m_localRight;
 }
 
-
-
 void Transform::computeModelMatrix()
 {
     m_modelMat = m_scaleMat*m_rotationMat*m_translationMat;
+
+    if(m_parent)
+    {
+        m_globalRotation = m_parent->getRotation() * m_rotation;
+        m_globalScale = m_parent->getScale() + m_scale;
+        m_globalTranslation = m_parent->getTranslation() + m_translation;
+        m_globalModelMat = m_parent->getModelMatrix() * m_modelMat;
+    }
+    else
+    {
+        m_globalRotation = m_rotation;
+        m_globalScale = m_scale;
+        m_globalTranslation = m_translation;
+        m_globalModelMat = m_modelMat;
+    }
+}
+
+void Transform::setParent(ExternalHandler<Transform> parent)
+{
+    m_parent = parent;
 }
 
 }

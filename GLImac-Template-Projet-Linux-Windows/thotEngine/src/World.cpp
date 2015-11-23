@@ -4,7 +4,7 @@
 
 namespace te{
 
-static float World::m_stepTime = 1.f/60.f;
+float World::m_stepTime = 1.f/60.f;
 
 World::World()
 {
@@ -14,7 +14,8 @@ World::World()
     m_content[typeid(Camera)] = std::make_shared<CArray<Camera> >();
     m_content[typeid(PointLight)] = std::make_shared<CArray<PointLight> >();
     m_content[typeid(DirectionalLight)] = std::make_shared<CArray<DirectionalLight> >();
-    m_content[typeid(RigidBody)] = std::make_shared<CArray<RigidBody> >();
+    m_content[typeid(physic::RigidBody)] = std::make_shared<CArray<physic::RigidBody> >();
+    m_content[typeid(physic::Collider)] = std::make_shared<CArray<physic::Collider> >();
 
     m_ptrToEntities = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)]);
     m_ptrToMeshRenderers = std::static_pointer_cast<CArray<MeshRenderer>>(m_content[typeid(MeshRenderer)]);
@@ -22,7 +23,8 @@ World::World()
     m_ptrToCameras = std::static_pointer_cast<CArray<Camera>>(m_content[typeid(Camera)]);
     m_ptrToPointLights = std::static_pointer_cast<CArray<PointLight>>(m_content[typeid(PointLight)]);
     m_ptrToDirectionalLights = std::static_pointer_cast<CArray<DirectionalLight>>(m_content[typeid(DirectionalLight)]);
-    m_ptrToRigidBodies = std::static_pointer_cast<CArray<RigidBody>>(m_content[typeid(RigidBody)]);
+    m_ptrToRigidBodies = std::static_pointer_cast<CArray<physic::RigidBody>>(m_content[typeid(physic::RigidBody)]);
+    m_ptrToColliders = std::static_pointer_cast<CArray<physic::Collider>>(m_content[typeid(physic::Collider)]);
 
 }
 
@@ -35,6 +37,8 @@ void World::init()
 {
     //init all scripts
     m_scriptSystem.init(m_ptrsToScripts);
+    //init physics
+    m_physicSimulation.init(m_ptrToColliders, m_ptrToRigidBodies);
 }
 
 float World::getStepTime()
@@ -105,12 +109,24 @@ void World::update()
     m_testSystem.update(m_ptrToEntities);
 
     m_scriptSystem.update(m_ptrsToScripts);
+
+    m_physicSimulation.update();
 }
 
 void World::render()
 {
     //m_renderer.render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
     m_renderer.deferred_render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
+}
+
+void World::setGravity(float x, float y, float z)
+{
+    m_physicSimulation.setGravity(glm::vec3(x,y,z));
+}
+
+glm::vec3 World::getGravity() const
+{
+    return m_physicSimulation.getGravity();
 }
 
 }

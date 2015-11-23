@@ -7,7 +7,9 @@ namespace physic{
 MotionState::MotionState(ExternalHandler<Transform> entityTransform)
 {
     auto transformMat = entityTransform->getModelMatrix();
-    m_physicTransform.setFromOpenGLMatrix(&transformMat[0]);
+    m_physicTransform.setFromOpenGLMatrix(glm::value_ptr(transformMat));
+
+    m_entityTransform = entityTransform;
 }
 
 MotionState::~MotionState()

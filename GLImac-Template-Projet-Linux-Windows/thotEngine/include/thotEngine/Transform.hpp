@@ -8,7 +8,15 @@
 
 namespace te{
 
-class Transformables; //forward declaration
+class Transform; //forward declaration
+
+class Transformable{
+public:
+    inline virtual void updateTransform(const Transform& transform)
+    {
+        //nothing
+    }
+};
 
 class Transform : public Component
 {
@@ -18,9 +26,15 @@ private :
     glm::vec3 m_scale;
     glm::vec3 m_translation;
 
+    glm::quat m_globalRotation;
+    glm::vec3 m_globalScale;
+    glm::vec3 m_globalTranslation;
+
     glm::mat4 m_rotationMat;
     glm::mat4 m_scaleMat;
     glm::mat4 m_translationMat;
+
+    glm::mat4 m_globalModelMat;
 
     glm::mat4 m_modelMat;
 
@@ -32,7 +46,9 @@ private :
     glm::vec3 m_localUp;
     glm::vec3 m_localRight;
 
-    std::vector<ExternalHandler<Transformables>> m_managedTransformables;
+    std::vector<ExternalHandler<Transformable>> m_managedTransformables;
+
+    ExternalHandler<Transform> m_parent;
 
 public :
     Transform();
@@ -45,6 +61,11 @@ public :
     glm::vec3 getScale() const;
     glm::vec3 getTranslation() const;
     glm::mat4 getModelMatrix() const;
+
+    glm::quat getLocalRotation() const;
+    glm::vec3 getLocalScale() const;
+    glm::vec3 getLocalTranslation() const;
+    glm::mat4 getLocalModelMatrix() const;
 
     void setRotation(glm::quat rotation);
     void setScale(glm::vec3 scale);
@@ -75,12 +96,9 @@ public :
 
     void computeModelMatrix();
 
+    void setParent(ExternalHandler<Transform> parent);
 
-};
 
-class Transformable{
-public:
-    virtual void updateTransform(const Transform& transform) = 0;
 };
 
 }

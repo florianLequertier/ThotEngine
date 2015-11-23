@@ -12,7 +12,7 @@ Script::~Script()
 
 }
 
-void Script::start()
+void Script::init()
 {
     //nothing
 }

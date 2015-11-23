@@ -17,6 +17,7 @@
 #include "TestSystem.hpp"
 #include "Renderer.hpp"
 #include "scriptsystem.hpp"
+#include "physicsimulation.hpp"
 
 namespace te{
 
@@ -31,6 +32,7 @@ private:
     TestSystem m_testSystem;
     Renderer m_renderer;
     ScriptSystem m_scriptSystem;
+    physic::PhysicSimulation m_physicSimulation;
 
     //shortcup to CArrays in the CMap, to improve performance
     std::shared_ptr<CArray<Entity>> m_ptrToEntities;
@@ -41,6 +43,7 @@ private:
     std::shared_ptr<CArray<PointLight>> m_ptrToPointLights;
     std::shared_ptr<CArray<DirectionalLight>> m_ptrToDirectionalLights;
     std::shared_ptr<CArray<physic::RigidBody>> m_ptrToRigidBodies;
+    std::shared_ptr<CArray<physic::Collider>> m_ptrToColliders;
 
     static float m_stepTime;
 
@@ -55,7 +58,7 @@ public :
 
     //delta time of a frame
     static float getStepTime();
-    static void setDeltaTime(float delta);
+    static void setStepTime(float delta);
 
     void pushToGPU();
     void popFromGPU();
@@ -80,6 +83,10 @@ public :
 
     void update();
     void render();
+
+    //world variables :
+    void setGravity(float x, float y, float z);
+    glm::vec3 getGravity() const;
 
 private:
     template<typename T>

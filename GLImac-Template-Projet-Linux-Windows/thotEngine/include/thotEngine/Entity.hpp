@@ -41,6 +41,9 @@ public:
     template<typename T>
     void getComponents(std::vector<ExternalHandler<T>>& result) const;
 
+    template<typename T>
+    std::vector<ExternalHandler<T>> getComponents() const;
+
 
 //    template<typename T>
 //    ExternalHandler<T> addComponent(World& worldptr, ExternalHandler<T> component);
@@ -93,6 +96,22 @@ void Entity::getComponents(std::vector<ExternalHandler<T>>& result) const
 }
 
 template<typename T>
+std::vector<ExternalHandler<T>> Entity::getComponents() const
+{
+    std::vector<ExternalHandler<T>> result;
+
+    for(int i = 0; i < m_components.size(); ++i)
+    {
+        if(m_components[i].istypeof( typeid(T) ))
+        {
+            result.push_back( m_components[i] );
+        }
+    }
+
+    return result;
+}
+
+template<typename T>
 void Entity::addComponent(ExternalHandler<T> component)
 {
     m_components.push_back(component);
@@ -130,7 +149,8 @@ template<typename T>
 std::vector<ExternalHandler<T>> Component::getComponents()
 {
     std::vector<ExternalHandler<T>> result;
-    return m_owner->getComponents<T>(result);
+    m_owner->getComponents<T>(result);
+    return result;
 }
 
 }

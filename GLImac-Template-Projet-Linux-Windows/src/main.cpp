@@ -12,13 +12,15 @@
 #include "thotEngine/MaterialManager.hpp"
 #include "thotEngine/prefabmanager.hpp"
 
+#include "thotEngine/collider.hpp"
+#include "thotEngine/rigidbody.hpp"
+
 #include "thotEngine/WindowManager.hpp"
 #include "thotEngine/Input.hpp"
 
 //scripts
-# include "thotEngine/FreeFlyCam.hpp"
+#include "thotEngine/FreeFlyCam.hpp"
 
-#include "Bullet/btBulletCollisionCommon.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -124,6 +126,10 @@ int main(int argc, char** argv)
     //test 03
     entityHandler = world.instantiate(prefab01);
     entityHandler->getComponent<te::Transform>()->setScale(50,1,50);
+    auto colliderHandler = entityHandler->addComponent<te::physic::Collider>(world);
+    colliderHandler->setDimensions(50,1,50);
+    auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
+    rigidBodyHandler->setMass(0.001);
 
     //test 04
     entityHandler = world.instantiate("prefab01");
@@ -132,6 +138,12 @@ int main(int argc, char** argv)
     PointlightHandler->setRadius(400);
     PointlightHandler->setColor(1,1,0);
     PointlightHandler->setIntensity(10);
+    entityHandler->addComponent<te::physic::Collider>(world);
+    rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
+    rigidBodyHandler->setMass(1);
+
+    //set world variables :
+    world.setGravity(0,1,0);
 
 
 //    world.destroy(entityHandler);

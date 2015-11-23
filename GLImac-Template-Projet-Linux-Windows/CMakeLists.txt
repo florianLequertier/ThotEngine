@@ -20,10 +20,10 @@ if(WIN32)
 	set(SDL_LIBRARY mingw32 ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libSDLmain.a ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libSDL.dll.a)
 	set(GLEW_LIBRARY ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libglew32.dll.a)
         set(ASSIMP_LIBRARY ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libassimp.dll.a)
-	set(BULLET_LIBRARY ${CMAKE_SOURCE_DIR}/third-party/lib/x86/libLinearMath.a 
-				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBulletSoftBody.a 
+	set(BULLET_LIBRARY 	${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBulletSoftBody.a 
 				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBulletDynamics.a 
 				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBulletCollision.a
+				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libLinearMath.a 
 				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3Common.a
 				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3Collision.a
 				${CMAKE_SOURCE_DIR}/third-party/lib/x86/libBullet3OpenCL_clew.a

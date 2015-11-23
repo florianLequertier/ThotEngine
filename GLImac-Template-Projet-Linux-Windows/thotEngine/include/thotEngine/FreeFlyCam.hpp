@@ -24,7 +24,7 @@ public:
     FreeFlyCam();
     ~FreeFlyCam();
 
-    virtual void start() override;
+    virtual void init() override;
     virtual void update() override;
 
     void updateLookAt(float x, float y);
