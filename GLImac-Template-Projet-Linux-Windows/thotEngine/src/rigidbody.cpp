@@ -49,7 +49,10 @@ void RigidBody::init()
 
 void RigidBody::updateTransform(const Transform &transform)
 {
-
+    //update directly the rigidbody with the entity's transform
+    btTransform newPhysicTransform;
+    newPhysicTransform.setFromOpenGLMatrix( glm::value_ptr(transform.getModelMatrix()) );
+    m_target->setWorldTransform(newPhysicTransform);
 }
 
 float RigidBody::getMass() const

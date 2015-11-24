@@ -47,6 +47,9 @@ private:
 
     static float m_stepTime;
 
+    //set to true to switch to debug mode (ie : see debug visual informations like colliders,...)
+    bool m_debugMode;
+
     //resources
     //std::shared_ptr<ResourceManager> m_resourceManager;
     //std::shared_ptr<MaterialManager> m_materialManager;
@@ -83,6 +86,9 @@ public :
 
     void update();
     void render();
+
+    void setDebugMode(bool state);
+    bool getDebugMode() const;
 
     //world variables :
     void setGravity(float x, float y, float z);

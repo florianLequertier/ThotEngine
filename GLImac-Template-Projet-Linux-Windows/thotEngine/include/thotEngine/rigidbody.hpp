@@ -10,9 +10,10 @@
 #include "collider.hpp"
 
 namespace te{
-namespace physic{
 
 class Transform; //forward
+
+namespace physic{
 
 class RigidBody : public Component, public Transformable
 {

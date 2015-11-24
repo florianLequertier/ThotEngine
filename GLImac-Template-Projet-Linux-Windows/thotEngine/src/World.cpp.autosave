@@ -35,6 +35,8 @@ World::~World()
 
 void World::init()
 {
+    //init all transforms
+    
     //init all scripts
     m_scriptSystem.init(m_ptrsToScripts);
     //init physics

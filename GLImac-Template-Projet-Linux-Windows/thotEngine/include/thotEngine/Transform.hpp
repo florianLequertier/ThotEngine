@@ -56,6 +56,9 @@ public :
 
     virtual void init() override;
     void updateTransformables();
+    void addUpdatableTransform(ExternalHandler<Transformable> updatable);
+    void removeUpdatableTransform(ExternalHandler<Transformable> updatable);
+    void synchronizeWithPhysic(const glm::vec3& translation, const glm::quat& rotation);
 
     glm::quat getRotation() const;
     glm::vec3 getScale() const;

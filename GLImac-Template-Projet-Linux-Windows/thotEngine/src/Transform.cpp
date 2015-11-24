@@ -29,11 +29,13 @@ Transform::~Transform()
 void Transform::init()
 {
     //rigidbody
-    std::vector< ExternalHandler<physic::RigidBody> > rigidbodies = getComponents<physic::RigidBody>();
-    for(int i = 0; i < rigidbodies.size(); ++i)
-    {
-        m_managedTransformables.push_back( ExternalHandler<Transformable>(rigidbodies[i]) );
-    }
+//    std::vector< ExternalHandler<physic::RigidBody> > rigidbodies = getComponents<physic::RigidBody>();
+//    for(int i = 0; i < rigidbodies.size(); ++i)
+//    {
+//        m_managedTransformables.push_back( ExternalHandler<Transformable>(rigidbodies[i]) );
+//        //first update of the motionState :
+//        m_managedTransformables.back()->updateTransform(*this);
+//    }
 }
 
 void Transform::updateTransformables()
@@ -41,6 +43,47 @@ void Transform::updateTransformables()
     for(int i = 0; i < m_managedTransformables.size(); ++i)
     {
         m_managedTransformables[i]->updateTransform(*this);
+    }
+}
+
+void Transform::addUpdatableTransform(ExternalHandler<Transformable> updatable)
+{
+    m_managedTransformables.push_back(updatable);
+}
+
+void Transform::removeUpdatableTransform(ExternalHandler<Transformable> updatable)
+{
+    m_managedTransformables.erase(std::find(m_managedTransformables.begin(), m_managedTransformables.end(), updatable));
+}
+
+void Transform::synchronizeWithPhysic(const glm::vec3& translation, const glm::quat& rotation)
+{
+    //rotation :
+    m_rotation = rotation;
+    m_rotationMat = glm::mat4_cast(m_rotation);
+
+    m_localForward = glm::vec3(m_rotation*glm::vec4(m_forward,0));
+    m_localRight = glm::vec3(m_rotation*glm::vec4(m_right,0));
+    m_localUp = glm::vec3(m_rotation*glm::vec4(m_up,0));
+    //translation :
+    m_translation = translation;
+    m_translationMat = glm::translate(glm::mat4(1), m_translation);
+    //update matrix :
+    m_modelMat = m_scaleMat*m_rotationMat*m_translationMat;
+
+    if(m_parent)
+    {
+        m_globalRotation = m_parent->getRotation() * m_rotation;
+        m_globalScale = m_parent->getScale() + m_scale;
+        m_globalTranslation = m_parent->getTranslation() + m_translation;
+        m_globalModelMat = m_parent->getModelMatrix() * m_modelMat;
+    }
+    else
+    {
+        m_globalRotation = m_rotation;
+        m_globalScale = m_scale;
+        m_globalTranslation = m_translation;
+        m_globalModelMat = m_modelMat;
     }
 }
 
@@ -250,6 +293,8 @@ void Transform::computeModelMatrix()
         m_globalTranslation = m_translation;
         m_globalModelMat = m_modelMat;
     }
+
+    updateTransformables();
 }
 
 void Transform::setParent(ExternalHandler<Transform> parent)

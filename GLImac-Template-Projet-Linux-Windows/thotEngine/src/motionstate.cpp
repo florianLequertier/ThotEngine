@@ -27,8 +27,9 @@ void MotionState::setWorldTransform(const btTransform& worldTransform)
     btQuaternion rotation =  worldTransform.getRotation();
     btVector3 translation = worldTransform.getOrigin();
 
-    m_entityTransform->setRotation(glm::quat( rotation.x(), rotation.y(), rotation.z(), rotation.w()));
-    m_entityTransform->setTranslation(translation.x(), translation.y(), translation.z());
+//    m_entityTransform->setRotation(glm::quat( rotation.x(), rotation.y(), rotation.z(), rotation.w()));
+//    m_entityTransform->setTranslation(translation.x(), translation.y(), translation.z());
+    m_entityTransform->synchronizeWithPhysic(glm::vec3(translation.x(), translation.y(), translation.z()), glm::quat( rotation.x(), rotation.y(), rotation.z(), rotation.w()));
 }
 
 

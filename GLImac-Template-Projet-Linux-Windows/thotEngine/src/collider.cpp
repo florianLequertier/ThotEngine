@@ -15,7 +15,10 @@ Collider::~Collider()
 
 void Collider::init()
 {
-    setParent(transform());
+    auto parent = transform();
+    parent->addUpdatableTransform(thisHandler());
+
+    setParent(parent);
 }
 
 Collider::ShapeType Collider::getShapeType() const

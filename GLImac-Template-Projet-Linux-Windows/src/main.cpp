@@ -129,7 +129,7 @@ int main(int argc, char** argv)
     auto colliderHandler = entityHandler->addComponent<te::physic::Collider>(world);
     colliderHandler->setDimensions(50,1,50);
     auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
-    rigidBodyHandler->setMass(0.001);
+    rigidBodyHandler->setMass(0);
 
     //test 04
     entityHandler = world.instantiate("prefab01");
@@ -144,6 +144,7 @@ int main(int argc, char** argv)
 
     //set world variables :
     world.setGravity(0,1,0);
+    world.setDebugMode(true);
 
 
 //    world.destroy(entityHandler);
