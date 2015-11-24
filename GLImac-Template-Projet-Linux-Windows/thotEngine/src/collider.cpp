@@ -16,7 +16,7 @@ Collider::~Collider()
 void Collider::init()
 {
     auto parent = transform();
-    parent->addUpdatableTransform(thisHandler());
+    parent->addUpdatableTransform(getHandler());
 
     setParent(parent);
 }
@@ -80,6 +80,16 @@ void Collider::setDimensions(const glm::vec3 &dimensions)
 void Collider::setDimensions(float w, float h, float d)
 {
     m_dimensions = glm::vec3(w,h,d);
+}
+
+void Collider::setHandler(std::shared_ptr<BaseCArray> user, int index)
+{
+    m_thisHandler = ExternalHandler<Collider>(user, index);
+}
+
+ExternalHandler<Collider> Collider::getHandler()
+{
+    return m_thisHandler;
 }
 
 }

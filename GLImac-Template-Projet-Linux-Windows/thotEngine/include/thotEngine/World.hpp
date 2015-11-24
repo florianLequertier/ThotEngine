@@ -73,13 +73,13 @@ public :
     void destroy(ExternalHandler<Entity> target);
 
     template<typename T>
-    ExternalHandler<T> attachTo(Handler entity);
+    ExternalHandler<T> attachTo(Handler entity); // External ???
 
     template<typename T>
-    ExternalHandler<T> attachTo(Handler entity, std::shared_ptr<T> model);
+    ExternalHandler<T> attachTo(Handler entity, std::shared_ptr<T> model); // External ???
 
     template<typename T>
-    ExternalHandler<T> removeFrom(Handler entity);
+    ExternalHandler<T> removeFrom(Handler entity); // External ???
 
     template<typename T>
     ExternalHandler<T> makeExternal(const Handler& handler);
@@ -115,7 +115,7 @@ ExternalHandler<T> World::instantiateNew()
     }
 
     int index = std::static_pointer_cast<CArray<T>>(m_content[typeid(T)])->instantiate();
-    return ExternalHandler<T>(&m_content, index);
+    return ExternalHandler<T>(m_content[typeid(T)], index);
 }
 
 template<typename T>
@@ -125,7 +125,7 @@ ExternalHandler<T> World::instantiateFrom(T& model)
         m_content[typeid(T)] = std::make_shared< CArray<T> >();
 
     int index = std::static_pointer_cast<CArray<T>>(m_content[typeid(T)])->instantiate(model);
-    return ExternalHandler<T>(&m_content, index);
+    return ExternalHandler<T>(m_content[typeid(T)], index);
 }
 
 template<typename T>
@@ -158,7 +158,7 @@ ExternalHandler<T> World::removeFrom(Handler entity)
 template<typename T>
 ExternalHandler<T> World::makeExternal(const Handler& handler)
 {
-    return ExternalHandler<T>(handler, &m_content);
+    return ExternalHandler<T>(handler, m_content[handler.getType()]);
 }
 
 }
@@ -170,20 +170,20 @@ namespace te {
 template<typename T>
 ExternalHandler<T> Entity::addComponent(World& worldPtr)
 {
-    return worldPtr.attachTo<T>(thisHandler());
+    return worldPtr.attachTo<T>(getHandler());
 }
 
 template<typename T>
 ExternalHandler<T> Entity::removeComponent(World& worldPtr)
 {
-    return worldPtr.removeFrom<T>(thisHandler());
+    return worldPtr.removeFrom<T>(getHandler());
 }
 
 
 template<typename T>
 ExternalHandler<T> Entity::addComponent(World& worldPtr, T& model)
 {
-    return worldPtr.attachTo<T>(thisHandler(), model);
+    return worldPtr.attachTo<T>(getHandler(), model);
 }
 
 }

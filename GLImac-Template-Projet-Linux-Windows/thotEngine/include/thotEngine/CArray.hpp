@@ -20,6 +20,9 @@ namespace te{
 template<typename T>
 class ICArray;
 
+template<typename T>
+class CArray; //forward
+
 class BaseCArray{
 
 };
@@ -75,16 +78,16 @@ class ExternalHandler : public Handler
 {
 public :
     ExternalHandler();
-    ExternalHandler(CMap* user, int index);
-    ExternalHandler(const Handler& handler, CMap *user);
-    ExternalHandler(CMap* user, int index, std::type_index type);
+    ExternalHandler(std::shared_ptr<BaseCArray> user, int index);
+    ExternalHandler(const Handler& handler, std::shared_ptr<BaseCArray> user);
+    ExternalHandler(std::shared_ptr<BaseCArray> user, int index, std::type_index type);
 
     T* operator->() const;
 
     template<typename U>
     operator ExternalHandler<U>()
     {
-        ExternalHandler<U> result(m_user, m_index, typeid(T));
+        ExternalHandler<U> result( m_user.lock(), m_index);
         return result;
     }
     template<typename U>
@@ -111,25 +114,35 @@ public :
         return m_valid;
     }
 
-    inline CMap* getUser() const
+    inline std::weak_ptr<BaseCArray> getUser() const
     {
-        return m_user;
+        return m_user.lock();
     }
 
 private :
-    CMap* m_user;
+    std::weak_ptr<BaseCArray> m_user;
 
 };
 
-class WorldObject{
+
+template<typename T>
+class BaseWorldObject
+{
+public:
+    BaseWorldObject(){}
+    inline virtual ~BaseWorldObject(){}
+
+    virtual void setHandler(std::shared_ptr<BaseCArray> user, int index) = 0;
+    virtual ExternalHandler<T> getHandler() = 0;
+};
+
+class WorldObject
+{
 protected:
     int m_index;
 public :
-    WorldObject():m_index(0){}
-
-    Handler thisHandler(){
-        return Handler(typeid(*this), m_index); // !!!
-    }
+    WorldObject(){}
+    inline virtual ~WorldObject(){}
 
     void setIndex(int i){
         m_index = i;
@@ -139,6 +152,7 @@ public :
         return m_index;
     }
 };
+
 
 
 template<typename T>
@@ -156,7 +170,7 @@ public :
 };
 
 template<typename T>
-class CArray : public ICArray<T>
+class CArray : public ICArray<T>, public std::enable_shared_from_this<CArray<T>>
 {
 
 public :
@@ -197,19 +211,19 @@ ExternalHandler<T>::ExternalHandler(): Handler()
 }
 
 template<typename T>
-ExternalHandler<T>::ExternalHandler(CMap* user, int index, std::type_index type): Handler(type, index)
+ExternalHandler<T>::ExternalHandler(std::shared_ptr<BaseCArray> user, int index, std::type_index type): Handler(type, index)
 {
     m_user = user;
 }
 
 template<typename T>
-ExternalHandler<T>::ExternalHandler(CMap* user, int index): Handler(typeid(T), index)
+ExternalHandler<T>::ExternalHandler(std::shared_ptr<BaseCArray> user, int index): Handler(typeid(T), index)
 {
     m_user = user;
 }
 
 template<typename T>
-ExternalHandler<T>::ExternalHandler(const Handler& handler, CMap* user)
+ExternalHandler<T>::ExternalHandler(const Handler& handler, std::shared_ptr<BaseCArray> user)
 {
     m_valid = handler.isValid();
     m_index = handler.getIndex();
@@ -221,7 +235,8 @@ template<typename T>
 T* ExternalHandler<T>::operator->() const
 {
     //return m_user->getArrayElement<T>();
-    return &std::static_pointer_cast<CArray<T>>( (*m_user)[typeid(T)] )->operator[](m_index);
+    //return &std::static_pointer_cast<CArray<T>>( (*m_user)[typeid(T)] )->operator[](m_index);
+    return &std::static_pointer_cast<CArray<T>>( m_user.lock() )->operator[](m_index);
 }
 
 template<typename T>
@@ -233,7 +248,8 @@ CArray<T>::CArray() : m_size(0)
 
     for(int i = 0; i < 10; i++)
     {
-        m_content[i].setIndex(i);
+        //m_content[i].setIndex(i);
+        m_content[i].setHandler( this->shared_from_this() , i);
     }
 
     for(int i = 0; i < 10; i++)
@@ -264,7 +280,8 @@ int CArray<T>::instantiate()
             index = m_content.size();
             m_pointers.push_back(index);
             m_content.push_back(T());
-            m_content.back().setIndex(index);
+            //m_content.back().setIndex(index);
+            m_content.back().setHandler( this->shared_from_this() , index);
             m_status.push_back(true);
         }
         else
@@ -297,7 +314,8 @@ int CArray<T>::instantiate(T element)
             index = m_content.size();
             m_pointers.push_back(index);
             m_content.push_back(element);
-            m_content.back().setIndex(index);
+            //m_content.back().setIndex(index);
+            m_content.back().setHandler( this->shared_from_this() , index);
             m_status.push_back(true);
         }
         else

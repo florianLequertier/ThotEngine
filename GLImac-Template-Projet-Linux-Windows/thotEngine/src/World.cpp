@@ -35,6 +35,8 @@ World::~World()
 
 void World::init()
 {
+    //init all transforms
+
     //init all scripts
     m_scriptSystem.init(m_ptrsToScripts);
     //init physics
@@ -70,7 +72,7 @@ void World::popFromGPU()
 ExternalHandler<Entity> World::instantiate()
 {
     int index = std::static_pointer_cast<CArray<Entity>>(m_content[typeid(Entity)])->instantiate();
-    return ExternalHandler<Entity>(&m_content, index);
+    return ExternalHandler<Entity>(m_content[typeid(Entity)], index);
 }
 
 ExternalHandler<Entity> World::instantiate(std::shared_ptr<Prefab> prefab)
