@@ -21,7 +21,6 @@ protected :
 public :
     Component();
     virtual ~Component();
-
     virtual void init() = 0;
 
     static bool isScriptable();

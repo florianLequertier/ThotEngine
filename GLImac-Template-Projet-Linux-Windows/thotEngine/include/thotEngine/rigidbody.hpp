@@ -15,7 +15,7 @@ class Transform; //forward
 
 namespace physic{
 
-class RigidBody : public Component, public Transformable
+class RigidBody : public Component, public Transformable, public BaseWorldObject<RigidBody>
 {
 
 private:
@@ -26,6 +26,8 @@ private:
 
     btCompoundShape* m_shape;
     MotionState* m_motionState;
+
+    std::weak_ptr<btDiscreteDynamicsWorld> m_ptrToPhysicWorld;
 
 public:
     RigidBody(float mass = 0, glm::vec3 inertia = glm::vec3(0,0,0));
@@ -40,7 +42,7 @@ public:
     btVector3 getInertia() const;
     void setInertia(const glm::vec3 &inertia);
 
-    void addToPhysicWorld(btDiscreteDynamicsWorld& physicWorld);
+    void addToPhysicWorld(std::shared_ptr<btDiscreteDynamicsWorld> physicWorld);
 };
 
 }

@@ -10,7 +10,7 @@
 
 namespace te{
 
-class FreeFlyCam : public Script
+class FreeFlyCam : public Script, public BaseWorldObject<FreeFlyCam>
 {
 private:
     ExternalHandler<Transform> m_transformPtr;

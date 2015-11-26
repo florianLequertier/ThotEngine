@@ -53,7 +53,7 @@ void PhysicSimulation::init(std::shared_ptr<CArray<Collider>> ptrToColliders, st
     for(int i = 0; i < ptrToRigidBodies->size(); ++i)
     {
         ptrToRigidBodies->parse(i).init();
-        ptrToRigidBodies->parse(i).addToPhysicWorld(*m_physicWorld.get());
+        ptrToRigidBodies->parse(i).addToPhysicWorld(m_physicWorld);
     }
 
 }

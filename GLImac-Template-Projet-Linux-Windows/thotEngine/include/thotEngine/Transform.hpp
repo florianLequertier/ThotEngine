@@ -12,13 +12,15 @@ class Transform; //forward declaration
 
 class Transformable{
 public:
-    inline virtual void updateTransform(const Transform& transform)
-    {
-        //nothing
-    }
+    virtual void updateTransform(const Transform& transform) = 0;
 };
 
-class Transform : public Component
+class BaseTransform
+{
+
+};
+
+class Transform : public Component, public BaseWorldObject<Transform>
 {
 
 private :

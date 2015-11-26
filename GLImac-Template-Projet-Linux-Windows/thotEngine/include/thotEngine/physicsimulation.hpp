@@ -39,7 +39,7 @@ private :
     btSequentialImpulseConstraintSolver* m_sequentialImpulseConstraintSolver;
     DebugDrawer* m_debugDrawer;
 
-    std::unique_ptr<btDiscreteDynamicsWorld> m_physicWorld;
+    std::shared_ptr<btDiscreteDynamicsWorld> m_physicWorld;
 
 public:
     PhysicSimulation();

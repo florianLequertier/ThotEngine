@@ -6,7 +6,7 @@
 
 namespace te{
 
-class PointLight : public Component
+class PointLight : public Component, public BaseWorldObject<PointLight>
 {
 private:
     glm::vec3 m_color;
@@ -30,7 +30,7 @@ public:
 
 };
 
-class DirectionalLight : public Component
+class DirectionalLight : public Component, public BaseWorldObject<DirectionalLight>
 {
 private:
     glm::vec3 m_direction;

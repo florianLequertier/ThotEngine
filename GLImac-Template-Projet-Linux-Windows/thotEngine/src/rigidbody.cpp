@@ -53,6 +53,8 @@ void RigidBody::updateTransform(const Transform &transform)
     btTransform newPhysicTransform;
     newPhysicTransform.setFromOpenGLMatrix( glm::value_ptr(transform.getModelMatrix()) );
     m_target->setWorldTransform(newPhysicTransform);
+
+
 }
 
 float RigidBody::getMass() const
@@ -77,9 +79,11 @@ void RigidBody::setInertia(const glm::vec3 &inertia)
     m_inertia.setZ(inertia.z);
 }
 
-void RigidBody::addToPhysicWorld(btDiscreteDynamicsWorld& physicWorld)
+void RigidBody::addToPhysicWorld(std::shared_ptr<btDiscreteDynamicsWorld> physicWorld)
 {
-    physicWorld.addRigidBody(m_target);
+    m_ptrToPhysicWorld = physicWorld;
+    physicWorld->addRigidBody(m_target);
+    //physicWorld->updateSingleAabb(m_target);
 }
 
 }

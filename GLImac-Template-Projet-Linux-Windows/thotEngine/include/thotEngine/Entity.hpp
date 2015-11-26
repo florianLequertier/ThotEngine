@@ -15,7 +15,6 @@ class World;
 class Entity : public WorldObject, public BaseWorldObject<Entity>
 {
 private:
-    ExternalHandler<Entity> m_thisHandler;
 
     std::string m_name;
 
@@ -65,12 +64,6 @@ public:
     {
         return m_index < other.m_index;
     }
-
-
-//BaseWorldHandler implementation :
-    virtual void setHandler(std::shared_ptr<BaseCArray> user, int index) override;
-    virtual ExternalHandler<Entity> getHandler() override;
-
 
 };
 

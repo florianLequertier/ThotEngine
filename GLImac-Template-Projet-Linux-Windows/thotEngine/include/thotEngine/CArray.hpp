@@ -23,7 +23,8 @@ class ICArray;
 template<typename T>
 class CArray; //forward
 
-class BaseCArray{
+class BaseCArray : public std::enable_shared_from_this<BaseCArray>
+{
 
 };
 
@@ -116,7 +117,7 @@ public :
 
     inline std::weak_ptr<BaseCArray> getUser() const
     {
-        return m_user.lock();
+        return m_user;
     }
 
 private :
@@ -128,12 +129,23 @@ private :
 template<typename T>
 class BaseWorldObject
 {
+protected:
+    ExternalHandler<T> m_thisHandler;
+
 public:
     BaseWorldObject(){}
     inline virtual ~BaseWorldObject(){}
 
-    virtual void setHandler(std::shared_ptr<BaseCArray> user, int index) = 0;
-    virtual ExternalHandler<T> getHandler() = 0;
+    inline virtual void setHandler(std::shared_ptr<BaseCArray> user, int index)
+    {
+         m_thisHandler = ExternalHandler<T>(user, index);
+    }
+
+    inline virtual ExternalHandler<T> getHandler()
+    {
+        return m_thisHandler;
+    }
+
 };
 
 class WorldObject
@@ -160,7 +172,7 @@ class ICArray : public BaseCArray
 {
 public :
     virtual int instantiate() = 0; //active a new element in the array
-    virtual int instantiate(T element) = 0; //active a new element in the array, copy element in it
+    virtual int instantiate(T& element) = 0; //active a new element in the array, copy element in it
     virtual void remove(const Handler& handler) = 0;
     virtual T& get(const Handler& handler) = 0;
     virtual bool isActive(int index) const = 0;
@@ -170,7 +182,7 @@ public :
 };
 
 template<typename T>
-class CArray : public ICArray<T>, public std::enable_shared_from_this<CArray<T>>
+class CArray : public ICArray<T>
 {
 
 public :
@@ -178,7 +190,7 @@ public :
     ~CArray();
 
     virtual int instantiate() override; //active a new element in the array
-    virtual int instantiate(T element) override; //active a new element in the array, copy element in it
+    virtual int instantiate(T& element) override; //active a new element in the array, copy element in it
     virtual void remove(const Handler& handler) override;
     virtual T& get(const Handler& handler) override;
     virtual T& operator[](int index) override;
@@ -249,7 +261,7 @@ CArray<T>::CArray() : m_size(0)
     for(int i = 0; i < 10; i++)
     {
         //m_content[i].setIndex(i);
-        m_content[i].setHandler( this->shared_from_this() , i);
+        m_content[i].setHandler( std::static_pointer_cast<CArray<T>>(std::enable_shared_from_this<BaseCArray>::shared_from_this()) , i);
     }
 
     for(int i = 0; i < 10; i++)
@@ -303,7 +315,7 @@ int CArray<T>::instantiate()
 }
 
 template<typename T>
-int CArray<T>::instantiate(T element)
+int CArray<T>::instantiate(T& element)
 {
     int index = 0;
 

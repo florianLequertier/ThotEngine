@@ -8,17 +8,12 @@
 namespace te{
 namespace physic{
 
-class Collider : public Transform, public Transformable, public BaseWorldObject<Collider>
+class Collider : public Component, public BaseWorldObject<Collider>
 {
 public:
     enum ShapeType{BOX, SPHERE, CAPSULE};
 
 private:
-
-    using Transform::init;
-    using Transform::updateTransformables;
-
-    ExternalHandler<Collider> m_thisHandler;
 
     ShapeType m_shapeType;
 
@@ -26,10 +21,11 @@ private:
     float m_height;
     glm::vec3 m_dimensions;
 
+    glm::vec3 m_origin; //translation from the center of parent
+
 public:
     Collider(ShapeType shapeType = ShapeType::BOX);
     virtual ~Collider();
-
     virtual void init() override;
 
     ShapeType getShapeType() const;
@@ -45,9 +41,10 @@ public:
     void setDimensions(const glm::vec3 &dimensions);
     void setDimensions(float w, float h, float d);
 
-    //BaseWorldHandler implementation :
-    virtual void setHandler(std::shared_ptr<BaseCArray> user, int index) override;
-    virtual ExternalHandler<Collider> getHandler() override;
+    glm::mat4 getModelMatrix();
+
+    glm::vec3 getOrigin() const;
+    void setOrigin(const glm::vec3& origin);
 };
 
 }

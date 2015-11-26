@@ -8,7 +8,7 @@
 
 namespace te{
 
-class Camera: public Component
+class Camera: public Component, public BaseWorldObject<Camera>
 {
 public : enum CAMERA_MOVEMENT {FORWARD, BACKWARD, RIGHT, LEFT, UP, DOWN};
 
@@ -32,6 +32,7 @@ public : enum CAMERA_MOVEMENT {FORWARD, BACKWARD, RIGHT, LEFT, UP, DOWN};
 
 
 private:
+
     glm::mat4 m_viewMatrix;
     glm::mat4 m_worldMatrix;
 

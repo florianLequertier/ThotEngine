@@ -11,7 +11,7 @@
 
 namespace te {
 
-class MeshRenderer : public Component
+class MeshRenderer : public Component, public BaseWorldObject<MeshRenderer>
 {
 private:
 //    std::weak_ptr<ResourceManager> m_resourceManager;

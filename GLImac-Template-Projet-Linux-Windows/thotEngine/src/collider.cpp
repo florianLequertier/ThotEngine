@@ -3,7 +3,7 @@
 namespace te{
 namespace physic{
 
-Collider::Collider(ShapeType shapeType) : m_shapeType(shapeType), m_dimensions(0.5, 0.5, 0.5), m_height(1), m_radius(0.5)
+Collider::Collider(ShapeType shapeType) : m_shapeType(shapeType), m_dimensions(0.5, 0.5, 0.5), m_height(1), m_radius(0.5), m_origin(0,0,0)
 {
 
 }
@@ -17,8 +17,6 @@ void Collider::init()
 {
     auto parent = transform();
     parent->addUpdatableTransform(getHandler());
-
-    setParent(parent);
 }
 
 Collider::ShapeType Collider::getShapeType() const
@@ -82,14 +80,20 @@ void Collider::setDimensions(float w, float h, float d)
     m_dimensions = glm::vec3(w,h,d);
 }
 
-void Collider::setHandler(std::shared_ptr<BaseCArray> user, int index)
+glm::mat4 Collider::getModelMatrix()
 {
-    m_thisHandler = ExternalHandler<Collider>(user, index);
+    glm::vec3 colliderPosition = transform()->getTranslation() + m_origin;
+    return glm::translate(glm::mat4(1), colliderPosition);
 }
 
-ExternalHandler<Collider> Collider::getHandler()
+glm::vec3 Collider::getOrigin() const
 {
-    return m_thisHandler;
+    return m_origin;
+}
+
+void Collider::setOrigin(const glm::vec3 &origin)
+{
+    m_origin = origin;
 }
 
 }
