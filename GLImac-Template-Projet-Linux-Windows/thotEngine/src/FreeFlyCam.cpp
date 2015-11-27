@@ -2,6 +2,9 @@
 #include "thotEngine/FreeFlyCam.hpp"
 #include "thotEngine/Transform.hpp"
 
+//forward
+#include "thotEngine/World.hpp"
+
 namespace te{
 
 FreeFlyCam::FreeFlyCam(): m_xPre(0), m_yPre(0), m_translationSpeed(1), m_rotationSpeed(0.5)
@@ -14,7 +17,7 @@ FreeFlyCam::~FreeFlyCam()
 
 }
 
-void FreeFlyCam::init()
+void FreeFlyCam::init(World &world)
 {
     m_transformPtr = transform();
     //m_translationSpeed = 1;

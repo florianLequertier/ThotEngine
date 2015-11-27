@@ -9,6 +9,7 @@ namespace te{
 //Forwards
 class Entity;
 class Transform;
+class World;
 
 class Component : public WorldObject
 {
@@ -21,7 +22,9 @@ protected :
 public :
     Component();
     virtual ~Component();
-    virtual void init() = 0;
+    virtual void init(World& world) = 0;
+    //TODO :
+    // virtual void delete(World& world) = 0;
 
     static bool isScriptable();
 

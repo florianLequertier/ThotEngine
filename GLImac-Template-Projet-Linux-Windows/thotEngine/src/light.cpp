@@ -1,6 +1,9 @@
 #include "thotEngine/Transform.hpp"
 #include "thotEngine/light.hpp"
 
+//forward
+#include "thotEngine/World.hpp"
+
 namespace te{
 
 PointLight::PointLight(): m_color(1,1,1), m_radius(10)
@@ -18,7 +21,7 @@ PointLight::~PointLight()
 
 }
 
-void PointLight::init()
+void PointLight::init(World& world)
 {
     //Nothing
 }
@@ -80,7 +83,7 @@ DirectionalLight::~DirectionalLight()
 
 }
 
-void DirectionalLight::init()
+void DirectionalLight::init(World &world)
 {
     //Nothing
 }

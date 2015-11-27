@@ -4,6 +4,8 @@
 #include "thotEngine/rigidbody.hpp"
 #include "thotEngine/glm.hpp"
 #include "thotEngine/Entity.hpp"
+//forward
+#include "thotEngine/World.hpp"
 
 namespace te{
 
@@ -26,7 +28,7 @@ Transform::~Transform()
 
 }
 
-void Transform::init()
+void Transform::init(World &world)
 {
     //rigidbody
 //    std::vector< ExternalHandler<physic::RigidBody> > rigidbodies = getComponents<physic::RigidBody>();

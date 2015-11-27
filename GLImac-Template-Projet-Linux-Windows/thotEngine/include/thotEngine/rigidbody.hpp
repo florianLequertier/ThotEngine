@@ -33,7 +33,7 @@ public:
     RigidBody(float mass = 0, glm::vec3 inertia = glm::vec3(0,0,0));
     ~RigidBody();
 
-    virtual void init() override;
+    virtual void init(World& world) override;
 
     void updateTransform(const Transform &transform);
 

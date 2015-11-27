@@ -56,7 +56,7 @@ public :
     Transform();
     virtual ~Transform();
 
-    virtual void init() override;
+    virtual void init(World& world) override;
     void updateTransformables();
     void addUpdatableTransform(ExternalHandler<Transformable> updatable);
     void removeUpdatableTransform(ExternalHandler<Transformable> updatable);

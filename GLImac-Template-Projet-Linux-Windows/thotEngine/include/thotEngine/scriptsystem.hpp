@@ -5,12 +5,14 @@
 
 namespace te{
 
+//forward
+class World;
 class Script;
 
 class ScriptSystem
 {
 public :
-    void init(std::vector<std::shared_ptr<CArray<Script> > >& scripts);
+    void init(World& world, std::vector<std::shared_ptr<CArray<Script> > >& scripts);
     void update(std::vector<std::shared_ptr<CArray<Script> > >& scripts);
 };
 

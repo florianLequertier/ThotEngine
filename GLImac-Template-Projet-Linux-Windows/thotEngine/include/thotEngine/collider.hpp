@@ -26,7 +26,7 @@ private:
 public:
     Collider(ShapeType shapeType = ShapeType::BOX);
     virtual ~Collider();
-    virtual void init() override;
+    virtual void init(World &world) override;
 
     ShapeType getShapeType() const;
     void setShapeType(const ShapeType &shapeType);

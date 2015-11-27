@@ -32,7 +32,7 @@ private:
     TestSystem m_testSystem;
     Renderer m_renderer;
     ScriptSystem m_scriptSystem;
-    physic::PhysicSimulation m_physicSimulation;
+    std::shared_ptr<physic::PhysicSimulation> m_physicSimulation;
 
     //shortcup to CArrays in the CMap, to improve performance
     std::shared_ptr<CArray<Entity>> m_ptrToEntities;
@@ -94,6 +94,8 @@ public :
     void setGravity(float x, float y, float z);
     glm::vec3 getGravity() const;
 
+    std::shared_ptr<physic::PhysicSimulation> getPhysicSimulation() const;
+
 private:
     template<typename T>
     ExternalHandler<T> instantiateNew();
@@ -132,9 +134,14 @@ template<typename T>
 ExternalHandler<T> World::attachTo(Handler entity)
 {
     auto newComponent = instantiateNew<T>();
+
     auto tmpExternal = makeExternal<Entity>(entity);
     newComponent->setOwner(tmpExternal);
     tmpExternal->addComponent<T>(newComponent);
+
+    //exp :
+    newComponent->init(*this);
+
     return newComponent;
 }
 
@@ -142,9 +149,14 @@ template<typename T>
 ExternalHandler<T> World::attachTo(Handler entity, std::shared_ptr<T> model)
 {
     auto newComponent = instantiateFrom<T>(*model);
+
     auto tmpExternal = makeExternal<Entity>(entity);
     newComponent->setOwner(tmpExternal);
     tmpExternal->addComponent<T>(newComponent);
+
+    //exp :
+    newComponent->init(*this);
+
     return newComponent;
 }
 

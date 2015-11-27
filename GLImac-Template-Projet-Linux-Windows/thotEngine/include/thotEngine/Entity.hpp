@@ -12,7 +12,7 @@ namespace te{
 //Forward
 class World;
 
-class Entity : public WorldObject, public BaseWorldObject<Entity>
+class Entity : public BaseWorldObject<Entity>
 {
 private:
 

@@ -42,6 +42,7 @@ class Handler : public IHandler
 public:
    Handler();
    Handler(std::type_index type, int index);
+   inline virtual ~Handler(){}
 
    inline virtual bool istypeof(const std::type_index& type) const override
    {
@@ -84,11 +85,12 @@ public :
     ExternalHandler(std::shared_ptr<BaseCArray> user, int index, std::type_index type);
 
     T* operator->() const;
+    T& operator*();
 
     template<typename U>
     operator ExternalHandler<U>()
     {
-        ExternalHandler<U> result( m_user.lock(), m_index);
+        ExternalHandler<U> result( m_user.lock(), m_index, typeid(T));
         return result;
     }
     template<typename U>
@@ -125,29 +127,6 @@ private :
 
 };
 
-
-template<typename T>
-class BaseWorldObject
-{
-protected:
-    ExternalHandler<T> m_thisHandler;
-
-public:
-    BaseWorldObject(){}
-    inline virtual ~BaseWorldObject(){}
-
-    inline virtual void setHandler(std::shared_ptr<BaseCArray> user, int index)
-    {
-         m_thisHandler = ExternalHandler<T>(user, index);
-    }
-
-    inline virtual ExternalHandler<T> getHandler()
-    {
-        return m_thisHandler;
-    }
-
-};
-
 class WorldObject
 {
 protected:
@@ -165,6 +144,29 @@ public :
     }
 };
 
+template<typename T>
+class BaseWorldObject : public WorldObject
+{
+protected:
+    ExternalHandler<T> m_thisHandler;
+
+public:
+    BaseWorldObject(){}
+    inline virtual ~BaseWorldObject(){}
+
+    inline virtual void setHandler(std::shared_ptr<BaseCArray> user, int index)
+    {
+        m_thisHandler = ExternalHandler<T>(user, index);
+        setIndex(index);
+    }
+
+    inline virtual ExternalHandler<T> getHandler()
+    {
+        return m_thisHandler;
+    }
+
+};
+
 
 
 template<typename T>
@@ -174,7 +176,7 @@ public :
     virtual int instantiate() = 0; //active a new element in the array
     virtual int instantiate(T& element) = 0; //active a new element in the array, copy element in it
     virtual void remove(const Handler& handler) = 0;
-    virtual T& get(const Handler& handler) = 0;
+    virtual T& get(int index) = 0;
     virtual bool isActive(int index) const = 0;
     virtual T& operator[](int index) = 0;
     virtual T& parse(int index) = 0;
@@ -188,11 +190,12 @@ class CArray : public ICArray<T>
 public :
     CArray();
     ~CArray();
+    void init(int nb); // initialize nb elements in the CArray
 
     virtual int instantiate() override; //active a new element in the array
     virtual int instantiate(T& element) override; //active a new element in the array, copy element in it
     virtual void remove(const Handler& handler) override;
-    virtual T& get(const Handler& handler) override;
+    virtual T& get(int index) override;
     virtual T& operator[](int index) override;
     virtual T& parse(int index) override;
     virtual void sort() override;
@@ -207,12 +210,18 @@ public :
         return m_size;
     }
 
+    inline int internalSize() const
+    {
+        return m_internalSize;
+    }
+
 private :
     std::vector<int> m_pointers;
     std::vector<T> m_content;
     std::vector<bool> m_status;
     std::list<unsigned int> m_inactives;
     int m_size;
+    int m_internalSize;
 
 };
 
@@ -252,8 +261,30 @@ T* ExternalHandler<T>::operator->() const
 }
 
 template<typename T>
+T& ExternalHandler<T>::operator*()
+{
+    return std::static_pointer_cast<CArray<T>>( m_user.lock() )->operator[](m_index);
+}
+
+template<typename T>
 CArray<T>::CArray() : m_size(0)
 { 
+
+}
+
+template<typename T>
+CArray<T>::~CArray()
+{
+
+}
+
+template<typename T>
+void CArray<T>::init(int nb)
+{
+    //resize the array
+    m_internalSize = nb;
+    m_size = 0;
+
     m_pointers.resize(10);
     m_content.resize(10);
     m_status.resize(10);
@@ -273,12 +304,11 @@ CArray<T>::CArray() : m_size(0)
     {
         m_pointers[i] = i;
     }
-}
 
-template<typename T>
-CArray<T>::~CArray()
-{
-
+    for(int i = 0; i < 10; i++)
+    {
+        m_inactives.push_back(i);
+    }
 }
 
 template<typename T>
@@ -287,7 +317,7 @@ int CArray<T>::instantiate()
     int index = 0;
     if(m_inactives.size() == 0 )
     {
-        if(m_content.size() < size())
+        if(m_content.size() <= internalSize())
         {
             index = m_content.size();
             m_pointers.push_back(index);
@@ -299,9 +329,9 @@ int CArray<T>::instantiate()
         else
         {
             index = m_size;
-            m_pointers[m_size] = index;
-            m_status[m_size] = true;
-            m_size++;
+            m_pointers[m_internalSize] = index;
+            m_status[m_internalSize] = true;
+            m_internalSize++;
         }
     }
     else
@@ -310,6 +340,7 @@ int CArray<T>::instantiate()
         m_status[index] = true;
         m_inactives.pop_front();
     }
+    m_size++;
 
     return index;
 }
@@ -321,7 +352,7 @@ int CArray<T>::instantiate(T& element)
 
     if(m_inactives.size() == 0 )
     {
-        if(m_content.size() < size())
+        if(m_content.size() <= internalSize())
         {
             index = m_content.size();
             m_pointers.push_back(index);
@@ -333,10 +364,10 @@ int CArray<T>::instantiate(T& element)
         else
         {
             index = m_size;
-            m_pointers[m_size] = index;
-            m_status[m_size] = true;
-            m_content[m_size] = element;
-            m_size++;
+            m_pointers[m_internalSize] = index;
+            m_status[m_internalSize] = true;
+            m_content[m_internalSize] = element;
+            m_internalSize++;
         }
     }
     else
@@ -346,6 +377,7 @@ int CArray<T>::instantiate(T& element)
         m_content[index] = element;
         m_inactives.pop_front();
     }
+    m_size++;
 
     return index;
 }
@@ -355,31 +387,32 @@ void CArray<T>::remove(const Handler& handler)
 {
     m_status[handler.getIndex()] = false;
     m_inactives.push_back(handler.getIndex());
-    if(m_size - 1 == handler.getIndex())
+    if(m_internalSize - 1 == handler.getIndex())
     {
-        while(!m_status[m_size - 1] && (m_size - 1)>=0)
+        while(!m_status[m_internalSize - 1] && (m_internalSize - 1)>=0)
         {
-            m_size--;
+            m_internalSize--;
         }
     }
+    m_size--;
 }
 
 template<typename T>
-T& CArray<T>::get(const Handler& handler)
+T& CArray<T>::get(int index)
 {
-    return m_content[ m_pointers[handler.getIndex()] ];
+    return m_content[index];
 }
 
 template<typename T>
 T& CArray<T>::operator[](int index)
 {
-    return m_content[ m_pointers[index] ];
+    return m_content[index];
 }
 
 template<typename T>
 T& CArray<T>::parse(int index)
 {
-    return m_content[index];
+    return m_content[m_pointers[index]];
 }
 
 template<typename T>

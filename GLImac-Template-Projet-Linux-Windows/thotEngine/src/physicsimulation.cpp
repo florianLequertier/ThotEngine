@@ -1,10 +1,19 @@
 #include <memory>
 #include "thotEngine/World.hpp"
+#include "thotEngine/WindowManager.hpp"
 
 #include "thotEngine/physicsimulation.hpp"
 
+//forward
+#include "thotEngine/World.hpp"
+
 namespace te{
 namespace physic{
+
+std::shared_ptr<btDiscreteDynamicsWorld> PhysicSimulation::getPhysicWorld() const
+{
+    return m_physicWorld;
+}
 
 PhysicSimulation::PhysicSimulation()
 {
@@ -13,7 +22,7 @@ PhysicSimulation::PhysicSimulation()
     m_broadPhase = new btDbvtBroadphase();
     m_sequentialImpulseConstraintSolver = new btSequentialImpulseConstraintSolver();
 
-    m_physicWorld = std::unique_ptr<btDiscreteDynamicsWorld>( new btDiscreteDynamicsWorld(m_dispatcher, m_broadPhase, m_sequentialImpulseConstraintSolver, m_collisionConfiguration) );
+    m_physicWorld = std::shared_ptr<btDiscreteDynamicsWorld>( new btDiscreteDynamicsWorld(m_dispatcher, m_broadPhase, m_sequentialImpulseConstraintSolver, m_collisionConfiguration) );
 
     // debug :
     m_debugDrawer = new DebugDrawer();
@@ -43,19 +52,18 @@ PhysicSimulation::~PhysicSimulation()
         delete m_debugDrawer;
 }
 
-void PhysicSimulation::init(std::shared_ptr<CArray<Collider>> ptrToColliders, std::shared_ptr<CArray<RigidBody>> ptrToRigidBodies)
+void PhysicSimulation::init(World& world, std::shared_ptr<CArray<Collider>> ptrToColliders, std::shared_ptr<CArray<RigidBody>> ptrToRigidBodies)
 {
-    for(int i = 0; i < ptrToColliders->size(); ++i)
-    {
-        ptrToColliders->parse(i).init();
-    }
+//    for(int i = 0; i < ptrToColliders->size(); ++i)
+//    {
+//        ptrToColliders->parse(i).init(world);
+//    }
 
-    for(int i = 0; i < ptrToRigidBodies->size(); ++i)
-    {
-        ptrToRigidBodies->parse(i).init();
-        ptrToRigidBodies->parse(i).addToPhysicWorld(m_physicWorld);
-    }
-
+//    for(int i = 0; i < ptrToRigidBodies->size(); ++i)
+//    {
+//        ptrToRigidBodies->parse(i).init(world);
+//        ptrToRigidBodies->parse(i).addToPhysicWorld(m_physicWorld);
+//    }
 }
 
 void PhysicSimulation::update()
@@ -74,7 +82,7 @@ glm::vec3 PhysicSimulation::getGravity() const
     return glm::vec3(vec.x(), vec.y(), vec.z());
 }
 
-void PhysicSimulation::debugDraw() const
+void PhysicSimulation::debugDraw(Camera& cam) const
 {
     m_physicWorld->debugDrawWorld();
 }
@@ -84,9 +92,8 @@ void PhysicSimulation::debugDraw() const
 //////////////////DebugDrawer////////////////////
 /////////////////////////////////////////////////
 
-DebugDrawer::DebugDrawer(): m_debugMode(0)
+DebugDrawer::DebugDrawer(): m_debugMode(DBG_DrawWireframe | DBG_DrawAabb )
 {
-
 }
 
 DebugDrawer::~DebugDrawer()
@@ -96,12 +103,26 @@ DebugDrawer::~DebugDrawer()
 
 void DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
 {
-    glBegin(GL_LINES);
+//    glBegin(GL_LINES);
 
-    glVertex3f(from.x(), from.y(), from.z()); glColor3f(color.x(), color.y(), color.z());
-    glVertex3f(to.x(), to.y(), to.z()); glColor3f(color.x(), color.y(), color.z());
+//    glVertex3f(from.x(), from.y(), from.z()); glColor3f(color.x(), color.y(), color.z());
+//    glVertex3f(to.x(), to.y(), to.z()); glColor3f(color.x(), color.y(), color.z());
 
-    glEnd();
+//    glEnd();
+
+    float tmp[ 6 ] = { from.getX(), from.getY(), from.getZ(),
+                  to.getX(), to.getY(), to.getZ() };
+
+       glColor4f(color.getX(), color.getY(), color.getZ(), 1.0f);
+       glVertexPointer( 3,
+                   GL_FLOAT,
+                   0,
+                   &tmp );
+
+       glPointSize( 5.0f );
+       glDrawArrays( GL_POINTS, 0, 2 );
+       glDrawArrays( GL_LINES, 0, 2 );
+
 }
 
 void DebugDrawer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color)

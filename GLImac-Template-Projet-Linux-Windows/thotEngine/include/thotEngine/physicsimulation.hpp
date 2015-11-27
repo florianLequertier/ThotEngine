@@ -9,8 +9,13 @@
 
 #include "CArray.hpp"
 #include "rigidbody.hpp"
+#include "Material.hpp"
 
 namespace te{
+
+//forward
+class World;
+
 namespace physic{
 
 class DebugDrawer : public btIDebugDraw
@@ -45,14 +50,15 @@ public:
     PhysicSimulation();
     ~PhysicSimulation();
 
-    void init(std::shared_ptr<CArray<Collider> > ptrToColliders, std::shared_ptr<CArray<RigidBody> > ptrToRigidBodies);
+    void init(World& world, std::shared_ptr<CArray<Collider> > ptrToColliders, std::shared_ptr<CArray<RigidBody> > ptrToRigidBodies);
     void update();
 
     void setGravity(glm::vec3 value);
     glm::vec3 getGravity() const;
 
-    void debugDraw() const;
+    void debugDraw(te::Camera &cam) const;
 
+    std::shared_ptr<btDiscreteDynamicsWorld> getPhysicWorld() const;
 };
 
 }

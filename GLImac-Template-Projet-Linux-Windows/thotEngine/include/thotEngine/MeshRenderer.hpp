@@ -28,7 +28,7 @@ public:
 MeshRenderer();
 ~MeshRenderer();
 
-virtual void init() override;
+virtual void init(World& world) override;
 
 void pushToGPU(); //init meshPtr and materialPtr
 void popFromGPU();

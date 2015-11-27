@@ -91,10 +91,13 @@ int main(int argc, char** argv)
     //ship 01
     auto entityHandler = world.instantiate();
     entityHandler->setName("ship01");
-    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,10,0);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,30,0);
     auto componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
+//    entityHandler->addComponent<te::physic::Collider>(world);
+//    auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
+//    rigidBodyHandler->setMass(0.1);
 
     //test 01
     entityHandler = world.instantiate();
@@ -113,27 +116,32 @@ int main(int argc, char** argv)
     //test 02
     entityHandler = world.instantiate();
     entityHandler->setName("ship02");
-    entityHandler->addComponent<te::Transform>(world)->setTranslation(20,10,0);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(20,30,0);
     componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
+    entityHandler->getComponent<te::MeshRenderer>();
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
     auto PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
     PointlightHandler->setRadius(400);
     PointlightHandler->setColor(0,1,0);
     PointlightHandler->setIntensity(10);
+//    entityHandler->addComponent<te::physic::Collider>(world);
+//    rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
+//    rigidBodyHandler->setMass(0.1);
 
 
     //test 03
     entityHandler = world.instantiate(prefab01);
-    entityHandler->getComponent<te::Transform>()->setScale(50,1,50);
+    auto transformHandler = entityHandler->getComponent<te::Transform>();
+    transformHandler->setScale(50,1,50);
     auto colliderHandler = entityHandler->addComponent<te::physic::Collider>(world);
-    colliderHandler->setDimensions(50,1,50);
+    colliderHandler->setDimensions(1,1,1);
     auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
     rigidBodyHandler->setMass(0);
 
     //test 04
     entityHandler = world.instantiate("prefab01");
-    entityHandler->getComponent<te::Transform>()->setTranslation(0,10,20);
+    entityHandler->getComponent<te::Transform>()->setTranslation(0,40,0);
     PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
     PointlightHandler->setRadius(400);
     PointlightHandler->setColor(1,1,0);
@@ -143,7 +151,7 @@ int main(int argc, char** argv)
     rigidBodyHandler->setMass(1);
 
     //set world variables :
-    world.setGravity(0,1,0);
+    world.setGravity(0,-1,0);
     world.setDebugMode(true);
 
 

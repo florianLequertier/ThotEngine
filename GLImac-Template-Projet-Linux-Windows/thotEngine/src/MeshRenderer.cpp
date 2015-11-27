@@ -1,6 +1,9 @@
 #include "thotEngine/MeshRenderer.hpp"
 #include "thotEngine/World.hpp"
 
+//forward
+#include "thotEngine/World.hpp"
+
 namespace te{
 
 MeshRenderer::MeshRenderer()
@@ -14,7 +17,7 @@ MeshRenderer::~MeshRenderer()
 
 }
 
-void MeshRenderer::init()
+void MeshRenderer::init(World &world)
 {
     //nothing
 }

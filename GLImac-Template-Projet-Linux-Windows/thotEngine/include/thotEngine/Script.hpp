@@ -11,7 +11,7 @@ public:
     Script();
     virtual ~Script();
 
-    virtual void init() override;
+    virtual void init(World& world) override;
     virtual void update();
 };
 

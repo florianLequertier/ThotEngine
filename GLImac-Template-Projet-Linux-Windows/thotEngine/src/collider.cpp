@@ -1,4 +1,6 @@
 #include "thotEngine/collider.hpp"
+//forward
+#include "thotEngine/World.hpp"
 
 namespace te{
 namespace physic{
@@ -13,7 +15,7 @@ Collider::~Collider()
 
 }
 
-void Collider::init()
+void Collider::init(World& world)
 {
     auto parent = transform();
     parent->addUpdatableTransform(getHandler());

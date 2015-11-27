@@ -4,6 +4,9 @@
 
 #include "thotEngine/Camera.hpp"
 
+//forward
+#include "thotEngine/World.hpp"
+
 namespace te{
 
 Camera::Camera()
@@ -19,7 +22,7 @@ Camera::~Camera()
 
 }
 
-void Camera::init()
+void Camera::init(World &world)
 {
 
 }
