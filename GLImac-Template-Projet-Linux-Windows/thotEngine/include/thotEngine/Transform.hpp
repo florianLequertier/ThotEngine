@@ -10,15 +10,27 @@ namespace te{
 
 class Transform; //forward declaration
 
-class Transformable{
+class Transformable
+{
 public:
     virtual void updateTransform(const Transform& transform) = 0;
 };
 
-class BaseTransform
+class TransformResolver
 {
+private:
+    Transformable* m_target;
+public:
+    TransformResolver();
+    TransformResolver(Transformable* target);
+    virtual ~TransformResolver();
 
+    void setTarget(Transformable* target);
+
+    void apply(const Transform& transform);
 };
+
+
 
 class Transform : public Component, public BaseWorldObject<Transform>
 {
@@ -48,7 +60,7 @@ private :
     glm::vec3 m_localUp;
     glm::vec3 m_localRight;
 
-    std::vector<ExternalHandler<Transformable>> m_managedTransformables;
+    std::vector<std::weak_ptr<TransformResolver>> m_managedTransformables;
 
     ExternalHandler<Transform> m_parent;
 
@@ -58,8 +70,8 @@ public :
 
     virtual void init(World& world) override;
     void updateTransformables();
-    void addUpdatableTransform(ExternalHandler<Transformable> updatable);
-    void removeUpdatableTransform(ExternalHandler<Transformable> updatable);
+    void addUpdatableTransform(std::shared_ptr<TransformResolver> updatable);
+    void removeUpdatableTransform(std::shared_ptr<TransformResolver> updatable);
     void synchronizeWithPhysic(const glm::vec3& translation, const glm::quat& rotation);
 
     glm::quat getRotation() const;

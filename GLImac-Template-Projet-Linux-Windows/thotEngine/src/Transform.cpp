@@ -10,6 +10,35 @@
 namespace te{
 
 
+/////Transform resolver : //////
+
+TransformResolver::TransformResolver() : m_target(nullptr)
+{
+
+}
+
+TransformResolver::TransformResolver(Transformable* target) : m_target(target)
+{
+
+}
+
+TransformResolver::~TransformResolver()
+{
+
+}
+
+void TransformResolver::setTarget(Transformable* target)
+{
+    m_target = target;
+}
+
+void TransformResolver::apply(const Transform& transform)
+{
+    m_target->updateTransform(transform);
+}
+
+/////Transform : /////
+
 const glm::vec3 Transform::m_forward = glm::vec3(0,0,1);
 const glm::vec3 Transform::m_up = glm::vec3(0,1,0);
 const glm::vec3 Transform::m_right = glm::vec3(1,0,0);
@@ -44,18 +73,20 @@ void Transform::updateTransformables()
 {
     for(int i = 0; i < m_managedTransformables.size(); ++i)
     {
-        m_managedTransformables[i]->updateTransform(*this);
+        m_managedTransformables[i].lock()->apply(*this);
     }
 }
 
-void Transform::addUpdatableTransform(ExternalHandler<Transformable> updatable)
+void Transform::addUpdatableTransform(std::shared_ptr<TransformResolver> updatable)
 {
     m_managedTransformables.push_back(updatable);
 }
 
-void Transform::removeUpdatableTransform(ExternalHandler<Transformable> updatable)
+void Transform::removeUpdatableTransform(std::shared_ptr<TransformResolver> updatable)
 {
-    m_managedTransformables.erase(std::find(m_managedTransformables.begin(), m_managedTransformables.end(), updatable));
+    m_managedTransformables.erase(std::find_if(m_managedTransformables.begin(), m_managedTransformables.end(), [&](std::weak_ptr<TransformResolver> const& p){
+                                                                                                                                                                    return updatable.get() == p.lock().get();
+                                                                                                                                                                }));
 }
 
 void Transform::synchronizeWithPhysic(const glm::vec3& translation, const glm::quat& rotation)
@@ -71,7 +102,7 @@ void Transform::synchronizeWithPhysic(const glm::vec3& translation, const glm::q
     m_translation = translation;
     m_translationMat = glm::translate(glm::mat4(1), m_translation);
     //update matrix :
-    m_modelMat = m_scaleMat*m_rotationMat*m_translationMat;
+    m_modelMat = m_scaleMat * m_translationMat * m_rotationMat;
 
     if(m_parent)
     {
@@ -279,7 +310,7 @@ glm::vec3 Transform::getLocalRight() const
 
 void Transform::computeModelMatrix()
 {
-    m_modelMat = m_scaleMat*m_rotationMat*m_translationMat;
+    m_modelMat = m_scaleMat * m_translationMat * m_rotationMat;
 
     if(m_parent)
     {

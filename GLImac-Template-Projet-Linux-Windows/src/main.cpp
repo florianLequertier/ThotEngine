@@ -91,7 +91,7 @@ int main(int argc, char** argv)
     //ship 01
     auto entityHandler = world.instantiate();
     entityHandler->setName("ship01");
-    entityHandler->addComponent<te::Transform>(world)->setTranslation(0,30,0);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(20,20,20);
     auto componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
     //test 01
     entityHandler = world.instantiate();
     entityHandler->setName("test01");
-    entityHandler->addComponent<te::Transform>(world);
+    entityHandler->addComponent<te::Transform>(world)->setTranslation(5,10,5);
     auto cameraHandler = entityHandler->addComponent<te::Camera>(world);
     cameraHandler->setSkyboxMaterial("skybox_mat02");
     cameraHandler->setUseSkybox(true);
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
     DirectionallightHandler->setColor(1,1,1);
     DirectionallightHandler->setIntensity(0.4);
 
-
+/*
     //test 02
     entityHandler = world.instantiate();
     entityHandler->setName("ship02");
@@ -133,22 +133,38 @@ int main(int argc, char** argv)
     //test 03
     entityHandler = world.instantiate(prefab01);
     auto transformHandler = entityHandler->getComponent<te::Transform>();
-    transformHandler->setScale(50,1,50);
+    transformHandler->setScale(1,1,1);
     auto colliderHandler = entityHandler->addComponent<te::physic::Collider>(world);
     colliderHandler->setDimensions(1,1,1);
     auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
-    rigidBodyHandler->setMass(0);
+    rigidBodyHandler->setMass(0);*/
 
     //test 04
     entityHandler = world.instantiate("prefab01");
-    entityHandler->getComponent<te::Transform>()->setTranslation(0,40,0);
-    PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
+    auto PointlightHandler = entityHandler->addComponent<te::PointLight>(world);
     PointlightHandler->setRadius(400);
     PointlightHandler->setColor(1,1,0);
     PointlightHandler->setIntensity(10);
     entityHandler->addComponent<te::physic::Collider>(world);
+    auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
+    rigidBodyHandler->setMass(10);
+    entityHandler->getComponent<te::Transform>()->setTranslation(20,10,0);
+
+    //test 05
+    entityHandler = world.instantiate();
+    entityHandler->setName("ship02");
+    entityHandler->addComponent<te::Transform>(world);
+    componentHandler = entityHandler->addComponent<te::MeshRenderer>(world);
+    entityHandler->getComponent<te::MeshRenderer>();
+    componentHandler->setMaterial("ship_mat");
+    componentHandler->setMesh("ship");
+    auto colliderComponent = entityHandler->addComponent<te::physic::Collider>(world);
+    colliderComponent->setDimensions(100,1,100);
     rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
-    rigidBodyHandler->setMass(1);
+    rigidBodyHandler->setMass(0);
+    auto transformHandler = entityHandler->getComponent<te::Transform>();
+    transformHandler->setTranslation(0,0,0);
+    transformHandler->setScale(1,1,1);
 
     //set world variables :
     world.setGravity(0,-1,0);

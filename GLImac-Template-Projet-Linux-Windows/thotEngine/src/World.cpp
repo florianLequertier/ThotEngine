@@ -145,8 +145,8 @@ void World::render()
     //m_renderer.render(m_ptrToCameras->operator [](0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
     m_renderer.deferred_render(m_ptrToCameras->parse(0), m_ptrToMeshRenderers, m_ptrToPointLights, m_ptrToDirectionalLights);
     //additionnal draw call if debugging :
-    if(m_debugMode)
-        m_physicSimulation->debugDraw(m_ptrToCameras->parse(0));
+    //if(m_debugMode)
+        //m_physicSimulation->debugDraw(m_ptrToCameras->parse(0));
 }
 
 void World::setDebugMode(bool state)

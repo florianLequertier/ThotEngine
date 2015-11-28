@@ -6,8 +6,13 @@ namespace physic{
 
 MotionState::MotionState(ExternalHandler<Transform> entityTransform)
 {
-    auto transformMat = entityTransform->getModelMatrix();
-    m_physicTransform.setFromOpenGLMatrix(glm::value_ptr(transformMat));
+    //auto transformMat = entityTransform->getModelMatrix();
+    //m_physicTransform.setFromOpenGLMatrix(glm::value_ptr(transformMat));
+
+    glm::quat rotation =  entityTransform->getRotation();
+    glm::vec3 translation = entityTransform->getTranslation();
+    m_physicTransform.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
+    m_physicTransform.setOrigin(btVector3(translation.x, translation.y, translation.z));
 
     m_entityTransform = entityTransform;
 }
@@ -19,7 +24,7 @@ MotionState::~MotionState()
 
 void MotionState::getWorldTransform(btTransform& worldTransform) const
 {
-    worldTransform = m_physicTransform;
+    //worldTransform = m_physicTransform;
 }
 
 void MotionState::setWorldTransform(const btTransform& worldTransform)
@@ -29,7 +34,7 @@ void MotionState::setWorldTransform(const btTransform& worldTransform)
 
 //    m_entityTransform->setRotation(glm::quat( rotation.x(), rotation.y(), rotation.z(), rotation.w()));
 //    m_entityTransform->setTranslation(translation.x(), translation.y(), translation.z());
-    m_entityTransform->synchronizeWithPhysic(glm::vec3(translation.x(), -translation.y(), translation.z()), glm::quat( rotation.x(), rotation.y(), rotation.z(), rotation.w()));
+    m_entityTransform->synchronizeWithPhysic(glm::vec3(translation.x(), translation.y(), translation.z()), glm::quat( rotation.x(), rotation.y(), rotation.z(), rotation.w() ));
 }
 
 

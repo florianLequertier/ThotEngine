@@ -11,7 +11,7 @@ class Entity;
 class Transform;
 class World;
 
-class Component : public WorldObject
+class Component : public WorldObject, public std::enable_shared_from_this<Component>
 {
 
 protected :

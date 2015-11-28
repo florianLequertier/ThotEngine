@@ -68,7 +68,7 @@ void PhysicSimulation::init(World& world, std::shared_ptr<CArray<Collider>> ptrT
 
 void PhysicSimulation::update()
 {
-    m_physicWorld->stepSimulation(World::getStepTime());
+    m_physicWorld->stepSimulation(World::getStepTime(), 10);
 }
 
 void PhysicSimulation::setGravity(glm::vec3 value)
