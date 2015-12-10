@@ -23,6 +23,13 @@
 
 namespace te{
 
+enum ResourceAccessType{EXTERNAL, INTERNAL};
+
+struct ResourceKey{
+    std::string m_name;
+    ResourceAccessType m_type;
+};
+
 class ResourceManager
 {
 
@@ -47,6 +54,28 @@ private:
     std::map<std::string, std::vector<std::string>> m_cubeMapKeys; // name <-> path
     std::map<std::string, int> m_cubeMapCount; // name <-> count
 
+    //internals :
+
+    //meshes
+    std::map<std::string, std::shared_ptr<Mesh> > m_internalMeshes; // name <-> mesh
+    std::map<std::string, std::string> m_internalMeshKeys; // name <-> path
+    std::map<std::string, int> m_internalMeshCount; // name <-> count
+
+    //images
+    std::map<std::string, std::shared_ptr<Image> > m_internalImages; //name <-> image
+    std::map<std::string, std::string> m_internalImageKeys; // name <-> path
+    std::map<std::string, int> m_internalImageCount; // name <-> count
+
+    //glProgram
+    std::map<std::string, std::shared_ptr<GLProgram> > m_internalPrograms; //name <-> program
+    std::map<std::string, std::vector<std::string>> m_internalProgramKeys; // name <-> path
+    std::map<std::string, int> m_internalProgramCount; // name <-> count
+
+    //cubeMap
+    std::map<std::string, std::shared_ptr<CubeMap> > m_internalCubeMaps; //name <-> cubeMap
+    std::map<std::string, std::vector<std::string>> m_internalCubeMapKeys; // name <-> path
+    std::map<std::string, int> m_internalCubeMapCount; // name <-> count
+
     //application path
     std::string m_applicationPath;
 
@@ -57,33 +86,35 @@ public:
     ~ResourceManager();
     void init(std::string applicationPath);
 
-    void pushMeshToGPU(std::string name);
-    void popMeshFromGPU(std::string name);
-    void pushImageToGPU(std::string name);
-    void popImageFromGPU(std::string name);
-    void pushCubeMapToGPU(std::string name);
-    void popCubeMapFromGPU(std::string name);
+    void loadInternals();
 
-    std::shared_ptr<Mesh> loadMesh(std::string name, std::string path, bool relative = true);
-    std::shared_ptr<Mesh> loadMesh(std::string name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+    void pushMeshToGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL );
+    void popMeshFromGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL );
+    void pushImageToGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL );
+    void popImageFromGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL );
+    void pushCubeMapToGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL );
+    void popCubeMapFromGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL );
 
-    std::shared_ptr<Image> loadImage(std::string name, std::string path, bool relative = true);
+    std::shared_ptr<Mesh> loadMesh(std::string name, std::string path, ResourceAccessType accessType = ResourceAccessType::EXTERNAL, bool relative = true);
+    std::shared_ptr<Mesh> loadMesh(std::string name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
-    std::shared_ptr<GLProgram> loadProgram(std::string name, std::string vsPath, std::string fsPath, bool relative = true);
+    std::shared_ptr<Image> loadImage(std::string name, std::string path, ResourceAccessType accessType = ResourceAccessType::EXTERNAL, bool relative = true);
 
-    std::shared_ptr<CubeMap> loadCubeMap(std::string name, std::vector<std::string> paths, bool relative = true);
+    std::shared_ptr<GLProgram> loadProgram(std::string name, std::string vsPath, std::string fsPath, ResourceAccessType accessType = ResourceAccessType::EXTERNAL, bool relative = true);
+
+    std::shared_ptr<CubeMap> loadCubeMap(std::string name, std::vector<std::string> paths, ResourceAccessType accessType = ResourceAccessType::EXTERNAL, bool relative = true);
 
     std::string getApplicationPath() const;
 
-    std::shared_ptr<Mesh> getMesh(std::string name);
-    std::shared_ptr<Image> getImage(std::string name);
-    std::shared_ptr<GLProgram> getProgram(std::string name);
-    std::shared_ptr<CubeMap> getCubeMap(std::string name);
+    std::shared_ptr<Mesh> getMesh(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+    std::shared_ptr<Image> getImage(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+    std::shared_ptr<GLProgram> getProgram(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+    std::shared_ptr<CubeMap> getCubeMap(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
-    bool containsMesh(std::string name);
-    bool containsImage(std::string name);
-    bool containsProgram(std::string name);
-    bool containsCubeMap(std::string name);
+    bool containsMesh(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+    bool containsImage(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+    bool containsProgram(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+    bool containsCubeMap(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
 private :
     ResourceManager();
@@ -97,3 +128,4 @@ private :
 
 
 #endif // RESOURCEMANAGER_HPP
+

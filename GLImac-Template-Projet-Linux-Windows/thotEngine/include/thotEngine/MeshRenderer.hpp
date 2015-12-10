@@ -18,7 +18,9 @@ private:
 //    std::weak_ptr<MaterialManager> m_materialManager;
 
     std::string m_meshName;
+    ResourceAccessType m_meshAccessType;
     std::string m_materialName;
+    ResourceAccessType m_materialAccessType;
 
     std::weak_ptr<Mesh> m_meshPtr;
     std::weak_ptr<Material> m_materialPtr;
@@ -33,14 +35,17 @@ virtual void init(World& world) override;
 void pushToGPU(); //init meshPtr and materialPtr
 void popFromGPU();
 
-void setMesh(std::string mesh);
-void setMaterial(std::string material);
+void setMesh(std::string mesh, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+void setMaterial(std::string material, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
 GLuint getMaterialID() const;
 
 void draw() const;
 void render(const glm::mat4& worldMat, const glm::mat4& viewMat);
 void render(const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition);
+
+glm::vec3 getUpperRight() const;
+glm::vec3 getLowerLeft() const;
 
 //operator overload
 inline bool operator<(const MeshRenderer& other )

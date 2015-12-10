@@ -35,6 +35,9 @@ private:
     std::vector<GLEntity> m_entities;
     //std::shared_ptr<Material> m_material;
 
+    glm::vec3 m_upperRight;
+    glm::vec3 m_lowerLeft;
+
 public:
 
     Mesh(std::string name = "Mesh");
@@ -50,9 +53,13 @@ public:
     //void setMaterial(std::shared_ptr<Material> material);
 
     void draw();
+
+    glm::vec3 getUpperRight() const;
+    glm::vec3 getLowerLeft() const;
 };
 
 
 }
 
 #endif // MESH_HPP
+

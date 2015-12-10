@@ -80,10 +80,10 @@ void World::setStepTime(float delta)
 
 void World::pushToGPU()
 {
-    for(int i = 0; i < m_ptrToMeshRenderers->size(); ++i)
-    {
-        m_ptrToMeshRenderers->parse(i).pushToGPU();
-    }
+//    for(int i = 0; i < m_ptrToMeshRenderers->size(); ++i)
+//    {
+//        m_ptrToMeshRenderers->parse(i).pushToGPU();
+//    }
 }
 
 void World::popFromGPU()

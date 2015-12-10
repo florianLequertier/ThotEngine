@@ -83,6 +83,16 @@ void Mesh::draw()
     }
 }
 
+glm::vec3 Mesh::getUpperRight() const
+{
+    return m_upperRight;
+}
+
+glm::vec3 Mesh::getLowerLeft() const
+{
+    return m_lowerLeft;
+}
+
 bool Mesh::initFromScene(const aiScene* pScene, const std::string& Filename/*, bool loadTextures*/)
 {
     m_entities.resize(pScene->mNumMeshes);
@@ -108,6 +118,13 @@ void Mesh::initMesh(unsigned int Index, const aiMesh* paiMesh)
 
     const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 
+    //bounds init :
+    if(paiMesh->mNumVertices > 0)
+    {
+        const aiVector3D* pPos00 = &(paiMesh->mVertices[0]);
+        m_upperRight = glm::vec3(pPos00->x, pPos00->y, pPos00->z);
+    }
+
     for (unsigned int i = 0; i < paiMesh->mNumVertices; i++) {
         const aiVector3D* pPos = &(paiMesh->mVertices[i]);
         const aiVector3D* pNormal = paiMesh->HasNormals() ? &(paiMesh->mNormals[i]) : &Zero3D;
@@ -118,6 +135,21 @@ void Mesh::initMesh(unsigned int Index, const aiMesh* paiMesh)
             glm::vec2(pTexCoord->x, pTexCoord->y));
 
         Vertices.push_back(v);
+
+        //bounds :
+        if(pPos->x > m_upperRight.x)
+            m_upperRight.x = pPos->x;
+        if(pPos->y > m_upperRight.y)
+            m_upperRight.y = pPos->y;
+        if(pPos->z > m_upperRight.z)
+            m_upperRight.z = pPos->z;
+
+        if(pPos->x < m_lowerLeft.x)
+            m_lowerLeft.x = pPos->x;
+        if(pPos->y < m_lowerLeft.y)
+            m_lowerLeft.y = pPos->y;
+        if(pPos->z < m_lowerLeft.z)
+            m_lowerLeft.z = pPos->z;
     }
 
     for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) {

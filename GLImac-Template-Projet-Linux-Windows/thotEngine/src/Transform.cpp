@@ -209,7 +209,7 @@ void Transform::setRotation(float x, float y, float z)
 void Transform::setScale(float x, float y, float z)
 {
     m_scale = glm::vec3(x,y,z);
-    m_scaleMat = glm::scale(glm::mat4(1), m_scale);
+    m_scaleMat = glm::scale( m_scale );
 
     computeModelMatrix();
 }
@@ -217,7 +217,7 @@ void Transform::setScale(float x, float y, float z)
 void Transform::setScale(float s)
 {
     m_scale = glm::vec3(s);
-    m_scaleMat = glm::scale(glm::mat4(1), m_scale);
+    m_scaleMat = glm::scale( m_scale );
 
     computeModelMatrix();
 }
@@ -310,7 +310,7 @@ glm::vec3 Transform::getLocalRight() const
 
 void Transform::computeModelMatrix()
 {
-    m_modelMat = m_scaleMat * m_translationMat * m_rotationMat;
+    m_modelMat =  m_scaleMat * m_translationMat * m_rotationMat;
 
     if(m_parent)
     {

@@ -81,6 +81,19 @@ void Collider::setDimensions(float w, float h, float d)
     m_dimensions = glm::vec3(w,h,d);
 }
 
+void Collider::fitMesh( ExternalHandler<MeshRenderer> meshComponent )
+{
+    glm::vec3 upperRight = meshComponent->getUpperRight();
+    glm::vec3 lowerLeft = meshComponent->getLowerLeft();
+    glm::vec3 diag = upperRight - lowerLeft;
+
+    m_dimensions = diag * 0.5f;
+    m_height = diag.y;
+    m_radius = diag.length() * 0.5f;
+
+    m_origin = glm::vec3(0,0,0); //diag*0.25f;
+}
+
 glm::mat4 Collider::getModelMatrix()
 {
     glm::vec3 colliderPosition = transform()->getTranslation() + m_origin;
@@ -99,4 +112,5 @@ void Collider::setOrigin(const glm::vec3 &origin)
 
 }
 }
+
 

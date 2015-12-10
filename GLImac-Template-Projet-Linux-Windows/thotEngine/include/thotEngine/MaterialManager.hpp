@@ -18,6 +18,10 @@ private:
     std::map<std::string, std::shared_ptr<Material> > m_materials; // name <-> material
     std::map<std::string, int> m_materialCount; // name <-> count
 
+    //internals
+    std::map<std::string, std::shared_ptr<Material> > m_internalMaterials; // name <-> material
+    std::map<std::string, int> m_internalMaterialCount; // name <-> count
+
 public:
 
     //singleton
@@ -25,27 +29,29 @@ public:
     ~MaterialManager();
     //void init(std::shared_ptr<ResourceManager> resourceManager);
 
-    void pushMaterialToGPU(std::string name);
-    void popMaterialFromGPU(std::string name);
+    void loadInternals();
+
+    void pushMaterialToGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
+    void popMaterialFromGPU(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
     template<typename MaterialType>
-    std::shared_ptr<Material> createMaterial(std::string name, std::string programName);
+    std::shared_ptr<Material> createMaterial(std::string name, std::string programName, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
     //std::shared_ptr<Material> createMaterial<SkyboxMaterial>(std::string name, std::string programName);
 
     template<typename MaterialType>
-    std::shared_ptr<Material> createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames);
+    std::shared_ptr<Material> createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
     //std::shared_ptr<Material> createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames);
 
     template<typename MaterialType>
-    std::shared_ptr<Material> createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters);
+    std::shared_ptr<Material> createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
     //std::shared_ptr<Material> createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters);
 
-    std::shared_ptr<Material> getMaterial(std::string name);
+    std::shared_ptr<Material> getMaterial(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
-    bool containsMaterial(std::string name);
+    bool containsMaterial(std::string name, ResourceAccessType accessType = ResourceAccessType::EXTERNAL);
 
 private:
     MaterialManager();
@@ -60,7 +66,7 @@ private:
 
 
 template<typename MaterialType>
-inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName)
+inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, ResourceAccessType accessType)
 {
     auto program = ResourceManager::getInstance().getProgram(programName);
 
@@ -73,15 +79,24 @@ inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string nam
     //make a new material instance, with name [parameter : name], and with a program which name is programName
     auto newMat = std::make_shared<MaterialType>(program); //std::shared_ptr<Material>(new Material( program ));
 
-    //store it in the manager
-    m_materials[name] = newMat;
-    m_materialCount[name] = 0;
+    if(accessType == ResourceAccessType::EXTERNAL)
+    {
+        //store it in the manager
+        m_materials[name] = newMat;
+        m_materialCount[name] = 0;
+    }
+    else
+    {
+        //store it in the manager
+        m_internalMaterials[name] = newMat;
+        m_internalMaterialCount[name] = 0;
+    }
 
     return newMat;
 }
 
 template<typename MaterialType>
-inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames)
+inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, ResourceAccessType accessType)
 {
     auto program = ResourceManager::getInstance().getProgram(programName);
     std::vector<std::shared_ptr<Image>> images;
@@ -99,16 +114,25 @@ inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string nam
     //make a new material instance, with name [parameter : name], and with a program which name is programName
     auto newMat = std::make_shared<MaterialType>(program, images); //std::shared_ptr<Material>(new Material( program, images ));
 
-    //store it in the manager
-    m_materials[name] = newMat;
-    m_materialCount[name] = 0;
+    if(accessType == ResourceAccessType::EXTERNAL)
+    {
+        //store it in the manager
+        m_materials[name] = newMat;
+        m_materialCount[name] = 0;
+    }
+    else
+    {
+        //store it in the manager
+        m_internalMaterials[name] = newMat;
+        m_internalMaterialCount[name] = 0;
+    }
 
     std::cout<<"creating new material : "<<name<<" successfully !"<<std::endl;
     return newMat;
 }
 
 template<typename MaterialType>
-inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters)
+inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters, ResourceAccessType accessType)
 {
     auto program = ResourceManager::getInstance().getProgram(programName);
     std::vector<std::shared_ptr<Image>> images;
@@ -126,20 +150,29 @@ inline std::shared_ptr<Material> MaterialManager::createMaterial(std::string nam
     //make a new material instance, with name [parameter : name], and with a program which name is programName
     auto newMat = std::make_shared<MaterialType>(program, images, parameters); //std::shared_ptr<Material>(new Material( program, images ));
 
-    //store it in the manager
-    m_materials[name] = newMat;
-    m_materialCount[name] = 0;
+    if(accessType == ResourceAccessType::EXTERNAL)
+    {
+        //store it in the manager
+        m_materials[name] = newMat;
+        m_materialCount[name] = 0;
+    }
+    else
+    {
+        //store it in the manager
+        m_internalMaterials[name] = newMat;
+        m_internalMaterialCount[name] = 0;
+    }
 
     std::cout<<"creating new material : "<<name<<" successfully !"<<std::endl;
     return newMat;
 }
 
 template<>
-std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName);
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, ResourceAccessType accessType);
 template<>
-std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames);
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames, ResourceAccessType accessType);
 template<>
-std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters);
+std::shared_ptr<Material> MaterialManager::createMaterial<SkyboxMaterial>(std::string name, std::string programName, std::vector<std::string> imgNames, std::vector<float> parameters, ResourceAccessType accessType);
 
 
 

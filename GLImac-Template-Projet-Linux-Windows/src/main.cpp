@@ -46,23 +46,25 @@ int main(int argc, char** argv)
 
     //load resources
     te::ResourceManager& resourceManager = te::ResourceManager::getInstance();
+    resourceManager.loadInternals();
     resourceManager.loadImage("ship_tex_dif", "assets/textures/cobble2.png");
-    resourceManager.loadImage("skybox_tex_dif", "assets/textures/skybox_texture.png");
+//    resourceManager.loadImage("skybox_tex_dif", "assets/textures/skybox_texture.png");
     resourceManager.loadMesh("ship", "assets/models/cube.obj");
-    resourceManager.loadProgram("glProg_3D", "shaders/3D.vs.glsl", "shaders/3D.fs.glsl");
-    resourceManager.loadProgram("glProg_skybox", "shaders/skyShader.vs.glsl", "shaders/skyShader.fs.glsl");
-    resourceManager.loadProgram("glProg_3DLight", "shaders/3DLight.vs.glsl", "shaders/3DLight.fs.glsl");
-    resourceManager.loadCubeMap("skybox_cubeTex_dif", {"assets/textures/skyboxes/siege/right.png",
-                                                       "assets/textures/skyboxes/siege/left.png",
-                                                       "assets/textures/skyboxes/siege/top.png",
-                                                       "assets/textures/skyboxes/siege/top.png",
-                                                       "assets/textures/skyboxes/siege/front.png",
-                                                       "assets/textures/skyboxes/siege/back.png"});
+//    resourceManager.loadProgram("glProg_3D", "shaders/3D.vs.glsl", "shaders/3D.fs.glsl");
+//    resourceManager.loadProgram("glProg_skybox", "shaders/skyShader.vs.glsl", "shaders/skyShader.fs.glsl");
+//    resourceManager.loadProgram("glProg_3DLight", "shaders/3DLight.vs.glsl", "shaders/3DLight.fs.glsl");
+//    resourceManager.loadCubeMap("skybox_cubeTex_dif", {"assets/textures/skyboxes/siege/right.png",
+//                                                       "assets/textures/skyboxes/siege/left.png",
+//                                                       "assets/textures/skyboxes/siege/top.png",
+//                                                       "assets/textures/skyboxes/siege/top.png",
+//                                                       "assets/textures/skyboxes/siege/front.png",
+//                                                       "assets/textures/skyboxes/siege/back.png"});
+
 
     //make materials
     te::MaterialManager& materialManager = te::MaterialManager::getInstance();
     materialManager.createMaterial<te::UnlitMaterial>("ship_unlit_mat", "glProg_3D", {"ship_tex_dif"});
-    materialManager.createMaterial<te::UnlitMaterial>("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
+//    materialManager.createMaterial<te::UnlitMaterial>("skybox_mat", "glProg_skybox", {"skybox_tex_dif"});
     materialManager.createMaterial<te::LitMaterial>("ship_mat", "glProg_3DLight", {"ship_tex_dif"}, {0.9f,32.f});
     materialManager.createMaterial<te::LitMaterial>("ship_02_mat", "glProg_3DLight", {}, {0.4f,32.f});
     materialManager.createMaterial<te::SkyboxMaterial>("skybox_mat02", "glProg_skybox", {"skybox_cubeTex_dif"});
@@ -145,10 +147,13 @@ int main(int argc, char** argv)
     PointlightHandler->setRadius(400);
     PointlightHandler->setColor(1,1,0);
     PointlightHandler->setIntensity(10);
-    entityHandler->addComponent<te::physic::Collider>(world);
+    auto colliderHandler = entityHandler->addComponent<te::physic::Collider>(world);
+    colliderHandler->fitMesh(entityHandler->getComponent<te::MeshRenderer>());
     auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
     rigidBodyHandler->setMass(10);
-    entityHandler->getComponent<te::Transform>()->setTranslation(20,10,0);
+    entityHandler->getComponent<te::Transform>()->setTranslation(0,10,0);
+    auto transformHandler = entityHandler->getComponent<te::Transform>();
+    transformHandler->setScale(2,2,2);
 
     //test 05
     entityHandler = world.instantiate();
@@ -158,13 +163,13 @@ int main(int argc, char** argv)
     entityHandler->getComponent<te::MeshRenderer>();
     componentHandler->setMaterial("ship_mat");
     componentHandler->setMesh("ship");
-    auto colliderComponent = entityHandler->addComponent<te::physic::Collider>(world);
-    colliderComponent->setDimensions(100,1,100);
+    colliderHandler = entityHandler->addComponent<te::physic::Collider>(world);
+    colliderHandler->fitMesh(entityHandler->getComponent<te::MeshRenderer>());
     rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
     rigidBodyHandler->setMass(0);
-    auto transformHandler = entityHandler->getComponent<te::Transform>();
+    transformHandler = entityHandler->getComponent<te::Transform>();
     transformHandler->setTranslation(0,0,0);
-    transformHandler->setScale(1,1,1);
+    //transformHandler->setScale(1,1,1);
 
     //set world variables :
     world.setGravity(0,-1,0);

@@ -3,6 +3,7 @@
 
 #include "Bullet/btBulletCollisionCommon.h"
 
+#include "MeshRenderer.hpp"
 #include "Transform.hpp"
 
 namespace te{
@@ -41,6 +42,8 @@ public:
     void setDimensions(const glm::vec3 &dimensions);
     void setDimensions(float w, float h, float d);
 
+    void fitMesh(ExternalHandler<MeshRenderer> meshComponent );
+
     glm::mat4 getModelMatrix();
 
     glm::vec3 getOrigin() const;
@@ -51,4 +54,3 @@ public:
 }
 
 #endif // COLLIDER_HPP
-
