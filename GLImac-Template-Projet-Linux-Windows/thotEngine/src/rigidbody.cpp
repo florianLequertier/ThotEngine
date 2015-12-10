@@ -57,16 +57,15 @@ void RigidBody::updateTransform(const Transform &transform)
 {
     //update directly the rigidbody with the entity's transform
     btTransform newPhysicTransform;
-    newPhysicTransform.setFromOpenGLMatrix( glm::value_ptr(transform.getModelMatrix()) );
-//    glm::quat rotation =  transform.getRotation();
-//    glm::vec3 translation = transform.getTranslation();
-//    newPhysicTransform.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
-//    newPhysicTransform.setOrigin(btVector3(translation.x, translation.y, translation.z));
+    glm::quat rotation =  transform.getRotation();
+    glm::vec3 translation = transform.getTranslation();
+    newPhysicTransform.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
+    newPhysicTransform.setOrigin(btVector3(translation.x, translation.y, translation.z));
 
-    if(m_target && m_target->isInWorld())
-    {
-        popFromSimulation();
-    }
+//    if(m_target && m_target->isInWorld())
+//    {
+//        popFromSimulation();
+//    }
 
     m_target->setWorldTransform(newPhysicTransform);
     //m_target->translate(btVector3(0,0,0));
@@ -74,16 +73,16 @@ void RigidBody::updateTransform(const Transform &transform)
 
     //scale :
     glm::vec3 s = transform.getScale();
-    //m_target->getCollisionShape()->setLocalScaling( btVector3(s.x, s.y, s.z) );
+    m_target->getCollisionShape()->setLocalScaling( btVector3(s.x, s.y, s.z) );
     btVector3 newInertia;
     m_target->getCollisionShape()->calculateLocalInertia(m_mass, newInertia);
     m_target->setMassProps(m_mass, newInertia);
     m_target->updateInertiaTensor();
 
     //add target to simulation :
-    pushToSimulation();
+    //pushToSimulation();
 
-    //m_ptrToPhysicWorld.lock()->updateSingleAabb(m_target.get());
+    m_ptrToPhysicWorld.lock()->updateSingleAabb(m_target.get());
 }
 
 //build a bullet rigidbody and send it to the btDynamicWorld

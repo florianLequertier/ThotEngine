@@ -91,7 +91,7 @@ void Collider::fitMesh( ExternalHandler<MeshRenderer> meshComponent )
     m_height = diag.y;
     m_radius = diag.length() * 0.5f;
 
-    m_origin = glm::vec3(0,0,0); //diag*0.25f;
+    m_origin = lowerLeft + diag*0.5f; // glm::vec3(0,0,0);
 }
 
 glm::mat4 Collider::getModelMatrix()

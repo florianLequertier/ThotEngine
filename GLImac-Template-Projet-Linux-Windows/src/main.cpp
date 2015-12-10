@@ -151,9 +151,9 @@ int main(int argc, char** argv)
     colliderHandler->fitMesh(entityHandler->getComponent<te::MeshRenderer>());
     auto rigidBodyHandler = entityHandler->addComponent<te::physic::RigidBody>(world);
     rigidBodyHandler->setMass(10);
-    entityHandler->getComponent<te::Transform>()->setTranslation(0,10,0);
+    entityHandler->getComponent<te::Transform>()->setTranslation(1.2,10,0);
     auto transformHandler = entityHandler->getComponent<te::Transform>();
-    transformHandler->setScale(2,2,2);
+    transformHandler->setScale(1,1,1);
 
     //test 05
     entityHandler = world.instantiate();
@@ -169,7 +169,7 @@ int main(int argc, char** argv)
     rigidBodyHandler->setMass(0);
     transformHandler = entityHandler->getComponent<te::Transform>();
     transformHandler->setTranslation(0,0,0);
-    //transformHandler->setScale(1,1,1);
+    transformHandler->setScale(2,2,2);
 
     //set world variables :
     world.setGravity(0,-1,0);

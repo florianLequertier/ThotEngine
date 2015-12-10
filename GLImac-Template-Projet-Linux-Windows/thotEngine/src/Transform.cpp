@@ -89,37 +89,6 @@ void Transform::removeUpdatableTransform(std::shared_ptr<TransformResolver> upda
                                                                                                                                                                 }));
 }
 
-void Transform::synchronizeWithPhysic(const glm::vec3& translation, const glm::quat& rotation)
-{
-    //rotation :
-    m_rotation = rotation;
-    m_rotationMat = glm::mat4_cast(m_rotation);
-
-    m_localForward = glm::vec3(m_rotation*glm::vec4(m_forward,0));
-    m_localRight = glm::vec3(m_rotation*glm::vec4(m_right,0));
-    m_localUp = glm::vec3(m_rotation*glm::vec4(m_up,0));
-    //translation :
-    m_translation = translation;
-    m_translationMat = glm::translate(glm::mat4(1), m_translation);
-    //update matrix :
-    m_modelMat = m_scaleMat * m_translationMat * m_rotationMat;
-
-    if(m_parent)
-    {
-        m_globalRotation = m_parent->getRotation() * m_rotation;
-        m_globalScale = m_parent->getScale() + m_scale;
-        m_globalTranslation = m_parent->getTranslation() + m_translation;
-        m_globalModelMat = m_parent->getModelMatrix() * m_modelMat;
-    }
-    else
-    {
-        m_globalRotation = m_rotation;
-        m_globalScale = m_scale;
-        m_globalTranslation = m_translation;
-        m_globalModelMat = m_modelMat;
-    }
-}
-
 //TODO take parent into account
 
 glm::quat Transform::getRotation() const
@@ -310,7 +279,7 @@ glm::vec3 Transform::getLocalRight() const
 
 void Transform::computeModelMatrix()
 {
-    m_modelMat =  m_scaleMat * m_translationMat * m_rotationMat;
+    m_modelMat =  m_translationMat * m_rotationMat * m_scaleMat;
 
     if(m_parent)
     {
@@ -328,6 +297,38 @@ void Transform::computeModelMatrix()
     }
 
     updateTransformables();
+}
+
+
+void Transform::synchronizeWithPhysic(const glm::vec3& translation, const glm::quat& rotation)
+{
+    //rotation :
+    m_rotation = rotation;
+    m_rotationMat = glm::mat4_cast(m_rotation);
+
+    m_localForward = glm::vec3(m_rotation*glm::vec4(m_forward,0));
+    m_localRight = glm::vec3(m_rotation*glm::vec4(m_right,0));
+    m_localUp = glm::vec3(m_rotation*glm::vec4(m_up,0));
+    //translation :
+    m_translation = translation;
+    m_translationMat = glm::translate(glm::mat4(1), m_translation);
+    //update matrix :
+    m_modelMat = m_translationMat * m_rotationMat * m_scaleMat;
+
+    if(m_parent)
+    {
+        m_globalRotation = m_parent->getRotation() * m_rotation;
+        m_globalScale = m_parent->getScale() + m_scale;
+        m_globalTranslation = m_parent->getTranslation() + m_translation;
+        m_globalModelMat = m_parent->getModelMatrix() * m_modelMat;
+    }
+    else
+    {
+        m_globalRotation = m_rotation;
+        m_globalScale = m_scale;
+        m_globalTranslation = m_translation;
+        m_globalModelMat = m_modelMat;
+    }
 }
 
 void Transform::setParent(ExternalHandler<Transform> parent)
