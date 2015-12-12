@@ -27,7 +27,7 @@ Material::Material(std::shared_ptr<GLProgram> program, std::vector<std::shared_p
 
 Material::~Material()
 {
-
+    popFromGPU();
 }
 
 void Material::pushToGPU()
@@ -54,6 +54,17 @@ GLuint Material::getGlId() const
 void Material::use()
 {
     m_program.lock()->use();
+}
+
+void Material::addUniform(GLuint programId, std::string uniformName ,std::string uniformMappedName)
+{
+    m_uniforms.push_back(glGetUniformLocation(programId, uniformName.c_str()));
+    m_mappedUniforms[uniformMappedName] = m_uniforms.back();
+}
+
+GLuint Material::getUniform(std::string uniformMappedName)
+{
+    return m_mappedUniforms[uniformMappedName];
 }
 
 
@@ -85,10 +96,14 @@ void UnlitMaterial::initUniforms()
 {
     GLuint programId = m_program.lock()->getId();
     m_uniforms.push_back(glGetUniformLocation(programId, "u_ModelMatrix"));
+    m_mappedUniforms["ModelMatrix"] = m_uniforms.back();
     m_uniforms.push_back( glGetUniformLocation(programId, "u_MVPMatrix"));
+    m_mappedUniforms["MVPMatrix"] = m_uniforms.back();
     m_uniforms.push_back( glGetUniformLocation(programId, "u_normalMatrix"));
+    m_mappedUniforms["normalMatrix"] = m_uniforms.back();
 
     m_uniforms.push_back( glGetUniformLocation(programId, "u_diffuse"));
+    m_mappedUniforms["diffuse"] = m_uniforms.back();
 }
 
 void UnlitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& worldMat, const glm::mat4& viewMat)
@@ -174,34 +189,50 @@ void LitMaterial::initUniforms()
 
     GLuint programId = m_program.lock()->getId();
     m_uniforms.push_back(glGetUniformLocation(programId, "u_ModelMatrix"));
+    m_mappedUniforms["ModelMatrix"] = m_uniforms.back();
     m_uniforms.push_back( glGetUniformLocation(programId, "u_MVPMatrix"));
+    m_mappedUniforms["MVPMatrix"] = m_uniforms.back();
     m_uniforms.push_back( glGetUniformLocation(programId, "u_normalMatrix"));
+    m_mappedUniforms["normalMatrix"] = m_uniforms.back();
 
     m_uniforms.push_back( glGetUniformLocation(programId, "u_diffuse"));
+    m_mappedUniforms["diffuse"] = m_uniforms.back();
 
     m_uniforms.push_back( glGetUniformLocation(programId, "u_nbPointLight"));
+    m_mappedUniforms["nbPointLight"] = m_uniforms.back();
     m_uniforms.push_back( glGetUniformLocation(programId, "u_nbDirectionalLight"));
+    m_mappedUniforms["nbDirectionalLight"] = m_uniforms.back();
 
     for(int i = 0; i < gl::NB_POINT_LIGHT; ++i)
     {
         std::string index = std::to_string(i);
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].position").c_str() ));
+        m_mappedUniforms[std::string("pointLights["+index+"].position")] = m_uniforms.back();
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].color").c_str()));
+        m_mappedUniforms[std::string("pointLights["+index+"].color")] = m_uniforms.back();
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].radius").c_str()));
+        m_mappedUniforms[std::string("pointLights["+index+"].radius")] = m_uniforms.back();
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_pointLights["+index+"].intensity").c_str()));
+        m_mappedUniforms[std::string("pointLights["+index+"].intensity")] = m_uniforms.back();
     }
     for(int i = 0; i < gl::NB_DIRECTIONAL_LIGHT; ++i)
     {
         std::string index = std::to_string(i);
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_directionalLights["+index+"].direction").c_str()));
+        m_mappedUniforms[std::string("directionalLights["+index+"].direction")] = m_uniforms.back();
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_directionalLights["+index+"].color").c_str()));
+        m_mappedUniforms[std::string("directionalLights["+index+"].color")] = m_uniforms.back();
         m_uniforms.push_back( glGetUniformLocation(programId, std::string("u_directionalLights["+index+"].intensity").c_str()));
+        m_mappedUniforms[std::string("directionalLights["+index+"].intensity")] = m_uniforms.back();
     }
 
      m_uniforms.push_back( glGetUniformLocation(programId, "u_viewPosition"));
+     m_mappedUniforms["viewPosition"] = m_uniforms.back();
 
      m_uniforms.push_back( glGetUniformLocation(programId, "u_specularValue"));
+     m_mappedUniforms["specularValue"] = m_uniforms.back();
      m_uniforms.push_back( glGetUniformLocation(programId, "u_shininessValue"));
+     m_mappedUniforms["shininessValue"] = m_uniforms.back();
 
 }
 
@@ -295,7 +326,7 @@ void LitMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projec
 }
 
 //////////////////////////////////////////////////////////////////////////////
-////////////////////////////// UnlitMaterial ////////////////////////////////
+////////////////////////////// SkyboxMaterial ////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
 SkyboxMaterial::SkyboxMaterial( std::shared_ptr<GLProgram> program ) : Material(program)
@@ -365,8 +396,11 @@ void SkyboxMaterial::initUniforms()
 {
     GLuint programId = m_program.lock()->getId();
     m_uniforms.push_back(glGetUniformLocation(programId, "u_viewMat"));
+    m_mappedUniforms["viewMat"] = m_uniforms.back();
     m_uniforms.push_back(glGetUniformLocation(programId, "u_projectionMat"));
+    m_mappedUniforms["projectionMat"] = m_uniforms.back();
     m_uniforms.push_back(glGetUniformLocation(programId, "u_diffuse"));
+    m_mappedUniforms["diffuse"] = m_uniforms.back();
 }
 
 void SkyboxMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat)
@@ -409,6 +443,55 @@ void SkyboxMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& pro
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMaps[0].lock()->getId());
         glUniform1i( m_uniforms[2], 0);
     }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////// LightPassMaterial ////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
+LightPassMaterial::LightPassMaterial( std::shared_ptr<GLProgram> program ) : Material(program)
+{
+    initUniforms();
+}
+
+LightPassMaterial::~LightPassMaterial()
+{
+
+}
+
+void LightPassMaterial::pushToGPU()
+{
+    Material::pushToGPU(); //push images if any
+}
+
+void LightPassMaterial::popFromGPU()
+{
+    Material::popFromGPU(); //popImages if any
+}
+
+void LightPassMaterial::initUniforms()
+{
+    GLuint programId = m_program.lock()->getId();
+    addUniform(programId, "u_ModelMatrix", "ModelMatrix");
+    addUniform(programId, "u_lightSpaceMatrix", "lightSpaceMatrix");
+}
+
+void LightPassMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat)
+{
+    //TODO
+}
+
+void LightPassMaterial::setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition)
+{
+    //TODO
+}
+
+void LightPassMaterial::setUniforms(const glm::mat4& modelMatrix, const glm::mat4& spaceLightMatrix)
+{
+    glUniformMatrix4fv( m_uniforms[0], 1, false, &modelMatrix[0][0]);
+    glUniformMatrix4fv( m_uniforms[1], 1, false, &spaceLightMatrix[0][0]);
 }
 
 

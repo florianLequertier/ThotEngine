@@ -8,6 +8,12 @@ namespace te{
 
 Renderer::Renderer()
 {
+
+    m_lightPassMaterial = std::static_pointer_cast<LightPassMaterial>( MaterialManager::getInstance().getMaterial("shadowMap_mat", ResourceAccessType::INTERNAL) );
+    if(m_lightPassMaterial.expired())
+        std::cerr<<"ERROR : in Renderer : Renderer() : Bad m_lightPassMaterial initialization"<<std::endl;
+
+
     //frameBuffer :
     glGenFramebuffers(1, &m_gBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_gBuffer);
@@ -262,6 +268,27 @@ void Renderer::setDeferredUniforms(glm::vec3 viewPosition, std::shared_ptr<CArra
     glBindTexture(GL_TEXTURE_2D, m_gTexSpecShininess);
     glUniform1i(m_uniforms[k++], 3);
 
+}
+
+void Renderer::lightPass(std::shared_ptr<CArray<MeshRenderer>> meshes, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights)
+{
+    glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
+    glm::mat4 lightSpaceMatrix;
+
+    m_lightPassMaterial.lock()->use();
+
+    for(int i = 0; i < directionalLights->size(); i++)
+    {
+        directionalLights->parse(i).bindDepthBuffer(lightProjection, lightSpaceMatrix);
+
+            for(int m = 0; m < meshes->size(); m++)
+            {
+                m_lightPassMaterial.lock()->setUniforms( meshes->parse(i).getModelMatrix(), lightSpaceMatrix );
+                meshes->parse(i).draw();
+            }
+
+        directionalLights->parse(i).unbindDepthBuffer();
+    }
 }
 
 }

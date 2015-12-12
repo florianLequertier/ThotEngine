@@ -60,6 +60,9 @@ void ResourceManager::loadInternals()
 
     loadProgram("glProg_3DLight", "shaders/3DLight.vs.glsl", "shaders/3DLight.fs.glsl");
 
+    //shadowMap program :
+    loadProgram("glProg_shadowMap", "shaders/shadowMap.vs.glsl", "shaders/shadowMap.fs.glsl");
+
     //defaults cubemaps :
     loadCubeMap("skybox_cubeTex_dif", {"assets/textures/skyboxes/siege/right.png",
                                                        "assets/textures/skyboxes/siege/left.png",
@@ -67,6 +70,7 @@ void ResourceManager::loadInternals()
                                                        "assets/textures/skyboxes/siege/top.png",
                                                        "assets/textures/skyboxes/siege/front.png",
                                                        "assets/textures/skyboxes/siege/back.png"});
+
 }
 
 void ResourceManager::pushMeshToGPU(std::string name, ResourceAccessType accessType)

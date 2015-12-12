@@ -44,6 +44,8 @@ void draw() const;
 void render(const glm::mat4& worldMat, const glm::mat4& viewMat);
 void render(const glm::mat4& worldMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition);
 
+glm::mat4 getModelMatrix() const;
+
 glm::vec3 getUpperRight() const;
 glm::vec3 getLowerLeft() const;
 

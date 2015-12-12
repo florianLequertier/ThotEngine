@@ -2,7 +2,9 @@
 #define LIGHT_HPP
 
 #include "glm.hpp"
+#include "gl/glew.h"
 #include "Component.hpp"
+#include "GLConfig.hpp"
 
 namespace te{
 
@@ -37,6 +39,9 @@ private:
     glm::vec3 m_color;
     float m_intensity;
 
+    GLuint m_depthMapFBO;
+    GLuint m_depthMap;
+
 public:
     DirectionalLight();
     DirectionalLight(const glm::vec3& direction, const glm::vec3& color);
@@ -50,6 +55,10 @@ public:
     void setColor( float red, float green, float blue);
     float getIntensity() const;
     void setIntensity(float intensity);
+
+    //depthBuffer draw
+    void bindDepthBuffer(glm::mat4& lightProjection, glm::mat4 &lightVPMatrix);
+    void unbindDepthBuffer();
 };
 
 }

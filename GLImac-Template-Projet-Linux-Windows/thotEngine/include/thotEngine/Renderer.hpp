@@ -16,6 +16,7 @@
 #include "thotEngine/Camera.hpp"
 
 #include "thotEngine/GLProgram.hpp"
+#include "thotEngine/MaterialManager.hpp"
 
 namespace te{
 
@@ -37,6 +38,8 @@ private:
 
     Mesh m_postProdQuad;
 
+    std::weak_ptr<LightPassMaterial> m_lightPassMaterial;
+
 public :
     Renderer();
     ~Renderer();
@@ -48,6 +51,16 @@ public :
     void deferred_render(Camera& camera, std::shared_ptr<CArray<MeshRenderer>> meshes, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights);
     void initDeferredUniforms();
     void setDeferredUniforms(glm::vec3 viewPosition, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights);
+
+    /**
+     * @brief lightPass
+     * @param meshes
+     * @param pointLights
+     * @param directionalLights
+     *
+     * update shadowMap of each lights on scene
+     */
+    void lightPass(std::shared_ptr<CArray<MeshRenderer>> meshes, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights); //update shadowMaps for each light
 };
 
 }

@@ -19,6 +19,7 @@ protected:
     std::weak_ptr<GLProgram> m_program;
     std::vector<std::weak_ptr<Image>> m_images;
     std::vector<GLuint> m_uniforms;
+    std::map<std::string, GLuint> m_mappedUniforms;
 
 public:
     Material( std::shared_ptr<GLProgram> program );
@@ -36,6 +37,9 @@ public:
     virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) = 0;
 
     void use();
+
+    void addUniform(GLuint programId, std::string uniformName, std::string uniformMappedName);
+    GLuint getUniform(std::string uniformMappedName);
 
 };
 
@@ -95,6 +99,25 @@ public:
     virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat) override;
     virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
 
+};
+
+class LightPassMaterial : public Material
+{
+private:
+    std::vector<std::weak_ptr<CubeMap>> m_cubeMaps;
+public:
+    LightPassMaterial( std::shared_ptr<GLProgram> program );
+
+    virtual ~LightPassMaterial();
+
+    virtual void pushToGPU() override;
+    virtual void popFromGPU() override;
+
+    virtual void initUniforms() override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat) override;
+    virtual void setUniforms(const glm::mat4& modelMat, const glm::mat4& projectionMat, const glm::mat4& viewMat, std::shared_ptr<CArray<PointLight>> pointLights, std::shared_ptr<CArray<DirectionalLight>> directionalLights, const glm::vec3& viewPosition) override;
+
+    void setUniforms(const glm::mat4& modelMatrix, const glm::mat4& spaceLightMatrix);
 };
 
 }

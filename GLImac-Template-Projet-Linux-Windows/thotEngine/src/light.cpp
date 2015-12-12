@@ -70,7 +70,22 @@ void PointLight::setIntensity(float intensity)
 
 DirectionalLight::DirectionalLight(): m_direction(1,0,0), m_color(1,1,1)
 {
+    //intiaialyze depth map :
+    glGenFramebuffers(1, &m_depthMapFBO);
 
+    glGenTextures(1, &m_depthMap);
+    glBindTexture(GL_TEXTURE_2D, m_depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, gl::SHADOW_WIDTH, gl::SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 DirectionalLight::DirectionalLight(const glm::vec3& direction, const glm::vec3& color): m_direction(direction), m_color(color)
@@ -121,6 +136,27 @@ float DirectionalLight::getIntensity() const
 void DirectionalLight::setIntensity(float intensity)
 {
     m_intensity = intensity;
+}
+
+
+//depthBuffer draw
+void DirectionalLight::bindDepthBuffer( glm::mat4 &lightProjection, glm::mat4& lightVPMatrix)
+{
+    glViewport(0, 0, gl::SHADOW_WIDTH, gl::SHADOW_HEIGHT);
+
+    glm::vec3 lightDirection = getDirection();
+    glm::vec3 lightPosition = -lightDirection * 100.0f;
+
+    glm::mat4 lightView = glm::lookAt(lightPosition, lightPosition + lightDirection, glm::vec3(0,1,0));
+    lightVPMatrix = lightProjection * lightView;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void DirectionalLight::unbindDepthBuffer()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 }

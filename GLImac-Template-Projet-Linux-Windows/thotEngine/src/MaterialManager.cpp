@@ -34,6 +34,8 @@ void MaterialManager::loadInternals()
     createMaterial<te::LitMaterial>("lit_mat", "glProg_3DLight", {}, {0.4f,32.f}, ResourceAccessType::INTERNAL);
     //skybox
     createMaterial<te::UnlitMaterial>("skybox_mat", "glProg_skybox", {}, ResourceAccessType::INTERNAL);
+    //shadowMapMaterial
+    createMaterial<te::LightPassMaterial>("shadowMap_mat", "glProg_shadowMap", ResourceAccessType::INTERNAL);
 }
 
 void MaterialManager::pushMaterialToGPU(std::string name, ResourceAccessType accessType )

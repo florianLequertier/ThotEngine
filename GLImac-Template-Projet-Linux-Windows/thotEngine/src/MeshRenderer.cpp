@@ -91,6 +91,10 @@ void MeshRenderer::render(const glm::mat4& worldMat, const glm::mat4& viewMat, s
     draw();
 }
 
+glm::mat4 MeshRenderer::getModelMatrix() const
+{
+    return m_owner->getComponent<Transform>()->getModelMatrix();
+}
 
 glm::vec3 MeshRenderer::getUpperRight() const
 {
